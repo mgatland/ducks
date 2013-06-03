@@ -1,11 +1,21 @@
-$(function () {
+var frontend = function () {
     "use strict";
  
+    //get element by id
+    function g (element) {
+        return document.getElementById(element);
+    }
+
     // for better performance - to avoid searching in DOM
-    var content = $('#content');
-    var input = $('#input');
-    var status = $('#status');
+    var content = g('content');
+    var input = g('input');
+    var status = g('status');
  
+    var canvas = g('gamescreen');
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = '#A0F';
+    ctx.fillRect(0,0,500,500);
+
     // my color assigned by the server
     var myColor = false;
     // my name sent to the server
@@ -16,10 +26,10 @@ $(function () {
  
     // if browser doesn't support WebSocket, just show some notification and exit
     if (!window.WebSocket) {
-        content.html($('<p>', { text: 'Sorry, but your browser doesn\'t '
-                                    + 'support WebSockets.'} ));
+        content.innerHTML = '<p>Sorry, but your browser doesn\'t '
+                                    + 'support WebSockets.</p>';
         input.hide();
-        $('span').hide();
+        status.hide();
         return;
     }
  
@@ -28,14 +38,14 @@ $(function () {
 
     connection.onopen = function () {
         // first we want users to enter their names
-        input.removeAttr('disabled');
-        status.text('Choose name:');
+        input.disabled = false;
+        status.innerHTML = 'Choose name:';
     };
  
     connection.onerror = function (error) {
-        // just in there were some problems with conenction...
-        content.html($('<p>', { text: 'Sorry, but there\'s some problem with your '
-                                    + 'connection or the server is down.' } ));
+        // just in there were some problems with connection...
+        content.innerHTML = '<p>Sorry, but there\'s some problem with your '
+                                    + 'connection or the server is down.</p>'; 
     };
 
     // most important part - incoming messages
@@ -54,8 +64,10 @@ $(function () {
         // check the server source code above
         if (json.type === 'color') { // first response from the server with user's color
             myColor = json.data;
-            status.text(myName + ': ').css('color', myColor);
-            input.removeAttr('disabled').focus();
+            status.innerHTML = myName + ': ';
+            status.style.color = myColor;
+            input.disabled = false;
+            input.focus();
             // from now user can start sending messages
         } else if (json.type === 'history') { // entire message history
             // insert every single message to the chat window
@@ -63,22 +75,22 @@ $(function () {
         } else if (json.type === 'state') { // world update
             addMessages(json.data.messages);
         } else if (json.type === 'message') { // it's a single message
-            input.removeAttr('disabled'); // let the user write another message
+            input.disabled = false; // let the user write another message
             addMessage(json.data.author, json.data.pos, json.data.text,
                        json.data.color, new Date(json.data.time));
         } else if (json.type === 'ack') { // it's a single message
-            input.removeAttr('disabled'); // let the user write another message
+            input.disabled = false; // let the user write another message
         } else {
             console.log('Hmm..., I\'ve never seen JSON like this: ', json);
         }
     };
  
     /**
-     * Send mesage when user presses Enter key
+     * Send message when user presses Enter key
      */
-    input.keydown(function(e) {
+    input.onkeydown = function(e) {
         if (e.keyCode === 13) {
-            var msg = $(this).val();
+            var msg = this.value;
             if (!msg) {
                 return;
             }
@@ -92,17 +104,17 @@ $(function () {
             }
             var json = JSON.stringify(message);
             connection.send(json);
-            $(this).val('');
+            this.value = '';
             // disable the input field to make the user wait until server
             // sends back response
-            input.attr('disabled', 'disabled');
+            input.disabled = true;
  
             // we know that the first message sent from a user their name
             if (myName === false) {
                 myName = msg;
             }
         }
-    });
+    };
  
     /**
      * This method is optional. If the server wasn't able to respond to the
@@ -111,8 +123,9 @@ $(function () {
      */
     setInterval(function() {
         if (connection.readyState !== 1) {
-            status.text('Error');
-            input.attr('disabled', 'disabled').val('Unable to communicate '
+            status.innerHTML = 'Error';
+            input.disabled = true;
+            input.value = ('Unable to communicate '
                                                  + 'with the WebSocket server.');
         }
     }, 3000);
@@ -121,11 +134,13 @@ $(function () {
      * Add message to the chat window
      */
     function addMessage(author, pos, message, color, dt) {
-        content.prepend('<p><span style="color:' + color + '">' + author + '</span> '
+        var newMessage = document.createElement('p');
+        newMessage.innerHTML = '<span style="color:' + color + '">' + author + '</span> '
              + "(" + pos.x + ", " + pos.y + ") @" 
              + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
              + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
-             + ': ' + message + '</p>');
+             + ': ' + message;
+        content.insertBefore(newMessage, content.firstChild);
     }
 
     function addMessages(messages) {
@@ -134,4 +149,6 @@ $(function () {
                            messages[i].color, new Date(messages[i].time));
             }
     }
-});
+};
+
+frontend();
