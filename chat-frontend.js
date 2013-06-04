@@ -9,7 +9,23 @@ var frontend = function () {
 
     //data from the server
     var users;
+    var myIndex;
+
+
+
+    //stuff    
     var tileSize = 48;
+    var duckImage = loadImage("duck.png");
+
+    function loadImage(name)
+    {
+        // create new image object
+        var image = new Image();
+        // load image
+        image.src = name;
+        // return image object
+        return image;
+    }
 
     // for better performance - to avoid searching in DOM
     var content = g('content');
@@ -26,6 +42,18 @@ var frontend = function () {
     // my name sent to the server
     var myName = false;
  
+
+    if (typeof KeyEvent == "undefined") {
+        var KeyEvent = {
+            DOM_VK_RETURN: 13,
+            DOM_VK_ENTER: 14,
+            DOM_VK_LEFT: 37,
+            DOM_VK_UP: 38,
+            DOM_VK_RIGHT: 39,
+            DOM_VK_DOWN: 40,
+        }
+    }
+
     // if user is running mozilla then use it's built-in WebSocket
     window.WebSocket = window.WebSocket || window.MozWebSocket;
  
@@ -47,9 +75,9 @@ var frontend = function () {
         ctx.fillRect(0,0,500,500);
 
         users.forEach(function(user) {
-            console.log("hi");
             ctx.fillStyle = user.color;
-            ctx.fillRect(user.pos.x * tileSize, user.pos.y * tileSize, tileSize, tileSize);
+            ctx.fillRect(user.pos.x * tileSize-4, user.pos.y * tileSize-4, tileSize+8, tileSize+8);
+            ctx.drawImage(duckImage, user.pos.x * tileSize, user.pos.y * tileSize);
         });
     }
 
@@ -92,6 +120,7 @@ var frontend = function () {
         } else if (json.type === 'state') { // world update
             addMessages(json.data.messages);
             users = json.data.users;
+            myIndex = json.data.yourIndex;
 
             drawUsers();
 
@@ -106,25 +135,56 @@ var frontend = function () {
         }
     };
  
+    function sendMessage(msg) {
+        if (!msg) {
+            return;
+        }
+        var message = {};
+        if (msg.charAt(0) === '/') {
+            message.type = 'cmd';
+            message.msg = msg.substring(1);
+        } else {
+            message.type = 'chat';
+            message.msg = msg;
+        }
+        var json = JSON.stringify(message);
+        connection.send(json);
+    }
+
+    function moveMyDuck(x, y) {
+        var myDuck = users[myIndex];
+        myDuck.pos.x += x;
+        myDuck.pos.y += y;
+        drawUsers();
+    }
+
     /**
      * Send message when user presses Enter key
      */
     input.onkeydown = function(e) {
-        if (e.keyCode === 13) {
+        switch (e.keyCode) {
+
+            case KeyEvent.DOM_VK_DOWN:
+                sendMessage("/south");
+                moveMyDuck(0,1);
+            break;
+            case KeyEvent.DOM_VK_UP:
+                sendMessage("/north");
+                moveMyDuck(0,-1);
+            break;
+            case KeyEvent.DOM_VK_LEFT:
+                sendMessage("/west");
+                moveMyDuck(-1,0);
+            break;
+            case KeyEvent.DOM_VK_RIGHT:
+                sendMessage("/east");
+                moveMyDuck(1,0);
+            break;
+
+            case KeyEvent.DOM_VK_ENTER:
+            case KeyEvent.DOM_VK_RETURN:
             var msg = this.value;
-            if (!msg) {
-                return;
-            }
-            var message = {};
-            if (msg.charAt(0) === '/') {
-                message.type = 'cmd';
-                message.msg = msg.substring(1);
-            } else {
-                message.type = 'chat';
-                message.msg = msg;
-            }
-            var json = JSON.stringify(message);
-            connection.send(json);
+            sendMessage(msg);
             this.value = '';
             // disable the input field to make the user wait until server
             // sends back response
@@ -134,6 +194,7 @@ var frontend = function () {
             if (myName === false) {
                 myName = msg;
             }
+            break;
         }
     };
  

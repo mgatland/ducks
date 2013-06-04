@@ -177,8 +177,10 @@ function ack(user) {
 
 function broadcast(type, data) {
     // broadcast message to all connected users
-    var json = JSON.stringify({ type:type, data: data });
+    //HACK: tell the user what their index is in the users array (hack because broadcast is used for non user data)
     for (var i=0; i < users.length; i++) {
+        data.yourIndex = i;
+        var json = JSON.stringify({ type:type, data: data });
         users[i].connection.sendUTF(json);
     }
 }
