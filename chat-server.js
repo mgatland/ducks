@@ -66,9 +66,9 @@ wsServer.on('request', function(request) {
     user.connection = connection;
     user.pos = new Pos(0,0);
     user.name = false;
+    user.color = false;
 
     var index = users.push(user) - 1;
-    var userColor = false;
  
     console.log((new Date()) + ' Connection accepted.');
  
@@ -87,10 +87,10 @@ wsServer.on('request', function(request) {
                 // remember user name
                 user.name = htmlEntities(json.msg);
                 // get random color and send it back to the user
-                userColor = colors.shift();
-                connection.sendUTF(JSON.stringify({ type:'color', data: userColor }));
+                user.color = colors.shift();
+                connection.sendUTF(JSON.stringify({ type:'color', data: user.color }));
                 console.log((new Date()) + ' User is known as: ' + user.name
-                            + ' with ' + userColor + ' color.');
+                            + ' with ' + user.color + ' color.');
  
             } else if (json.type === 'cmd') {
                 switch (json.msg) {
@@ -117,7 +117,7 @@ wsServer.on('request', function(request) {
                     time: (new Date()).getTime(),
                     text: htmlEntities(json.msg),
                     author: user.name,
-                    color: userColor,
+                    color: user.color,
                     pos: user.pos
                 };
                 history.push(obj);
@@ -131,13 +131,13 @@ wsServer.on('request', function(request) {
  
     // user disconnected
     connection.on('close', function(connection) {
-        if (user.name !== false && userColor !== false) {
+        if (user.name !== false && user.color !== false) {
             console.log((new Date()) + " Peer "
                 + connection.remoteAddress + " disconnected.");
             // remove user from the list of connected clients
             users.splice(index, 1);
             // push back user's color to be reused by another user
-            colors.push(userColor);
+            colors.push(user.color);
         }
     });
 });
@@ -150,6 +150,7 @@ setInterval(function(){
             var netUser = {};
             netUser.name = user.name;
             netUser.pos = user.pos;
+            netUser.color = user.color;
             return netUser;
         })
         broadcast("state", state);

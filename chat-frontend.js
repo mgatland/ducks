@@ -6,6 +6,11 @@ var frontend = function () {
         return document.getElementById(element);
     }
 
+
+    //data from the server
+    var users;
+    var tileSize = 48;
+
     // for better performance - to avoid searching in DOM
     var content = g('content');
     var input = g('input');
@@ -35,6 +40,18 @@ var frontend = function () {
  
     // open connection
     var connection = new WebSocket('ws://127.0.0.1:1337');
+
+    function drawUsers () {
+        //clear background
+        ctx.fillStyle = '#A0F';
+        ctx.fillRect(0,0,500,500);
+
+        users.forEach(function(user) {
+            console.log("hi");
+            ctx.fillStyle = user.color;
+            ctx.fillRect(user.pos.x * tileSize, user.pos.y * tileSize, tileSize, tileSize);
+        });
+    }
 
     connection.onopen = function () {
         // first we want users to enter their names
@@ -74,6 +91,10 @@ var frontend = function () {
             addMessages(json.data);
         } else if (json.type === 'state') { // world update
             addMessages(json.data.messages);
+            users = json.data.users;
+
+            drawUsers();
+
         } else if (json.type === 'message') { // it's a single message
             input.disabled = false; // let the user write another message
             addMessage(json.data.author, json.data.pos, json.data.text,
