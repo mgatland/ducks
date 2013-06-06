@@ -67,7 +67,8 @@ var frontend = function () {
     }
  
     // open connection
-    var connection = new WebSocket('ws://127.0.0.1:1337');
+    //var connection = new WebSocket('ws://127.0.0.1:1337');
+    var connection = new WebSocket('ws://mgatland-ducks.nodejitsu.com:80');
 
     function drawUsers () {
         //clear background
