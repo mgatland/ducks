@@ -1,162 +1,142 @@
 // http://ejohn.org/blog/ecmascript-5-strict-mode-json-and-more/
 "use strict";
- 
-// Optional. You will see this name in eg. 'ps' or 'top' command
+
 process.title = 'node-chat';
- 
-// Port where we'll run the websocket server
-var webSocketsServerPort = 80;
- 
-// websocket and http servers
-var webSocketServer = require('websocket').server;
-var http = require('http');
- 
-/**
- * Global variables
- */
-// latest 100 messages
+var express = require("express");
+var app = express();
+var port = process.env.PORT || 80;
+var io = require('socket.io').listen(app.listen(port));
+console.log("listening on port " + port);
+
+//globals
 var history = [ ];
 var unsentMessages = [ ];
 var users = [ ];
  
-/**
- * Helper function for escaping input strings
- */
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
  
-// Array with some colors
 var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange' ];
-// ... in random order
+//random order:
 colors.sort(function(a,b) { return Math.random() > 0.5; } );
- 
-/**
- * HTTP server
- */
-var server = http.createServer(function(request, response) {
-    // Not important for us. We're writing WebSocket server, not HTTP server
+
+// routing
+app.get('/', function (req, res) {
+  res.sendfile(__dirname + '/index.html');
 });
-server.listen(webSocketsServerPort, function() {
-    console.log((new Date()) + " Server is listening on port " + webSocketsServerPort);
-});
- 
-/**
- * WebSocket server
- */
-var wsServer = new webSocketServer({
-    // WebSocket server is tied to a HTTP server. WebSocket request is just
-    // an enhanced HTTP request. For more info http://tools.ietf.org/html/rfc6455#page-6
-    httpServer: server
-});
- 
-// This callback function is called every time someone
-// tries to connect to the WebSocket server
-wsServer.on('request', function(request) {
-    console.log((new Date()) + ' Connection from origin ' + request.origin + '.');
- 
-    // accept connection - you should check 'request.origin' to make sure that
-    // client is connecting from your website
-    // (http://en.wikipedia.org/wiki/Same_origin_policy)
-    var connection = request.accept(null, request.origin); 
-    // we need to know client index to remove them on 'close' event
+
+app.use("/client", express.static(__dirname + '/client'));
+
+io.set('log level', 1); // reduce logging
+
+io.sockets.on('connection', function (socket) {
 
     var user = {};
-    user.connection = connection;
+    user.socket = socket;
     user.pos = new Pos(0,0);
     user.name = false;
     user.color = false;
-
+    user.moved = false;
+    user.isReal = function() {
+        return !(this.name === false);
+    }
     var index = users.push(user) - 1;
  
     console.log((new Date()) + ' Connection accepted.');
  
     // send back chat history
     if (history.length > 0) {
-        connection.sendUTF(JSON.stringify( { type: 'history', data: history} ));
+        user.socket.emit({ type: history, data: history });
     }
- 
-    // user sent some message
-    connection.on('message', function(message) {
-        if (message.type === 'utf8') { // accept only text
 
-            var json = JSON.parse(message.utf8Data);
+    socket.on('sendchat', function (data) {
 
-            if (user.name === false) { // first message sent by user is their name
-                // remember user name
-                user.name = htmlEntities(json.msg);
-                // get random color and send it back to the user
-                user.color = colors.shift();
-                connection.sendUTF(JSON.stringify({ type:'color', data: user.color }));
-                console.log((new Date()) + ' User is known as: ' + user.name
-                            + ' with ' + user.color + ' color.');
- 
-            } else if (json.type === 'cmd') {
-                switch (json.msg) {
-                    case 'east':
-                        user.pos.x++;
-                        break;
-                    case 'west':
-                        user.pos.x--;
-                        break;
-                    case 'north':
-                        user.pos.y--;
-                        break;
-                    case 'south':
-                        user.pos.y++;
-                        break;
+        console.log((new Date()) + ' Received a message from '
+                    + user.name + ': ' + data);
+        
+        var obj = {
+            time: (new Date()).getTime(),
+            text: htmlEntities(data),
+            author: user.name,
+            color: user.color
+        };
+        history.push(obj);
+        unsentMessages.push(obj);
+        history = history.slice(-100);
+    });
+
+    socket.on('adduser', function(username){
+        if (user.isReal()) {
+            return;
+        }
+        console.log("setting name: " + username);
+        user.name = username;
+        user.color = colors.shift();
+        user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'You arrived in Duck Town.'} });
+        socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: username + ' arrived in Duck Town.'} });
+    });
+
+    socket.on('cmd', function(message) {
+        if (!user.isReal()) {
+            return;
+        }
+        switch (message) {
+            case 'east':
+                if (user.moved === false) {
+                    user.pos.x++;
+                    user.moved = true;
                 }
-                ack(user);
-            } else { // log and broadcast the message
-                console.log((new Date()) + ' Received a message from '
-                            + user.name + ': ' + message.utf8Data);
-                
-                // we want to keep history of all sent messages
-                var obj = {
-                    time: (new Date()).getTime(),
-                    text: htmlEntities(json.msg),
-                    author: user.name,
-                    color: user.color,
-                    pos: user.pos
-                };
-                history.push(obj);
-                unsentMessages.push(obj);
-                history = history.slice(-100);
-                //broadcast('message', obj);
-                ack(user);
-            }
+                break;
+            case 'west':
+                if (user.moved === false) {
+                    user.pos.x--;
+                    user.moved = true;
+                }
+                break;
+            case 'north':
+                if (user.moved === false) {
+                    user.pos.y--;
+                    user.moved = true;
+                }
+                break;
+            case 'south':
+                if (user.moved === false) {
+                    user.pos.y++;
+                    user.moved = true;
+                }
+                break;
         }
     });
- 
-    // user disconnected
-    connection.on('close', function(connection) {
-        if (user.name !== false && user.color !== false) {
+
+    socket.on('disconnect', function(){
+        if (user.isReal()) {
             console.log((new Date()) + " Peer "
-                + connection.remoteAddress + " disconnected.");
-            // remove user from the list of connected clients
-            users.splice(index, 1);
-            // push back user's color to be reused by another user
+                + user.name + " disconnected.");
             colors.push(user.color);
+            socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' disappeared.' }});
         }
+        users.splice(index, 1);
     });
 });
 
 setInterval(function(){
     for (var i=0; i < users.length; i++) {
-        var state = {};
-        state.messages = unsentMessages;
-        state.users = users.map(function(user) {
-            var netUser = {};
-            netUser.name = user.name;
-            netUser.pos = user.pos;
-            netUser.color = user.color;
-            return netUser;
-        })
-        broadcast("state", state);
-        unsentMessages = [ ];
+        users[i].moved = false; //let me move again.
     }
-}, 1000/2);
+    var state = {};
+    state.messages = unsentMessages;
+    state.users = users.map(function(user) {
+        var netUser = {};
+        netUser.name = user.name;
+        netUser.pos = user.pos;
+        netUser.color = user.color;
+        return netUser;
+    })
+    broadcast("state", state);
+    unsentMessages = [ ];
+}, 1000/4);
 
 function Pos(x, y) {
     this.x = x;
@@ -177,10 +157,10 @@ function ack(user) {
 
 function broadcast(type, data) {
     // broadcast message to all connected users
-    //HACK: tell the user what their index is in the users array (hack because broadcast is used for non user data)
+    // each user also recieves their index into the array
     for (var i=0; i < users.length; i++) {
         data.yourIndex = i;
-        var json = JSON.stringify({ type:type, data: data });
-        users[i].connection.sendUTF(json);
+        var datagram = { type:type, data: data };
+        users[i].socket.emit('updatechat', datagram);
     }
 }

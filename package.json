@@ -4,12 +4,13 @@
   "scripts": {
     "start": "node chat-server.js"
   },
-  "version": "0.0.0-1",
+  "version": "0.0.0-2",
   "engines": {
-    "node": "0.8.x"
+    "node": "0.10.x",
+    "npm": "1.2.x"
   },
   "dependencies": {
     "express": "3.1.x",
-    "websocket": "1.0.8"
+    "socket.io": "0.9.16"
   }
 }
