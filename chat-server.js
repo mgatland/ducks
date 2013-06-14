@@ -49,6 +49,7 @@ io.sockets.on('connection', function (socket) {
     user.color = false;
     user.moved = false;
     user.act = false;
+    user.queuedMoves = [];
     user.isReal = function() {
         return !(this.name === false);
     }
@@ -94,58 +95,7 @@ io.sockets.on('connection', function (socket) {
 
     });
 
-    socket.on('cmd', function(message) {
-        if (!user.isReal()) {
-            return;
-        }
-        var netUpdate = false;
-        switch (message) {
-            case 'east':
-                if (user.moved === false) {
-                    user.pos.x++;
-                    user.moved = true;
-                    user.act = false;
-                    netUpdate = true;
-                }
-                break;
-            case 'west':
-                if (user.moved === false) {
-                    user.pos.x--;
-                    user.moved = true;
-                    user.act = false;
-                    netUpdate = true;
-                }
-                break;
-            case 'north':
-                if (user.moved === false) {
-                    user.pos.y--;
-                    user.moved = true;
-                    user.act = false;
-                    netUpdate = true;
-                }
-                break;
-            case 'south':
-                if (user.moved === false) {
-                    user.pos.y++;
-                    user.moved = true;
-                    user.act = false;
-                    netUpdate = true;
-                }
-                break;
-            case 'quack':
-                if (user.moved === false) {
-                    user.act = 'quack';
-                    user.moved = true;
-                    netUpdate = true;
-                }
-                break;
-        }
-        //if (netUpdate === true) {
-        var netUser = getNetUser(user);
-        broadcast('playerUpdate', netUser);
-        setTimeout(clearMove(user), moveDelay);
-        //}
-    });
+    socket.on('cmd', processCommand);
 
     socket.on('disconnect', function(){
         console.log((new Date()) + " Peer "
@@ -157,11 +107,67 @@ io.sockets.on('connection', function (socket) {
         }
         users.splice(index, 1);
     });
-});
 
-function clearMove(duck) {
-    duck.moved = false;
-}
+    function processCommand(message) {
+        console.log(message);
+        if (!user.isReal()) {
+            return;
+        }
+        if (user.moved === true) {
+            user.queuedMoves.push(message);
+            console.log("move queue ++ to " + user.queuedMoves.length);
+            return;
+        }
+        var netUpdate = false;
+        switch (message) {
+            case 'east':
+                user.pos.x++;
+                user.moved = true;
+                user.act = false;
+                netUpdate = true;
+                break;
+            case 'west':
+                user.pos.x--;
+                user.moved = true;
+                user.act = false;
+                netUpdate = true;
+                break;
+            case 'north':
+                user.pos.y--;
+                user.moved = true;
+                user.act = false;
+                netUpdate = true;
+                break;
+            case 'south':
+                user.pos.y++;
+                user.moved = true;
+                user.act = false;
+                netUpdate = true;
+                break;
+            case 'quack':
+                user.act = 'quack';
+                user.moved = true;
+                netUpdate = true;
+                break;
+        }
+        if (netUpdate === true) {
+            var netUser = getNetUser(user);
+            broadcast('playerUpdate', netUser);
+            setTimeout(clearMove, moveDelay, user);           
+        }
+    }
+
+
+    function clearMove(duck) {
+        duck.moved = false;
+        if (duck.queuedMoves.length > 0) {
+            var oldMove = duck.queuedMoves.shift();
+            console.log(duck.queuedMoves.length + " queued moves --");
+            processCommand(oldMove);
+        }
+    }
+
+});
 
 setInterval(function(){
     if (unsentMessages.length === 0) {
