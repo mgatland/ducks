@@ -12,6 +12,8 @@ var frontend = function () {
 
     //stuff    
     var tileSize = 48;
+    var screenWidth = 12;
+    var screenHeight = 12;
     var duckImage = loadImage("/client/duck.png");
     var duckQuackImage = loadImage("/client/duck-quack.png");
     var moved = false;
@@ -34,8 +36,10 @@ var frontend = function () {
  
     var canvas = g('gamescreen');
     var ctx = canvas.getContext("2d");
+    canvas.width = tileSize * screenWidth;
+    canvas.height = tileSize * screenHeight;
     ctx.fillStyle = '#A0F';
-    ctx.fillRect(0,0,500,500);
+    ctx.fillRect(0,0,tileSize*screenWidth,tileSize*screenHeight);
 
     // my color assigned by the server
     var myColor = false;
@@ -59,7 +63,7 @@ var frontend = function () {
     function drawUsers () {
         //clear background
         ctx.fillStyle = '#A0F';
-        ctx.fillRect(0,0,500,500);
+        ctx.fillRect(0,0,tileSize*screenWidth,tileSize*screenHeight);
 
         users.forEach(function(user) {
             if (user.name != false) {
@@ -99,7 +103,7 @@ var frontend = function () {
         } else if (data.type === 'playerUpdate') {
             var updatedUser = data.data;
             //find the user to update in our array
-            var index = getIndexOfUser(updatedUser.name);
+            var index = shared.getIndexOfUser(updatedUser.name, users);
             if (index != null) {
                 users[index] = updatedUser;
             } else {
@@ -108,7 +112,7 @@ var frontend = function () {
             }
             drawUsers();
         } else if (data.type === 'playerleaves') {
-            var index = getIndexOfUser(data.data);
+            var index = shared.getIndexOfUser(data.data, users);
             if (index) {
                 users.splice(index, 1);
                 drawUsers();
@@ -118,16 +122,6 @@ var frontend = function () {
             console.log('Hmm..., I\'ve never seen data like this: ', data);
         }
     });
- 
-    function getIndexOfUser(name) {
-        var index = null;
-        users.forEach(function(user, idx) {
-            if (user.name === name) {
-                index = idx;
-            }
-        });
-        return index;
-    }
 
     function sendMessage(msg) {
         if (!msg) {
@@ -152,7 +146,7 @@ var frontend = function () {
     }
 
     function moveMyDuck(x, y) {
-        var myIndex = getIndexOfUser(myName);
+        var myIndex = shared.getIndexOfUser(myName, users);
         var myDuck = users[myIndex];
         myDuck.pos.x += x;
         myDuck.pos.y += y;

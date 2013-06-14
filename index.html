@@ -16,13 +16,14 @@
         </style>
     </head>
     <body>
-        <canvas id="gamescreen" width=512 height=512></canvas>
+        <canvas id="gamescreen"></canvas>
         <div id="content"></div>
         <div>
             <span id="status">Connecting...</span>
             <input type="text" id="input" disabled="disabled" />
         </div> 
         <script src="/socket.io/socket.io.js"></script>
-        <script src="/client/chat-frontend.js"></script>
+        <script src="/shared/shared.js"></script>    
+        <script src="/client/chat-frontend.js"></script>    
     </body>
 </html>

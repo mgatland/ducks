@@ -8,6 +8,9 @@ var port = process.env.PORT || 80;
 var io = require('socket.io').listen(app.listen(port));
 console.log("listening on port " + port);
 
+var shared = require('./shared/shared');
+
+
 //consts
 var moveDelay = 1000/4;
 
@@ -31,6 +34,8 @@ app.get('/', function (req, res) {
 });
 
 app.use("/client", express.static(__dirname + '/client'));
+app.use("/shared", express.static(__dirname + '/shared'));
+
 
 io.set('log level', 1); // reduce logging
 
@@ -105,20 +110,9 @@ io.sockets.on('connection', function (socket) {
             socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' disappeared.' }});
             socket.broadcast.emit('updatechat', { type: 'playerleaves', data: user.name });
         }
-        var index = getIndexOfUser(user);
+        var index = shared.getIndexOfUser(user, users);
         users.splice(index, 1);
     });
-
-
-    function getIndexOfUser(name) {
-        var index = null;
-        users.forEach(function(user, idx) {
-            if (user.name === name) {
-                index = idx;
-            }
-        });
-        return index;
-    }
 
     function processCommand(message) {
         console.log(message);
