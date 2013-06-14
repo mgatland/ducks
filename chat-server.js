@@ -18,7 +18,8 @@ var moveDelay = 1000/4;
 var history = [ ];
 var unsentMessages = [ ];
 var users = [ ];
- 
+var map = shared.getMap();
+
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -49,7 +50,7 @@ io.sockets.on('connection', function (socket) {
 
     var user = {};
     user.socket = socket;
-    user.pos = new Pos(0,0);
+    user.pos = new Pos(5,5);
     user.name = false;
     user.color = false;
     user.moved = false;
@@ -152,9 +153,8 @@ io.sockets.on('connection', function (socket) {
 
     function moveDuck(x, y, act) {
         act = typeof act !== 'undefined' ? act : false; //default arguments
-        user.pos.x += x;
-        user.pos.y += y;
         user.moved = true;
+        shared.move(user, x, y);
         user.act = act;
         return true;
     }

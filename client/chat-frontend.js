@@ -18,6 +18,7 @@ var frontend = function () {
     var duckQuackImage = loadImage("/client/duck-quack.png");
     var moved = false;
     var moveDelay = 1000/4;
+    var map = shared.getMap();
 
     function loadImage(name)
     {
@@ -148,8 +149,7 @@ var frontend = function () {
     function moveMyDuck(x, y) {
         var myIndex = shared.getIndexOfUser(myName, users);
         var myDuck = users[myIndex];
-        myDuck.pos.x += x;
-        myDuck.pos.y += y;
+        shared.move(myDuck, x, y);
         moved = true;
         setTimeout(function(){
             moved = false;
