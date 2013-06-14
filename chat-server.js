@@ -127,33 +127,20 @@ io.sockets.on('connection', function (socket) {
         var netUpdate = false;
         switch (message) {
             case 'east':
-                user.pos.x++;
-                user.moved = true;
-                user.act = false;
-                netUpdate = true;
+                netUpdate = moveDuck(1,0);
                 break;
             case 'west':
-                user.pos.x--;
-                user.moved = true;
-                user.act = false;
-                netUpdate = true;
+                netUpdate = moveDuck(-1,0);
                 break;
             case 'north':
-                user.pos.y--;
-                user.moved = true;
-                user.act = false;
-                netUpdate = true;
+                netUpdate = moveDuck(0,-1);
                 break;
             case 'south':
-                user.pos.y++;
-                user.moved = true;
-                user.act = false;
-                netUpdate = true;
+                netUpdate = moveDuck(0,1);
+                console.log(user.act);
                 break;
             case 'quack':
-                user.act = 'quack';
-                user.moved = true;
-                netUpdate = true;
+                netUpdate = moveDuck(0,0,'quack');
                 break;
         }
         if (netUpdate === true) {
@@ -161,6 +148,15 @@ io.sockets.on('connection', function (socket) {
             broadcast('playerUpdate', netUser);
             setTimeout(clearMove, moveDelay);           
         }
+    }
+
+    function moveDuck(x, y, act) {
+        act = typeof act !== 'undefined' ? act : false; //default arguments
+        user.pos.x += x;
+        user.pos.y += y;
+        user.moved = true;
+        user.act = act;
+        return true;
     }
 
     function clearMove() {
