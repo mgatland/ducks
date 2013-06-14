@@ -159,16 +159,15 @@ io.sockets.on('connection', function (socket) {
         if (netUpdate === true) {
             var netUser = getNetUser(user);
             broadcast('playerUpdate', netUser);
-            setTimeout(clearMove, moveDelay, user);           
+            setTimeout(clearMove, moveDelay);           
         }
     }
 
-
-    function clearMove(duck) {
-        duck.moved = false;
-        if (duck.queuedMoves.length > 0) {
-            var oldMove = duck.queuedMoves.shift();
-            console.log(duck.queuedMoves.length + " queued moves --");
+    function clearMove() {
+        user.moved = false;
+        if (user.queuedMoves.length > 0) {
+            var oldMove = user.queuedMoves.shift();
+            console.log(user.queuedMoves.length + " queued moves --");
             processCommand(oldMove);
         }
     }
