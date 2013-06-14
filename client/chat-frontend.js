@@ -8,13 +8,14 @@ var frontend = function () {
 
     //data from the server
     var users;
-    var myIndex;
     var keysDown = [];
 
     //stuff    
     var tileSize = 48;
     var duckImage = loadImage("/client/duck.png");
+    var duckQuackImage = loadImage("/client/duck-quack.png");
     var moved = false;
+    var moveDelay = 1000/4;
 
     function loadImage(name)
     {
@@ -64,7 +65,11 @@ var frontend = function () {
             if (user.name != false) {
                 ctx.fillStyle = user.color;
                 ctx.fillRect(user.pos.x * tileSize-4, user.pos.y * tileSize-4, tileSize+8, tileSize+8);
-                ctx.drawImage(duckImage, user.pos.x * tileSize, user.pos.y * tileSize);
+                if (user.act === 'quack') {
+                    ctx.drawImage(duckQuackImage, user.pos.x * tileSize, user.pos.y * tileSize);
+                } else {
+                    ctx.drawImage(duckImage, user.pos.x * tileSize, user.pos.y * tileSize);
+                }
             }
         });
     }
@@ -83,22 +88,47 @@ var frontend = function () {
 
     socket.on('updatechat', function (data) {
         if (data.type === 'state') { // world update
-            addMessages(data.data.messages);
+            console.log('recieved initial state');
             users = data.data.users;
-            myIndex = data.data.yourIndex;
             drawUsers();
-        } else if (data.type === 'message') { // it's a single message
-            //input.disabled = false; // let the user write another message
-            addMessage(data.data.author, data.data.text,
-                       data.data.color, new Date(data.data.time));
+        } else if (data.type === 'messages') {
+            addMessages(data.data.messages);
         } else if (data.type === 'servermessage') {
             //input.disabled = false;
             addMessage('server', data.data.text, "#000", new Date());
+        } else if (data.type === 'playerUpdate') {
+            var updatedUser = data.data;
+            //find the user to update in our array
+            var index = getIndexOfUser(updatedUser.name);
+            if (index != null) {
+                users[index] = updatedUser;
+            } else {
+                console.log("update for new user: " + updatedUser.name);
+                users.push(updatedUser);
+            }
+            drawUsers();
+        } else if (data.type === 'playerleaves') {
+            var index = getIndexOfUser(data.data);
+            if (index) {
+                users.splice(index, 1);
+                drawUsers();
+            }
+
         } else {
             console.log('Hmm..., I\'ve never seen data like this: ', data);
         }
     });
  
+    function getIndexOfUser(name) {
+        var index = null;
+        users.forEach(function(user, idx) {
+            if (user.name === name) {
+                index = idx;
+            }
+        });
+        return index;
+    }
+
     function sendMessage(msg) {
         if (!msg) {
             return;
@@ -122,13 +152,14 @@ var frontend = function () {
     }
 
     function moveMyDuck(x, y) {
+        var myIndex = getIndexOfUser(myName);
         var myDuck = users[myIndex];
         myDuck.pos.x += x;
         myDuck.pos.y += y;
         moved = true;
         setTimeout(function(){
             moved = false;
-        }, 1000/4);
+        }, moveDelay);
         drawUsers();
     }
 

@@ -8,6 +8,9 @@ var port = process.env.PORT || 80;
 var io = require('socket.io').listen(app.listen(port));
 console.log("listening on port " + port);
 
+//consts
+var moveDelay = 1000/4;
+
 //globals
 var history = [ ];
 var unsentMessages = [ ];
@@ -31,6 +34,12 @@ app.use("/client", express.static(__dirname + '/client'));
 
 io.set('log level', 1); // reduce logging
 
+//Force xhr-polling, this means no websockets (because appfog doesn't support websockets)
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+
 io.sockets.on('connection', function (socket) {
 
     var user = {};
@@ -39,6 +48,7 @@ io.sockets.on('connection', function (socket) {
     user.name = false;
     user.color = false;
     user.moved = false;
+    user.act = false;
     user.isReal = function() {
         return !(this.name === false);
     }
@@ -46,10 +56,12 @@ io.sockets.on('connection', function (socket) {
  
     console.log((new Date()) + ' Connection accepted.');
  
-    // send back chat history
-    if (history.length > 0) {
-        user.socket.emit({ type: history, data: history });
-    }
+//    // send back chat history
+ //   if (history.length > 0) {
+ //       user.socket.emit({ type: history, data: history });
+ //   }
+    sendFullStateTo(user.socket);
+
 
     socket.on('sendchat', function (data) {
 
@@ -76,67 +88,111 @@ io.sockets.on('connection', function (socket) {
         user.color = colors.shift();
         user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'You arrived in Duck Town.'} });
         socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: username + ' arrived in Duck Town.'} });
+
+        var netUser = getNetUser(user);
+        broadcast('playerUpdate', netUser);
+
     });
 
     socket.on('cmd', function(message) {
         if (!user.isReal()) {
             return;
         }
+        var netUpdate = false;
         switch (message) {
             case 'east':
                 if (user.moved === false) {
                     user.pos.x++;
                     user.moved = true;
+                    user.act = false;
+                    netUpdate = true;
                 }
                 break;
             case 'west':
                 if (user.moved === false) {
                     user.pos.x--;
                     user.moved = true;
+                    user.act = false;
+                    netUpdate = true;
                 }
                 break;
             case 'north':
                 if (user.moved === false) {
                     user.pos.y--;
                     user.moved = true;
+                    user.act = false;
+                    netUpdate = true;
                 }
                 break;
             case 'south':
                 if (user.moved === false) {
                     user.pos.y++;
                     user.moved = true;
+                    user.act = false;
+                    netUpdate = true;
+                }
+                break;
+            case 'quack':
+                if (user.moved === false) {
+                    user.act = 'quack';
+                    user.moved = true;
+                    netUpdate = true;
                 }
                 break;
         }
+        //if (netUpdate === true) {
+        var netUser = getNetUser(user);
+        broadcast('playerUpdate', netUser);
+        setTimeout(clearMove(user), moveDelay);
+        //}
     });
 
     socket.on('disconnect', function(){
+        console.log((new Date()) + " Peer "
+            + user.name + " disconnected.");
         if (user.isReal()) {
-            console.log((new Date()) + " Peer "
-                + user.name + " disconnected.");
             colors.push(user.color);
             socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' disappeared.' }});
+            socket.broadcast.emit('updatechat', { type: 'playerleaves', data: user.name });
         }
         users.splice(index, 1);
     });
 });
 
+function clearMove(duck) {
+    duck.moved = false;
+}
+
 setInterval(function(){
-    for (var i=0; i < users.length; i++) {
-        users[i].moved = false; //let me move again.
+    if (unsentMessages.length === 0) {
+        return;
     }
     var state = {};
     state.messages = unsentMessages;
-    state.users = users.map(function(user) {
+    broadcast("messages", state);
+    unsentMessages = [ ];
+}, 1000/4);
+
+function sendFullStateTo(socket) {
+    var state = getFullState();
+    var datagram = { type:'state', data: state };
+    socket.emit("updatechat", datagram);
+};
+
+function getFullState() {
+    var state = {};
+    state.users = users.map( getNetUser );
+    return state;    
+}
+
+function getNetUser (user) {
         var netUser = {};
         netUser.name = user.name;
         netUser.pos = user.pos;
         netUser.color = user.color;
+        netUser.act = user.act;
         return netUser;
-    })
-    broadcast("state", state);
-    unsentMessages = [ ];
-}, 1000/4);
+    }
 
 function Pos(x, y) {
     this.x = x;
@@ -157,9 +213,8 @@ function ack(user) {
 
 function broadcast(type, data) {
     // broadcast message to all connected users
-    // each user also recieves their index into the array
     for (var i=0; i < users.length; i++) {
-        data.yourIndex = i;
+        //data.yourIndex = i;
         var datagram = { type:type, data: data };
         users[i].socket.emit('updatechat', datagram);
     }
