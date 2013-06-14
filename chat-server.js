@@ -105,8 +105,20 @@ io.sockets.on('connection', function (socket) {
             socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' disappeared.' }});
             socket.broadcast.emit('updatechat', { type: 'playerleaves', data: user.name });
         }
+        var index = getIndexOfUser(user);
         users.splice(index, 1);
     });
+
+
+    function getIndexOfUser(name) {
+        var index = null;
+        users.forEach(function(user, idx) {
+            if (user.name === name) {
+                index = idx;
+            }
+        });
+        return index;
+    }
 
     function processCommand(message) {
         console.log(message);
