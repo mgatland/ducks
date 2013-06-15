@@ -1,6 +1,14 @@
 
 (function(exports){
 
+	exports.Pos = function(x, y) {
+	    this.x = x;
+	    this.y = y;
+	    this.toString = function() {
+	        return "(" + this.x + "," + this.y + ")";
+	    }
+	}
+
    exports.getIndexOfUser = function (name, users) {
         var index = null;
         users.forEach(function(user, idx) {
@@ -26,16 +34,16 @@
 		gridData[10] = "x          x";
 		gridData[11] = "xxxxxxxxxxxx";
 
-		exports.levelWidth = gridData[0].length;
-		exports.levelHeight = gridData.length;
+		var levelWidth = gridData[0].length;
+		var levelHeight = gridData.length;
 
 		var grid = {};
 
 		grid.isValid = function (pos) {
-			if (pos.x < 0 || pos.x >= exports.levelWidth) {
+			if (pos.x < 0 || pos.x >= levelWidth) {
 				return false;
 			}
-			if (pos.y < 0 || pos.y >= exports.levelHeight) {
+			if (pos.y < 0 || pos.y >= levelHeight) {
 				return false;	
 			}
 			return true;
@@ -52,6 +60,14 @@
 			var tile = this.get(pos);
 			if (tile === "x") return false;
 			return true;
+		}
+
+		grid.getWidth = function () {
+			return levelWidth;
+		}
+
+		grid.getHeight = function () {
+			return levelHeight;
 		}
 
 		return grid;

@@ -61,10 +61,30 @@ var frontend = function () {
     var port = "80";
     var socket = io.connect("http://" + document.domain + ":" + port); //document.domain or "ducks.hp.af.cm" 
 
-    function drawUsers () {
+    function forEachCell(map, func) {
+        var pos = new shared.Pos(0,0);
+        for (var i = 0; i < map.getWidth(); i ++) {
+            for (var j = 0; j < map.getHeight(); j++) {
+                pos.x = i;
+                pos.y = j;
+                func(map.get(pos), pos);
+            }
+        }
+    }
+
+    function drawEverything () {
         //clear background
         ctx.fillStyle = '#A0F';
         ctx.fillRect(0,0,tileSize*screenWidth,tileSize*screenHeight);
+
+        //draw the walls
+        var map = shared.getMap();
+        ctx.fillStyle = '#72D';
+        forEachCell(map, function (tile, pos) {
+            if (tile === 'x') {
+                ctx.fillRect(pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
+            }
+        });
 
         users.forEach(function(user) {
             if (user.name != false) {
@@ -95,7 +115,7 @@ var frontend = function () {
         if (data.type === 'state') { // world update
             console.log('recieved initial state');
             users = data.data.users;
-            drawUsers();
+            drawEverything();
         } else if (data.type === 'messages') {
             addMessages(data.data.messages);
         } else if (data.type === 'servermessage') {
@@ -111,12 +131,12 @@ var frontend = function () {
                 console.log("update for new user: " + updatedUser.name);
                 users.push(updatedUser);
             }
-            drawUsers();
+            drawEverything();
         } else if (data.type === 'playerleaves') {
             var index = shared.getIndexOfUser(data.data, users);
             if (index) {
                 users.splice(index, 1);
-                drawUsers();
+                drawEverything();
             }
 
         } else {
@@ -154,7 +174,7 @@ var frontend = function () {
         setTimeout(function(){
             moved = false;
         }, moveDelay);
-        drawUsers();
+        drawEverything();
     }
 
     addEventListener("keydown", function (e) {
