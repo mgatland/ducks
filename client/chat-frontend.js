@@ -11,11 +11,13 @@ var frontend = function () {
     var keysDown = [];
 
     //stuff    
-    var tileSize = 48;
+    var tileSize = 48; //16, 32, 48
     var screenWidth = 12;
     var screenHeight = 12;
     var duckImage = loadImage("/client/duck.png");
     var duckQuackImage = loadImage("/client/duck-quack.png");
+    var brickImage = loadImage("/client/bricks0.png");
+    var groundImage = loadImage("/client/ground0.png");
     var moved = false;
     var moveDelay = 1000/4;
     var map = shared.getMap();
@@ -73,16 +75,14 @@ var frontend = function () {
     }
 
     function drawEverything () {
-        //clear background
-        ctx.fillStyle = '#A0F';
-        ctx.fillRect(0,0,tileSize*screenWidth,tileSize*screenHeight);
-
-        //draw the walls
+        //draw the tiles
         var map = shared.getMap();
-        ctx.fillStyle = '#72D';
+        //ctx.fillStyle = '#72D';
         forEachCell(map, function (tile, pos) {
             if (tile === 'x') {
-                ctx.fillRect(pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
+                ctx.drawImage(brickImage, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
+            } else {
+                ctx.drawImage(groundImage, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
             }
         });
 
