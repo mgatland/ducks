@@ -2,26 +2,32 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Let's Be Ducks</title>
+        <title>let's be ducks</title>
  
         <style>
-        * { font-family:tahoma; font-size:12px; padding:0px; margin:0px; }
-        p { line-height:18px; }
-        div { width:500px; margin-left:auto; margin-right:auto;}
-        #content { padding:5px; background:#ddd; border-radius:5px; overflow-y: scroll;
-                   border:1px solid #CCC; margin-top:10px; height: 160px; }
-        #input { border-radius:2px; border:1px solid #ccc;
-                 margin-top:10px; padding:5px; width:400px;  }
-        #status { width:88px; display:block; float:left; margin-top:15px; }
+        body { color: #fff; background: #309; font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+            text-transform: uppercase;}
+        #gamescreen { float: left; }
+        #panel { font-size: 24px; float: left; margin: 20px; width: 400px; }
+        #chat { padding:4px; background:#330; overflow-y: scroll;
+                   border: 3px solid #9CC; margin-top:10px; height: 190px;
+                   overflow-x: hidden; }
+        #inputline { margin-top: 10px;}
+        input { color: #fff; background-color: #330; border: 3px solid #9CC;
+                font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+                font-size: 24px; text-transform: uppercase;
+            }
         </style>
     </head>
     <body>
         <canvas id="gamescreen"></canvas>
-        <div id="content"></div>
-        <div>
-            <span id="status">Connecting...</span>
-            <input type="text" id="input" disabled="disabled" />
-        </div> 
+        <div id="panel">
+            <div id="chat"></div>
+            <div id="inputline">
+                <span id="status">...</span>
+                <input type="text" id="input" disabled="disabled" size="20" maxlength="20"/>
+            </div> 
+        </div>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/shared/shared.js"></script>    
         <script src="/client/chat-frontend.js"></script>    

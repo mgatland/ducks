@@ -33,7 +33,7 @@ var frontend = function () {
     }
 
     // for better performance - to avoid searching in DOM
-    var content = g('content');
+    var content = g('chat');
     var input = g('input');
     var status = g('status');
  
@@ -102,7 +102,7 @@ var frontend = function () {
     socket.on('connect', function () {
         // first we want users to enter their names
         input.disabled = false;
-        status.innerHTML = 'Choose name:';
+        status.innerHTML = 'NAME:';
     });
  
    /* connection.onerror = function (error) {
@@ -155,7 +155,7 @@ var frontend = function () {
             message = msg;
             myName = msg;
             console.log("Setting name");
-            status.innerHTML = 'chat:';
+            status.innerHTML = 'CHAT:';
         } else if (msg.charAt(0) === '/') {
             type = 'cmd';
             message = msg.substring(1);
@@ -238,13 +238,14 @@ var frontend = function () {
      * Add message to the chat window
      */
     function addMessage(author, message, color, dt) {
-        var newMessage = document.createElement('p');
-        newMessage.innerHTML = '<span style="color:' + color + '">' + author + '</span>'
+        var newMessage = document.createElement('div');
+        newMessage.innerHTML = '<span style="background-color:' + color + '">' + author + '</span>'
         //     + " @" 
         //     + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
         //     + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
              + ': ' + message;
-        content.insertBefore(newMessage, content.firstChild);
+        content.insertBefore(newMessage, null);
+        content.scrollTop = content.scrollHeight; //scroll to bottom of div
     }
 
     function addMessages(messages) {
