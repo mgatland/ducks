@@ -25,7 +25,7 @@ function htmlEntities(str) {
                       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
  
-var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange' ];
+var colors = [ '#ff0000', '#008000', '#0000ff', '#ff00ff', '#800080', '#dda0dd', '#ffa500' ];
 //random order:
 colors.sort(function(a,b) { return Math.random() > 0.5; } );
 
@@ -36,7 +36,6 @@ app.get('/', function (req, res) {
 
 app.use("/client", express.static(__dirname + '/client'));
 app.use("/shared", express.static(__dirname + '/shared'));
-
 
 io.set('log level', 1); // reduce logging
 
