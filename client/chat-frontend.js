@@ -33,6 +33,7 @@ var frontend = function () {
     //unlock the loader
     itemHasLoaded("asset list");
 
+    var hasSentName = false;
     var moved = false;
     var moveDelay = 1000/4;
 
@@ -66,6 +67,11 @@ var frontend = function () {
                 console.log('recieved initial state');
                 users = data.data.users;
                 drawEverything();
+            } else if (data.type === 'loggedin') {
+                myName = data.data.name;
+                myColor = data.data.color;
+                status.innerHTML = myName + ':';
+                status.style.color = myColor;
             } else if (data.type === 'messages') {
                 addMessages(data.data.messages);
             } else if (data.type === 'servermessage') {
@@ -228,9 +234,8 @@ var frontend = function () {
     canvas.width = screenWidth*tileSize;
     canvas.height = screenWidth*tileSize;
 
-    // my color assigned by the server
+    //from server
     var myColor = false;
-    // my name sent to the server
     var myName = false;
 
     if (typeof KeyEvent == "undefined") {
@@ -288,12 +293,12 @@ var frontend = function () {
         }
         var type = null;
         var message = {};
-        if (myName === false && msg.charAt(0) != '/') {
+        if (hasSentName === false && msg.charAt(0) != '/') {
             type = "adduser";
             message = msg;
-            myName = msg;
-            console.log("Setting name");
-            status.innerHTML = 'CHAT:';
+            hasSentName = true;
+            console.log("Sending name to server");
+            status.innerHTML = 'WAIT:';
         } else if (msg.charAt(0) === '/') {
             type = 'cmd';
             message = msg.substring(1);

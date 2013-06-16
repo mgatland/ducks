@@ -101,6 +101,12 @@ io.sockets.on('connection', function (socket) {
             return;
         }
 
+        //prevent duplicate usernames.
+        while (shared.getIndexOfUser(username, users) !== null) {
+            console.log("duplicate username " + username);
+            username = "_" + username + "_";
+        }
+
         console.log("setting name: " + username);
         user.name = username;
         if (unusedColors.length === 0) {
@@ -112,7 +118,10 @@ io.sockets.on('connection', function (socket) {
         user.color = unusedColors.shift();
         
         user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'You arrived in Duck Town.'} });
-        socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: username + ' arrived in Duck Town.'} });
+
+        user.socket.emit('updatechat', { type: 'loggedin', data: { name: user.name, color: user.color } });
+
+        socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' arrived in Duck Town.'} });
 
         var netUser = getNetUser(user);
         broadcast('playerUpdate', netUser);
