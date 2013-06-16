@@ -39,16 +39,13 @@ var frontend = function () {
  
     var canvas = g('gamescreen');
     var ctx = canvas.getContext("2d");
-    canvas.width = tileSize * screenWidth;
-    canvas.height = tileSize * screenHeight;
-    ctx.fillStyle = '#A0F';
-    ctx.fillRect(0,0,tileSize*screenWidth,tileSize*screenHeight);
-
+    canvas.width = screenWidth*tileSize;
+    canvas.height = screenWidth*tileSize;
+    
     // my color assigned by the server
     var myColor = false;
     // my name sent to the server
     var myName = false;
- 
 
     if (typeof KeyEvent == "undefined") {
         var KeyEvent = {
