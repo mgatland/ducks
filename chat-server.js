@@ -50,7 +50,7 @@ io.sockets.on('connection', function (socket) {
 
     var user = {};
     user.socket = socket;
-    user.pos = new Pos(5,5);
+    user.pos = new shared.Pos(5,5);
     user.name = false;
     user.color = false;
     user.moved = false;
@@ -200,15 +200,6 @@ function getNetUser (user) {
         netUser.act = user.act;
         return netUser;
     }
-
-function Pos(x, y) {
-    this.x = x;
-    this.y = y;
-
-    this.toString = function() {
-        return "(" + this.x + "," + this.y + ")";
-    }
-}
 
 var ackData = {};
 ackData.type = "ack";
