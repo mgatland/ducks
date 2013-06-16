@@ -377,13 +377,28 @@ var frontend = function () {
      */
     function addMessage(author, message, color, dt) {
         var newMessage = document.createElement('div');
-        newMessage.innerHTML = '<span style="background-color:' + color + '">' + author + '</span>'
+        var style = makeChatStyle(color);
+        newMessage.innerHTML = '<span style="' + style + '">' + author + '</span>'
         //     + " @" 
         //     + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
         //     + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
              + ': ' + message;
         content.insertBefore(newMessage, null);
         content.scrollTop = content.scrollHeight; //scroll to bottom of div
+    }
+
+    function makeChatStyle(color) {
+        var fore = '';
+        if (color === '#fff8bc' 
+            || color === '#8effc1'
+            || color === '#dda0dd'
+            || color === '#ffa500'
+            || color === '#8effc1'
+            || color === '#ff00ff') {
+            fore = '; color: black';
+        }
+        var back = 'background-color: ' + color;
+        return back + fore;
     }
 
     function addMessages(messages) {

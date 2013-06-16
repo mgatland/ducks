@@ -25,9 +25,20 @@ function htmlEntities(str) {
                       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
  
-var colors = [ '#ff0000', '#008000', '#0000ff', '#ff00ff', '#800080', '#dda0dd', '#ffa500' ];
-//random order:
-colors.sort(function(a,b) { return Math.random() > 0.5; } );
+var colors = [  //in order of attractiveness
+    '#fff8bc', //white
+    '#dda0dd', //light pink
+    '#ffa500',  //orange
+    '#8effc1', //light green
+    '#ff0000', //red
+    '#2badff', //blue
+    '#008000', //green
+    '#800080', //maroon
+    '#ff00ff', //bright pink
+    '#7f3300' // brown
+    ];
+
+var unusedColors = colors.slice(0);
 
 // routing
 app.get('/', function (req, res) {
@@ -89,9 +100,17 @@ io.sockets.on('connection', function (socket) {
         if (user.isReal()) {
             return;
         }
+
         console.log("setting name: " + username);
         user.name = username;
-        user.color = colors.shift();
+        if (unusedColors.length === 0) {
+            //This allows duplicate colors for ever, but I don't mind.
+            //ideally we would issue a random color from the set of "least used colors"
+            //which means maintaining a use-count for each color
+            unusedColors = colors.slice(0);
+        }
+        user.color = unusedColors.shift();
+        
         user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'You arrived in Duck Town.'} });
         socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: username + ' arrived in Duck Town.'} });
 
