@@ -388,6 +388,8 @@ var frontend = function () {
     }
 
     function makeChatStyle(color) {
+        //todo: we should get this list of colors from the server, or calculate
+        //which colors are light or dark using math.
         var fore = '';
         if (color === '#fff8bc' 
             || color === '#8effc1'
