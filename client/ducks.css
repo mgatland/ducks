@@ -18,12 +18,17 @@ body {
 
 #chat { 
     padding:4px; 
-    background:#330; 
+    background: darkblue; 
     overflow-y: scroll;
     border: 3px solid #9CC; 
     margin-top:10px; 
     height: 190px;
     overflow-x: hidden; 
+}
+
+.chatname {
+    padding-right: 4px;
+    padding-left: 4px;
 }
 
 #inputline { 

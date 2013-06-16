@@ -276,7 +276,6 @@ var frontend = function () {
             if (user.name != false) {
                 ctx.fillStyle = user.color;
                 var sprites = getSprites(user.color);
-                //ctx.fillRect(user.pos.x * tileSize, user.pos.y * tileSize, tileSize, tileSize);
                 if (user.act === 'quack') {
                     ctx.drawImage(duckQuackImage, user.pos.x * tileSize, user.pos.y * tileSize, tileSize, tileSize);
                     ctx.drawImage(sprites, user.pos.x * tileSize, user.pos.y * tileSize, tileSize, tileSize);
@@ -383,7 +382,7 @@ var frontend = function () {
     function addMessage(author, message, color, dt) {
         var newMessage = document.createElement('div');
         var style = makeChatStyle(color);
-        newMessage.innerHTML = '<span style="' + style + '">' + author + '</span>'
+        newMessage.innerHTML = '<span class="chatname" style="' + style + '">' + author + '</span>'
         //     + " @" 
         //     + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
         //     + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
