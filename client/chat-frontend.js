@@ -209,6 +209,11 @@ var frontend = function () {
 
     function loadGeneratedImage(name) {
         var image = new Image();
+        image.onload = function () {
+            //We probably tried to draw this image before it had loaded.
+            //once it loads, redraw the whole screen so it appears.
+            drawEverything();
+        }
         image.src = name;
         return image;
     }
