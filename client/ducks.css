@@ -1,0 +1,39 @@
+body { 
+    color: #fff; 
+    background: #309; 
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    text-transform: uppercase;
+}
+
+#gamescreen { 
+    float: left; 
+}
+
+#panel {
+    font-size: 24px; 
+    float: left; 
+    margin: 20px; 
+    width: 400px;
+}
+
+#chat { 
+    padding:4px; 
+    background:#330; 
+    overflow-y: scroll;
+    border: 3px solid #9CC; 
+    margin-top:10px; 
+    height: 190px;
+    overflow-x: hidden; 
+}
+
+#inputline { 
+    margin-top: 10px;
+}
+
+input { 
+    color: #fff; 
+    background-color: #330; 
+    border: 3px solid #9CC;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    font-size: 24px; text-transform: uppercase;
+}
