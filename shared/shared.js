@@ -26,8 +26,8 @@
 		gridData[ 2] = "x          x";
 		gridData[ 3] = "x          x";
 		gridData[ 4] = "x          x";
-		gridData[ 5] = "x          x";
-		gridData[ 6] = "x          x";
+		gridData[ 5] = "            ";
+		gridData[ 6] = "            ";
 		gridData[ 7] = "x          x";
 		gridData[ 8] = "x          x";
 		gridData[ 9] = "x          x";
@@ -50,10 +50,10 @@
 		}
 
 		grid.get = function (pos) {
-			if (!this.isValid(pos.x, pos.y)) {
+			if (!this.isValid(pos)) {
 				return "x";
 			}
-			return gridData[pos.x][pos.y]; 
+			return gridData[pos.y][pos.x]; 
 		};
 
 		grid.isWalkable = function (pos) {
