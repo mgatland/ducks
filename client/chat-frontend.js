@@ -101,7 +101,7 @@ var frontend = function () {
 
     socket.on('connect', function () {
         // first we want users to enter their names
-        input.disabled = false;
+        //input.disabled = false;
         status.innerHTML = 'NAME:';
     });
  
