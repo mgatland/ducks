@@ -75,7 +75,7 @@ var frontend = function () {
                 addMessages(data.data.messages);
             } else if (data.type === 'servermessage') {
                 //input.disabled = false;
-                addMessage('server', data.data.text, "#000", new Date());
+                addServerMessage(data.data.text);
             } else if (data.type === 'playerUpdate') {
                 var updatedUser = data.data;
                 //find the user to update in our array
@@ -401,16 +401,21 @@ var frontend = function () {
     /**
      * Add message to the chat window
      */
-    function addMessage(author, message, color, dt) {
+    function addMessage(author, message, color) {
         var newMessage = document.createElement('div');
         var style = makeChatStyle(color);
-        newMessage.innerHTML = '<span class="chatname" style="' + style + '">' + author + '</span>'
-        //     + " @" 
-        //     + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
-        //     + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
-             + ': ' + message;
+        newMessage.innerHTML = '<span class="chatname" style="' + style + '">' + author + ':</span>'
+             + ' ' + message;
         content.insertBefore(newMessage, null);
         content.scrollTop = content.scrollHeight; //scroll to bottom of div
+    }
+
+    function addServerMessage(message) {
+        var newMessage = document.createElement('div');
+        newMessage.style.color = "#9CC";
+        newMessage.innerHTML = message;
+        content.insertBefore(newMessage, null);
+        content.scrollTop = content.scrollHeight; //scroll to bottom of div 
     }
 
     function makeChatStyle(color) {
@@ -432,7 +437,7 @@ var frontend = function () {
     function addMessages(messages) {
         for (var i=0; i < messages.length; i++) {
                 addMessage(messages[i].author, messages[i].text,
-                           messages[i].color, new Date(messages[i].time));
+                           messages[i].color);
             }
     }
 };
