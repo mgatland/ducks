@@ -40,7 +40,7 @@
 		gridData[ 8] = "x    .     x";
 		gridData[ 9] = "x       ., x";
 		gridData[10] = "x .  ,     x";
-		gridData[11] = "xxxxxxxxxxxx";
+		gridData[11] = "xxxxx .xxxxx";
 		return gridData;
     }
 
@@ -74,9 +74,61 @@
 		gridData[ 8] = "x          v";
 		gridData[ 9] = "x  m   m   x";
 		gridData[10] = "x bn   nb  c";
-		gridData[11] = "xxxxccvxxxcc";
+		gridData[11] = "xxxx   xxxcc";
 		return gridData;
     }
+
+    var map_09_11 = function () {
+		var gridData = [];
+		gridData[ 0] = "xxxxx .xxxxx";
+		gridData[ 1] = "x.     x,   ";
+		gridData[ 2] = "x   ,  x   .";
+		gridData[ 3] = "x  xxxxx  , ";
+		gridData[ 4] = "x           ";
+		gridData[ 5] = "x xxxxxxx   ";
+		gridData[ 6] = "x x     xxxx";
+		gridData[ 7] = "x    x      ";
+		gridData[ 8] = "xxxxxxxxxxxx";
+		gridData[ 9] = "x           ";
+		gridData[10] = "x           ";
+		gridData[11] = "xxxxxxxxxxxx";
+		return gridData;
+    }
+
+    var map_10_11 = function () {
+		var gridData = [];
+		gridData[ 0] = "xxxxxxxxxxxx";
+		gridData[ 1] = ".           ";
+		gridData[ 2] = "            ";
+		gridData[ 3] = "   .        ";
+		gridData[ 4] = "  xxxxx     ";
+		gridData[ 5] = ", x   x     ";
+		gridData[ 6] = "xxx,  x     ";
+		gridData[ 7] = "      x     ";
+		gridData[ 8] = "xx    xxxxxx";
+		gridData[ 9] = "            ";
+		gridData[10] = "            ";
+		gridData[11] = "xxxxxxxxxxxx";
+		return gridData;
+    }
+
+    var map_11_11 = function () {
+		var gridData = [];
+		gridData[ 0] = "xxxx   xxxcc";
+		gridData[ 1] = "           x";
+		gridData[ 2] = "   m   m   c";
+		gridData[ 3] = "   n   n   v";
+		gridData[ 4] = "           x";
+		gridData[ 5] = "           x";
+		gridData[ 6] = "   m   m   x";
+		gridData[ 7] = "   n   n   x";
+		gridData[ 8] = "xxxxxcxxvxvc";
+		gridData[ 9] = "           v";
+		gridData[10] = "           x";
+		gridData[11] = "xxxvxccxvcvx";
+		return gridData;
+    }
+
 
 	var createGrid = function (gridData) {
 
@@ -125,13 +177,18 @@
 		return grid;
 	}    
 
-    var maps = [];
-    maps[10] = [];
-    maps[10][10] = createGrid(map_10_10());
-    maps[11] = [];
-    maps[11][10] = createGrid(map_11_10());
+    var maps = []; //x[], then y[]
     maps[9] = [];
+    maps[10] = [];
+    maps[11] = [];
+
     maps[9][10] = createGrid(map_09_10());
+    maps[10][10] = createGrid(map_10_10());
+    maps[11][10] = createGrid(map_11_10());
+
+    maps[9][11] = createGrid(map_09_11());
+    maps[10][11] = createGrid(map_10_11());
+    maps[11][11] = createGrid(map_11_11());
 
     exports.getMap = function (pos) {
     	return maps[pos.x][pos.y];
