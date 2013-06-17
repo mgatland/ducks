@@ -170,6 +170,10 @@ io.sockets.on('connection', function (socket) {
             case 'quack':
                 netUpdate = moveDuck(0,0,'quack');
                 break;
+            case 'sleep':
+            case 'nap':
+                netUpdate = moveDuck(0,0,'nap');
+                break;
         }
         if (netUpdate === true) {
             var netUser = getNetUser(user);
