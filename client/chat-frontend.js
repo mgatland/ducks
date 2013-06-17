@@ -20,13 +20,16 @@ var frontend = function () {
     var scale = 3; //16x16 tiles are scaled up 3 times
     var screenWidth = 12;
     var screenHeight = 12;
+    var duckTileSizeX = 16*scale;
+    var duckTileSizeY = 18*scale;
+    var duckYOffset = tileSize - duckTileSizeY;
+    console.log(duckYOffset);
 
     var itemsLoaded = 0;
     var itemsToLoad = 1; //the '1' locks until all items have been requested
 
     var replaceHex = "#fff8bc"; //color to replace with user color
     var duckImage = loadImage("/client/duck.png");
-    var duckQuackImage = loadImage("/client/duck-quack.png");
     var srcTilesImg = loadImage("/client/tiles.png");
     var spritesForColor = {}; //map of color name to sprites for that color duck
 
@@ -115,7 +118,7 @@ var frontend = function () {
         var tilesCanvas = document.createElement("canvas");
         drawScaledUpImageOnCanvas(tilesCanvas, srcTilesImg, scale);
         var tileImgUrl = tilesCanvas.toDataURL();
-        tilesImg = loadGeneratedImage(tileImgUrl);
+        tilesImg = loadGeneratedImage(tileImgUrl, null);
     }
 
     var duckTemplateImgData;
@@ -191,7 +194,7 @@ var frontend = function () {
         }
 
         var spriteUrl = spriteCanvas.toDataURL();
-        var sprites = loadGeneratedImage(spriteUrl);
+        var sprites = loadGeneratedImage(spriteUrl, drawEverything);
         spritesForColor[color] = sprites;
         return sprites;
     }
@@ -228,13 +231,9 @@ var frontend = function () {
         return image;
     }
 
-    function loadGeneratedImage(name) {
+    function loadGeneratedImage(name, onload) {
         var image = new Image();
-        image.onload = function () {
-            //We probably tried to draw this image before it had loaded.
-            //once it loads, redraw the whole screen so it appears.
-            drawEverything();
-        }
+        image.onload = onload;
         image.src = name;
         return image;
     }
@@ -292,10 +291,9 @@ var frontend = function () {
                 ctx.fillStyle = user.color;
                 var sprites = getSprites(user.color);
                 if (user.act === 'quack') {
-                    ctx.drawImage(duckQuackImage, user.pos.x * tileSize, user.pos.y * tileSize, tileSize, tileSize);
-                    ctx.drawImage(sprites, user.pos.x * tileSize, user.pos.y * tileSize, tileSize, tileSize);
+                    ctx.drawImage(sprites, 1*duckTileSizeX, 0, duckTileSizeX, duckTileSizeY, user.pos.x * tileSize, user.pos.y * tileSize + duckYOffset, duckTileSizeX, duckTileSizeY);
                 } else {
-                    ctx.drawImage(sprites, user.pos.x * tileSize, user.pos.y * tileSize, tileSize, tileSize);
+                    ctx.drawImage(sprites, 0, 0, duckTileSizeX, duckTileSizeY, user.pos.x * tileSize, user.pos.y * tileSize + duckYOffset, duckTileSizeX, duckTileSizeY);
                 }
             }
         });
