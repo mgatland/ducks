@@ -89,7 +89,7 @@ var frontend = function () {
                 drawEverything();
             } else if (data.type === 'playerleaves') {
                 var index = shared.getIndexOfUser(data.data, users);
-                if (index) {
+                if (index !== null) {
                     users.splice(index, 1);
                     drawEverything();
                 }
