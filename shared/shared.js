@@ -9,6 +9,10 @@
 	    }
 	}
 
+	exports.posAreEqual = function(p1, p2) {
+		return (p1.x === p2.x && p1.y === p2.y); 
+	}
+
    exports.getIndexOfUser = function (name, users) {
         var index = null;
         users.forEach(function(user, idx) {
@@ -53,6 +57,23 @@
 		return gridData;
     }
 
+    var map_west = function () {
+		var gridData = [];
+		gridData[ 0] = "xxxxxxxxxxxx";
+		gridData[ 1] = "x          x";
+		gridData[ 2] = "x          x";
+		gridData[ 3] = "x          x";
+		gridData[ 4] = "xxxxx  xxxxx";
+		gridData[ 5] = "x           ";
+		gridData[ 6] = "x           ";
+		gridData[ 7] = "xxxxx  xxxxx";
+		gridData[ 8] = "x          x";
+		gridData[ 9] = "x          x";
+		gridData[10] = "x          x";
+		gridData[11] = "xxxxxxxxxxxx";
+		return gridData;
+    }
+
 	var createGrid = function (gridData) {
 
 		var levelWidth = gridData[0].length;
@@ -60,7 +81,7 @@
 
 		var grid = {};
 
-		grid.isValid = function (pos) {
+		grid.isInMap = function (pos) {
 			if (pos.x < 0 || pos.x >= levelWidth) {
 				return false;
 			}
@@ -71,7 +92,7 @@
 		}
 
 		grid.get = function (pos) {
-			if (!this.isValid(pos)) {
+			if (!this.isInMap(pos)) {
 				return "x";
 			}
 			return gridData[pos.y][pos.x]; 
@@ -99,6 +120,8 @@
     maps[0][0] = createGrid(map_home());
     maps[1] = [];
     maps[1][0] = createGrid(map_east());
+    maps[-1] = [];
+    maps[-1][0] = createGrid(map_west());
 
     exports.getMap = function (pos) {
     	return maps[pos.x][pos.y];
@@ -107,7 +130,33 @@
     exports.move = function (user, x, y) {
         user.pos.x += x;
         user.pos.y += y;
-        if (this.getMap(user.map).isWalkable(user.pos) === false) {
+        var map = this.getMap(user.map);
+        //map transitions
+        if (map.isInMap(user.pos) === false) {
+        	if (user.pos.x === -1) {
+        		user.map.x--;
+        		user.pos.x = this.getMap(user.map).getWidth() - 1;
+        	} else if (user.pos.x === map.getWidth()) {
+        		user.map.x++;
+        		user.pos.x = 0;
+        	} else if (user.pos.y === -1) {
+        		user.map.y--;
+        		user.pos.y += this.getMap(user.map).getHeight();
+        	} else if (user.pos.y === map.getHeight()) {
+        		user.map.y++;
+        		user.pos.y = 0;
+        	} else {
+        		console.log("Cancelling weird error off-screen move: " + user.name + " " + user.pos);
+	            //undo move
+	            user.pos.x -= x;
+	            user.pos.y -= y;
+	            return false;
+        	}
+        	return true;
+        }
+
+        //normal movement
+        if (map.isWalkable(user.pos) === false) {
             //undo move
             user.pos.x -= x;
             user.pos.y -= y;

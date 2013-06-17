@@ -290,7 +290,7 @@ var frontend = function () {
         });
 
         users.forEach(function(user) {
-            if (user.name != false) {
+            if (user.name != false && shared.posAreEqual(user.map, map)) {
                 ctx.fillStyle = user.color;
                 var sprites = getSprites(user.color);
                 if (user.act === 'quack') {
