@@ -65,7 +65,7 @@ io.sockets.on('connection', function (socket) {
     user.moved = false;
     user.act = false;
     user.queuedMoves = [];
-    user.map = new shared.Pos(0,0);
+    user.map = shared.startingPos();
     user.isReal = function() {
         return !(this.name === false);
     }

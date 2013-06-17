@@ -9,6 +9,10 @@
 	    }
 	}
 
+	exports.startingPos = function() {
+		return new exports.Pos(10,10);
+	}
+
 	exports.posAreEqual = function(p1, p2) {
 		return (p1.x === p2.x && p1.y === p2.y); 
 	}
@@ -23,7 +27,24 @@
         return index;
     }
 
-    var map_home = function () {
+    var map_09_10 = function () {
+		var gridData = [];
+		gridData[ 0] = "xxxxxxxxxxxx";
+		gridData[ 1] = "x          x";
+		gridData[ 2] = "x          x";
+		gridData[ 3] = "x  z       x";
+		gridData[ 4] = "xxxxx  xxxxx";
+		gridData[ 5] = "x           ";
+		gridData[ 6] = "x         , ";
+		gridData[ 7] = "xxxxx .xxxxx";
+		gridData[ 8] = "x    .     x";
+		gridData[ 9] = "x       ., x";
+		gridData[10] = "x .  ,     x";
+		gridData[11] = "xxxxxxxxxxxx";
+		return gridData;
+    }
+
+    var map_10_10 = function () {
 		var gridData = [];
 		gridData[ 0] = "xxxxxxxxxxxx";
 		gridData[ 1] = "x          x";
@@ -34,43 +55,26 @@
 		gridData[ 6] = "            ";
 		gridData[ 7] = "x          x";
 		gridData[ 8] = "x          x";
-		gridData[ 9] = "x          x";
+		gridData[ 9] = "x ,        x";
 		gridData[10] = "x          x";
 		gridData[11] = "xxxxxxxxxxxx";
 		return gridData;
     }
 
-    var map_east = function () {
+    var map_11_10 = function () {
 		var gridData = [];
-		gridData[ 0] = "xxxxxxxxxxxx";
-		gridData[ 1] = "x        xxx";
-		gridData[ 2] = "x      x   x";
-		gridData[ 3] = "x          x";
-		gridData[ 4] = "x   x      x";
+		gridData[ 0] = "xxxxvxccvcxx";
+		gridData[ 1] = "x  vc    xcx";
+		gridData[ 2] = "x      v   x";
+		gridData[ 3] = "x          c";
+		gridData[ 4] = "x   c      v";
 		gridData[ 5] = "           x";
-		gridData[ 6] = "           x";
-		gridData[ 7] = "x    x     x";
-		gridData[ 8] = "x          x";
-		gridData[ 9] = "x      x   x";
-		gridData[10] = "x       x  x";
-		gridData[11] = "xxxxxxxxxxxx";
-		return gridData;
-    }
-
-    var map_west = function () {
-		var gridData = [];
-		gridData[ 0] = "xxxxxxxxxxxx";
-		gridData[ 1] = "x          x";
-		gridData[ 2] = "x          x";
-		gridData[ 3] = "x          x";
-		gridData[ 4] = "xxxxx  xxxxx";
-		gridData[ 5] = "x           ";
-		gridData[ 6] = "x           ";
-		gridData[ 7] = "xxxxx  xxxxx";
-		gridData[ 8] = "x          x";
-		gridData[ 9] = "x          x";
-		gridData[10] = "x          x";
-		gridData[11] = "xxxxxxxxxxxx";
+		gridData[ 6] = "           c";
+		gridData[ 7] = "x          c";
+		gridData[ 8] = "x          v";
+		gridData[ 9] = "x  m   m   x";
+		gridData[10] = "x bn   nb  c";
+		gridData[11] = "xxxxccvxxxcc";
 		return gridData;
     }
 
@@ -100,7 +104,13 @@
 
 		grid.isWalkable = function (pos) {
 			var tile = this.get(pos);
+			if (tile === "z") return false;
 			if (tile === "x") return false;
+			if (tile === "c") return false;
+			if (tile === "v") return false;
+			if (tile === "b") return false;
+			if (tile === "n") return false;
+			if (tile === "m") return false;
 			return true;
 		}
 
@@ -116,12 +126,12 @@
 	}    
 
     var maps = [];
-    maps[0] = [];
-    maps[0][0] = createGrid(map_home());
-    maps[1] = [];
-    maps[1][0] = createGrid(map_east());
-    maps[-1] = [];
-    maps[-1][0] = createGrid(map_west());
+    maps[10] = [];
+    maps[10][10] = createGrid(map_10_10());
+    maps[11] = [];
+    maps[11][10] = createGrid(map_11_10());
+    maps[9] = [];
+    maps[9][10] = createGrid(map_09_10());
 
     exports.getMap = function (pos) {
     	return maps[pos.x][pos.y];

@@ -262,7 +262,7 @@ var frontend = function (assets) {
 
     function getCurrentMap() {
         var myDuck = getMyDuck();
-        var map = myDuck.map || new shared.Pos(0,0);
+        var map = myDuck.map || shared.startingPos();
         return map;
     }
 
@@ -277,16 +277,37 @@ var frontend = function (assets) {
         }
     }
 
+    function drawTile(ctx, pos, tX, tY) {
+        ctx.drawImage(tilesImg, tX*tileSize, tY*tileSize, tileSize, tileSize, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
+    }
+
     function drawEverything () {
         //draw the tiles
         var map = getCurrentMap();
         var mapData = shared.getMap(map);
-        //ctx.fillStyle = '#72D';
         forEachCell(mapData, function (tile, pos) {
-            if (tile === 'x') {
-                ctx.drawImage(tilesImg, 0, 0, tileSize, tileSize, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
-            } else {
-                ctx.drawImage(tilesImg, 1*tileSize, 0, tileSize, tileSize, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
+            switch (tile) {
+                case 'z': drawTile(ctx, pos, 0, 0);
+                break;
+                case 'x': drawTile(ctx, pos, 1, 0);
+                break;
+                case 'c': drawTile(ctx, pos, 2, 0);
+                break;
+                case 'v': drawTile(ctx, pos, 3, 0);
+                break;
+                case 'b': drawTile(ctx, pos, 4, 0);
+                break;
+                case 'n': drawTile(ctx, pos, 5, 0);
+                break;
+                case 'm': drawTile(ctx, pos, 6, 0);
+                break;
+                //grounds:
+                case '.': drawTile(ctx, pos, 1, 1);
+                break;
+                case ',': drawTile(ctx, pos, 2, 1);
+                break;
+                default:
+                drawTile(ctx, pos, 0, 1);
             }
         });
 
