@@ -6,14 +6,17 @@
         <link href="./client/ducks.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <canvas id="gamescreen"></canvas>
-        <div id="panel">
-            <div id="chat"></div>
-            <div id="inputline">
-                <span id="status">...</span>
-                <input type="text" id="input" autofocus size="20" maxlength="60"/>
-            </div> 
+        <div id="game">
+            <canvas id="gamescreen"></canvas>
+            <div id="panel">
+                <div id="chat"></div>
+                <div id="inputline">
+                    <span id="status">...</span>
+                    <input type="text" id="input" autofocus size="20" maxlength="60"/>
+                </div> 
+            </div>
         </div>
+        <aisde id="notes"></aside>
         <script src="./socket.io/socket.io.js"></script>
         <script src="./shared/shared.js"></script>    
         <script src="./client/chat-frontend.js"></script>    

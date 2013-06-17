@@ -2,18 +2,19 @@ body {
     color: #fff; 
     background: #309; 
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
-    text-transform: uppercase;
 }
 
-#gamescreen { 
-    float: left; 
+#game {
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
 #panel {
+    display: inline-block;
     font-size: 24px; 
-    float: left; 
     margin: 20px; 
     width: 400px;
+
 }
 
 #chat { 

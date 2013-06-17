@@ -1,4 +1,35 @@
-var frontend = function () {
+var loader = function () {
+    var itemsLoaded = 0;
+    var itemsToLoad = 0;
+    this.duckImage = loadImage("/client/duck.png");
+    this.srcTilesImg = loadImage("/client/tiles.png");
+
+    function loadImage(name)
+    {
+        itemsToLoad++;
+        var image = new Image();
+        image.onload = function () {
+            itemHasLoaded(name);
+        }
+        image.src = name;
+        return image;
+    }
+
+    function itemHasLoaded(name) {
+        console.log("loaded " + name);
+        itemsLoaded++;
+        if (itemsLoaded === itemsToLoad) {
+            allItemsHaveLoaded();
+        }
+    }
+
+    function allItemsHaveLoaded() {
+        console.log("all " + itemsToLoad + " items have loaded");
+        frontend(this);
+    }
+}
+
+var frontend = function (assets) {
     "use strict";
 
     var debug = true;
@@ -24,28 +55,12 @@ var frontend = function () {
     var duckTileSizeY = 18*scale;
     var duckYOffset = tileSize - duckTileSizeY;
 
-    var itemsLoaded = 0;
-    var itemsToLoad = 1; //the '1' locks until all items have been requested
-
     var replaceHex = "#fff8bc"; //color to replace with user color
-    var duckImage = loadImage("/client/duck.png");
-    var srcTilesImg = loadImage("/client/tiles.png");
     var spritesForColor = {}; //map of color name to sprites for that color duck
-
-    //unlock the loader
-    itemHasLoaded("asset list");
 
     var hasSentName = false;
     var moved = false;
     var moveDelay = 1000/4;
-
-    function itemHasLoaded(name) {
-        console.log("loaded " + name);
-        itemsLoaded++;
-        if (itemsLoaded === itemsToLoad) {
-            allItemsHaveLoaded();
-        }
-    }
 
     function connect() {
         console.log("connecting to port " + port);
@@ -102,9 +117,8 @@ var frontend = function () {
 
     }
 
-    function allItemsHaveLoaded() {
-        console.log("all " + itemsToLoad + " items have loaded");
-        initializeSprites(duckImage);
+    function start() {
+        initializeSprites(assets.duckImage);
         createTileSet();
         connect();
     }
@@ -112,7 +126,7 @@ var frontend = function () {
     var tilesImg;
     function createTileSet() {
         var tilesCanvas = document.createElement("canvas");
-        drawScaledUpImageOnCanvas(tilesCanvas, srcTilesImg, scale);
+        drawScaledUpImageOnCanvas(tilesCanvas, assets.srcTilesImg, scale);
         var tileImgUrl = tilesCanvas.toDataURL();
         tilesImg = loadGeneratedImage(tileImgUrl, null);
     }
@@ -140,7 +154,7 @@ var frontend = function () {
         s_ctx.drawImage(srcImage, 0, 0);
 
         if (debug) {
-            get("panel").insertBefore(canvas, null);
+           get("notes").insertBefore(canvas, null);
         }
     }
 
@@ -186,7 +200,7 @@ var frontend = function () {
         s_ctx.putImageData(spriteImgData, 0, 0);
 
         if (debug) {
-            get("panel").insertBefore(spriteCanvas, null);
+            get("notes").insertBefore(spriteCanvas, null);
         }
 
         var spriteUrl = spriteCanvas.toDataURL();
@@ -213,18 +227,6 @@ var frontend = function () {
             g: parseInt(result[2], 16),
             b: parseInt(result[3], 16)
         } : null;
-    }
-    ///////
-
-    function loadImage(name)
-    {
-        itemsToLoad++;
-        var image = new Image();
-        image.onload = function () {
-            itemHasLoaded(name);
-        }
-        image.src = name;
-        return image;
     }
 
     function loadGeneratedImage(name, onload) {
@@ -440,6 +442,8 @@ var frontend = function () {
                            messages[i].color);
             }
     }
+
+    start();
 };
 
-window.onLoad = frontend();
+window.onload = loader;
