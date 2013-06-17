@@ -130,7 +130,7 @@ io.sockets.on('connection', function (socket) {
         console.log((new Date()) + " Peer "
             + user.name + " disconnected.");
         if (user.isReal()) {
-            colors.push(user.color);
+            unusedColors.push(user.color);
             socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' disappeared.' }});
             socket.broadcast.emit('updatechat', { type: 'playerleaves', data: user.name });
         }
