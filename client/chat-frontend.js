@@ -23,7 +23,6 @@ var frontend = function () {
     var duckTileSizeX = 16*scale;
     var duckTileSizeY = 18*scale;
     var duckYOffset = tileSize - duckTileSizeY;
-    console.log(duckYOffset);
 
     var itemsLoaded = 0;
     var itemsToLoad = 1; //the '1' locks until all items have been requested
