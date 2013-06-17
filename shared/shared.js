@@ -19,7 +19,7 @@
         return index;
     }
 
-	var createGrid = function () {
+    var map_home = function () {
 		var gridData = [];
 		gridData[ 0] = "xxxxxxxxxxxx";
 		gridData[ 1] = "x          x";
@@ -33,6 +33,27 @@
 		gridData[ 9] = "x          x";
 		gridData[10] = "x          x";
 		gridData[11] = "xxxxxxxxxxxx";
+		return gridData;
+    }
+
+    var map_east = function () {
+		var gridData = [];
+		gridData[ 0] = "xxxxxxxxxxxx";
+		gridData[ 1] = "x        xxx";
+		gridData[ 2] = "x      x   x";
+		gridData[ 3] = "x          x";
+		gridData[ 4] = "x   x      x";
+		gridData[ 5] = "           x";
+		gridData[ 6] = "           x";
+		gridData[ 7] = "x    x     x";
+		gridData[ 8] = "x          x";
+		gridData[ 9] = "x      x   x";
+		gridData[10] = "x       x  x";
+		gridData[11] = "xxxxxxxxxxxx";
+		return gridData;
+    }
+
+	var createGrid = function (gridData) {
 
 		var levelWidth = gridData[0].length;
 		var levelHeight = gridData.length;
@@ -73,16 +94,20 @@
 		return grid;
 	}    
 
-    var map = createGrid();
+    var maps = [];
+    maps[0] = [];
+    maps[0][0] = createGrid(map_home());
+    maps[1] = [];
+    maps[1][0] = createGrid(map_east());
 
-    exports.getMap = function () {
-    	return map;
+    exports.getMap = function (pos) {
+    	return maps[pos.x][pos.y];
     }
 
     exports.move = function (user, x, y) {
         user.pos.x += x;
         user.pos.y += y;
-        if (map.isWalkable(user.pos) === false) {
+        if (this.getMap(user.map).isWalkable(user.pos) === false) {
             //undo move
             user.pos.x -= x;
             user.pos.y -= y;

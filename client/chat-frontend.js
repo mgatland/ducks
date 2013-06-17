@@ -40,8 +40,6 @@ var frontend = function () {
     var moved = false;
     var moveDelay = 1000/4;
 
-    var map = shared.getMap();
-
     function itemHasLoaded(name) {
         console.log("loaded " + name);
         itemsLoaded++;
@@ -67,14 +65,13 @@ var frontend = function () {
 
         socket.on('updatechat', function (data) {
             if (data.type === 'state') { // world update
-                console.log('recieved initial state');
+                console.log('recieved list of players');
                 users = data.data.users;
                 drawEverything();
             } else if (data.type === 'loggedin') {
                 myName = data.data.name;
-                myColor = data.data.color;
                 status.innerHTML = myName + ':';
-                status.style.color = myColor;
+                status.style.color = data.data.color;
             } else if (data.type === 'messages') {
                 addMessages(data.data.messages);
             } else if (data.type === 'servermessage') {
@@ -249,7 +246,6 @@ var frontend = function () {
     canvas.height = screenWidth*tileSize;
 
     //from server
-    var myColor = false;
     var myName = false;
 
     if (typeof KeyEvent == "undefined") {
@@ -263,22 +259,29 @@ var frontend = function () {
         }
     }
 
-    function forEachCell(map, func) {
-        var pos = new shared.Pos(0,0);
-        for (var i = 0; i < map.getWidth(); i ++) {
-            for (var j = 0; j < map.getHeight(); j++) {
+    function getCurrentMap() {
+        var myDuck = getMyDuck();
+        var map = myDuck.map || new shared.Pos(0,0);
+        return map;
+    }
+
+    function forEachCell(mapData, func) {
+        var pos = new shared.Pos(0,0); //the coordinates here don't matter.
+        for (var i = 0; i < mapData.getWidth(); i ++) {
+            for (var j = 0; j < mapData.getHeight(); j++) {
                 pos.x = i;
                 pos.y = j;
-                func(map.get(pos), pos);
+                func(mapData.get(pos), pos);
             }
         }
     }
 
     function drawEverything () {
         //draw the tiles
-        var map = shared.getMap();
+        var map = getCurrentMap();
+        var mapData = shared.getMap(map);
         //ctx.fillStyle = '#72D';
-        forEachCell(map, function (tile, pos) {
+        forEachCell(mapData, function (tile, pos) {
             if (tile === 'x') {
                 ctx.drawImage(tilesImg, 0, 0, tileSize, tileSize, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
             } else {
@@ -323,9 +326,14 @@ var frontend = function () {
         socket.emit(type, message);
     }
 
-    function moveMyDuck(x, y) {
+    function getMyDuck() {
         var myIndex = shared.getIndexOfUser(myName, users);
         var myDuck = users[myIndex];
+        return myDuck;
+    }
+
+    function moveMyDuck(x, y) {
+        var myDuck = getMyDuck();
         shared.move(myDuck, x, y);
         moved = true;
         setTimeout(function(){

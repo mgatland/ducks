@@ -15,10 +15,9 @@ var shared = require('./shared/shared');
 var moveDelay = 1000/4;
 
 //globals
-var history = [ ];
+var history = [ ]; //totally unused
 var unsentMessages = [ ];
 var users = [ ];
-var map = shared.getMap();
 
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -66,6 +65,7 @@ io.sockets.on('connection', function (socket) {
     user.moved = false;
     user.act = false;
     user.queuedMoves = [];
+    user.map = new shared.Pos(0,0);
     user.isReal = function() {
         return !(this.name === false);
     }
@@ -73,11 +73,7 @@ io.sockets.on('connection', function (socket) {
  
     console.log((new Date()) + ' Connection accepted.');
  
-//    // send back chat history
- //   if (history.length > 0) {
- //       user.socket.emit({ type: history, data: history });
- //   }
-    sendFullStateTo(user.socket);
+    sendNetUsersTo(user.socket);
 
 
     socket.on('sendchat', function (data) {
@@ -211,13 +207,13 @@ setInterval(function(){
     unsentMessages = [ ];
 }, 1000/4);
 
-function sendFullStateTo(socket) {
-    var state = getFullState();
+function sendNetUsersTo(socket) {
+    var state = getAllNetUsers();
     var datagram = { type:'state', data: state };
     socket.emit("updatechat", datagram);
 };
 
-function getFullState() {
+function getAllNetUsers() {
     var state = {};
     state.users = users.map( getNetUser );
     return state;    
@@ -229,6 +225,7 @@ function getNetUser (user) {
         netUser.pos = user.pos;
         netUser.color = user.color;
         netUser.act = user.act;
+        netUser.map = user.map;
         return netUser;
     }
 
