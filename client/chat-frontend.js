@@ -16,7 +16,8 @@ var frontend = function () {
     var port = "80";
 
     //stuff    
-    var tileSize = 48; //16, 32, 48
+    var tileSize = 48;
+    var scale = 3; //16x16 tiles are scaled up 3 times
     var screenWidth = 12;
     var screenHeight = 12;
 
@@ -26,8 +27,7 @@ var frontend = function () {
     var replaceHex = "#fff8bc"; //color to replace with user color
     var duckImage = loadImage("/client/duck.png");
     var duckQuackImage = loadImage("/client/duck-quack.png");
-    var brickImage = loadImage("/client/bricks0.png");
-    var groundImage = loadImage("/client/ground0.png");
+    var srcTilesImg = loadImage("/client/tiles.png");
     var spritesForColor = {}; //map of color name to sprites for that color duck
 
     //unlock the loader
@@ -105,17 +105,32 @@ var frontend = function () {
 
     function allItemsHaveLoaded() {
         console.log("all " + itemsToLoad + " items have loaded");
-        initializeSprites();
+        initializeSprites(duckImage);
+        createTileSet();
         connect();
     }
 
-    var templateImgData;
-    var scale = 3;
-    function initializeSprites() {
+    var tilesImg;
+    function createTileSet() {
+        var tilesCanvas = document.createElement("canvas");
+        drawScaledUpImageOnCanvas(tilesCanvas, srcTilesImg, scale);
+        var tileImgUrl = tilesCanvas.toDataURL();
+        tilesImg = loadGeneratedImage(tileImgUrl);
+    }
+
+    var duckTemplateImgData;
+
+    function initializeSprites(srcImage) {
         var spriteCanvas = document.createElement("canvas");
-        spriteCanvas.width = duckImage.width*scale;
-        spriteCanvas.height = duckImage.height*scale;  
+        drawScaledUpImageOnCanvas(spriteCanvas, srcImage, scale);
         var s_ctx = spriteCanvas.getContext("2d");
+        duckTemplateImgData = s_ctx.getImageData(0, 0, spriteCanvas.width, spriteCanvas.height);
+    }
+
+    function drawScaledUpImageOnCanvas(canvas, srcImage, scale) {
+        canvas.width = srcImage.width*scale;
+        canvas.height = srcImage.height*scale;  
+        var s_ctx = canvas.getContext("2d");
 
         //disable smoothing
         s_ctx.imageSmoothingEnabled = false;
@@ -123,11 +138,11 @@ var frontend = function () {
         s_ctx.mozImageSmoothingEnabled = false;
 
         s_ctx.scale(scale, scale);
-        s_ctx.drawImage(duckImage, 0, 0);
+        s_ctx.drawImage(srcImage, 0, 0);
+
         if (debug) {
-            get("panel").insertBefore(spriteCanvas, null);
+            get("panel").insertBefore(canvas, null);
         }
-        templateImgData = s_ctx.getImageData(0, 0, spriteCanvas.width, spriteCanvas.height);
     }
 
     function getSprites(color) {
@@ -138,23 +153,23 @@ var frontend = function () {
         console.log("generating new " + color + " sprites.");
 
         var spriteCanvas = document.createElement("canvas");
-        spriteCanvas.width = templateImgData.width;
-        spriteCanvas.height = templateImgData.height;
+        spriteCanvas.width = duckTemplateImgData.width;
+        spriteCanvas.height = duckTemplateImgData.height;
         var s_ctx = spriteCanvas.getContext("2d");
-        var spriteImgData = s_ctx.getImageData(0, 0, templateImgData.width, templateImgData.height);
+        var spriteImgData = s_ctx.getImageData(0, 0, duckTemplateImgData.width, duckTemplateImgData.height);
         for (var rgbI = 0; rgbI < spriteImgData.data.length; rgbI++) {
-            spriteImgData.data[rgbI] = templateImgData.data[rgbI];
+            spriteImgData.data[rgbI] = duckTemplateImgData.data[rgbI];
         }
 
         var newColor = hexToRgb(color);
 
         var r, g, b, i;
         for (var rgbI = 0; rgbI < spriteImgData.data.length; rgbI+=4) {
-            i = templateImgData.data[rgbI+3];
+            i = duckTemplateImgData.data[rgbI+3];
             if (i !== 0) {
-                r = templateImgData.data[rgbI+0];
-                g = templateImgData.data[rgbI+1];
-                b = templateImgData.data[rgbI+2];
+                r = duckTemplateImgData.data[rgbI+0];
+                g = duckTemplateImgData.data[rgbI+1];
+                b = duckTemplateImgData.data[rgbI+2];
 
                 var hex = rgbToHex(r,g,b);
                 if (hex == replaceHex) {
@@ -266,9 +281,9 @@ var frontend = function () {
         //ctx.fillStyle = '#72D';
         forEachCell(map, function (tile, pos) {
             if (tile === 'x') {
-                ctx.drawImage(brickImage, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
+                ctx.drawImage(tilesImg, 0, 0, tileSize, tileSize, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
             } else {
-                ctx.drawImage(groundImage, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
+                ctx.drawImage(tilesImg, 1*tileSize, 0, tileSize, tileSize, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
             }
         });
 
