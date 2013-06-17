@@ -12,9 +12,8 @@ body {
 #panel {
     display: inline-block;
     font-size: 24px; 
-    margin: 20px; 
-    width: 400px;
-
+    margin: 20px;
+    vertical-align: top;
 }
 
 #chat { 
@@ -25,6 +24,7 @@ body {
     margin-top:10px; 
     height: 190px;
     overflow-x: hidden; 
+    width: 400px;
 }
 
 .chatname {
