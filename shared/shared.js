@@ -27,6 +27,7 @@
         return index;
     }
 
+    //treasure room
     var map_09_10 = function () {
 		var gridData = [];
 		gridData[ 0] = "xxxxxxxxxxxx";
@@ -38,12 +39,13 @@
 		gridData[ 6] = "x         , ";
 		gridData[ 7] = "xxxxx .xxxxx";
 		gridData[ 8] = "x    .     x";
-		gridData[ 9] = "x       ., x";
+		gridData[ 9] = "x .     ., x";
 		gridData[10] = "x .  ,     x";
-		gridData[11] = "xxxxx .xxxxx";
+		gridData[11] = "xxxxx//xxxxx";
 		return gridData;
     }
 
+    //home room
     var map_10_10 = function () {
 		var gridData = [];
 		gridData[ 0] = "xxxxxxxxxxxx";
@@ -61,6 +63,7 @@
 		return gridData;
     }
 
+    //pillar room
     var map_11_10 = function () {
 		var gridData = [];
 		gridData[ 0] = "xxxxvxccvcxx";
@@ -71,61 +74,64 @@
 		gridData[ 5] = "           x";
 		gridData[ 6] = "           c";
 		gridData[ 7] = "x          c";
-		gridData[ 8] = "x          v";
-		gridData[ 9] = "x  m   m   x";
-		gridData[10] = "x bn   nb  c";
-		gridData[11] = "xxxx   xxxcc";
+		gridData[ 8] = "x  m   m   v";
+		gridData[ 9] = "x  n   n   x";
+		gridData[10] = "xb        bc";
+		gridData[11] = "xxxx///xxxcc";
 		return gridData;
     }
 
+    //desert (below treasure room)
     var map_09_11 = function () {
 		var gridData = [];
-		gridData[ 0] = "xxxxx .xxxxx";
-		gridData[ 1] = "x.     x,   ";
-		gridData[ 2] = "x   ,  x   .";
-		gridData[ 3] = "x  xxxxx  , ";
-		gridData[ 4] = "x           ";
-		gridData[ 5] = "x xxxxxxx   ";
-		gridData[ 6] = "x x     xxxx";
-		gridData[ 7] = "x    x      ";
-		gridData[ 8] = "xxxxxxxxxxxx";
-		gridData[ 9] = "x           ";
-		gridData[10] = "x           ";
-		gridData[11] = "xxxxxxxxxxxx";
+		gridData[ 0] = "qq8875598888";
+		gridData[ 1] = "q75555555555";
+		gridData[ 2] = "455555555555";
+		gridData[ 3] = "455555555555";
+		gridData[ 4] = "455555555555";
+		gridData[ 5] = "455555555555";
+		gridData[ 6] = "455555555555";
+		gridData[ 7] = "455555555555";
+		gridData[ 8] = "455555555555";
+		gridData[ 9] = "455555555555";
+		gridData[10] = "q15555555555";
+		gridData[11] = "qq2222222222";
 		return gridData;
     }
 
+    //desert (below home screen)
     var map_10_11 = function () {
 		var gridData = [];
-		gridData[ 0] = "xxxxxxxxxxxx";
-		gridData[ 1] = ".           ";
-		gridData[ 2] = "            ";
-		gridData[ 3] = "   .        ";
-		gridData[ 4] = "  xxxxx     ";
-		gridData[ 5] = ", x   x     ";
-		gridData[ 6] = "xxx,  x     ";
-		gridData[ 7] = "      x     ";
-		gridData[ 8] = "xx    xxxxxx";
-		gridData[ 9] = "            ";
-		gridData[10] = "            ";
-		gridData[11] = "xxxxxxxxxxxx";
+		gridData[ 0] = "888888888888";
+		gridData[ 1] = "555555555555";
+		gridData[ 2] = "555555555555";
+		gridData[ 3] = "555555555555";
+		gridData[ 4] = "555555555555";
+		gridData[ 5] = "555555555555";
+		gridData[ 6] = "555555555555";
+		gridData[ 7] = "555555555555";
+		gridData[ 8] = "555555555555";
+		gridData[ 9] = "555555555555";
+		gridData[10] = "555555555555";
+		gridData[11] = "222222222222";
 		return gridData;
     }
 
+    //desert, below pilla room
     var map_11_11 = function () {
 		var gridData = [];
-		gridData[ 0] = "xxxx   xxxcc";
-		gridData[ 1] = "           x";
-		gridData[ 2] = "   m   m   c";
-		gridData[ 3] = "   n   n   v";
-		gridData[ 4] = "           x";
-		gridData[ 5] = "           x";
-		gridData[ 6] = "   m   m   x";
-		gridData[ 7] = "   n   n   x";
-		gridData[ 8] = "xxxxxcxxvxvc";
-		gridData[ 9] = "           v";
-		gridData[10] = "           x";
-		gridData[11] = "xxxvxccxvcvx";
+		gridData[ 0] = "88875559888q";
+		gridData[ 1] = "555555555556";
+		gridData[ 2] = "555555555556";
+		gridData[ 3] = "555555555556";
+		gridData[ 4] = "555555555556";
+		gridData[ 5] = "555555555556";
+		gridData[ 6] = "555555555556";
+		gridData[ 7] = "555555555556";
+		gridData[ 8] = "555555555556";
+		gridData[ 9] = "555555555556";
+		gridData[10] = "55555555553q";
+		gridData[11] = "2222222222qq";
 		return gridData;
     }
 
@@ -154,15 +160,13 @@
 			return gridData[pos.y][pos.x]; 
 		};
 
+
+		var wallTiles = ['z', 'x', 'c', 'v', 'b', 'n', 'm',
+						'7', '8', '9', '4', '6', '1', '2', '3'];
+
 		grid.isWalkable = function (pos) {
 			var tile = this.get(pos);
-			if (tile === "z") return false;
-			if (tile === "x") return false;
-			if (tile === "c") return false;
-			if (tile === "v") return false;
-			if (tile === "b") return false;
-			if (tile === "n") return false;
-			if (tile === "m") return false;
+			if (wallTiles.indexOf(tile) !== -1) return false;
 			return true;
 		}
 

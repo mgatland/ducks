@@ -287,14 +287,17 @@ var frontend = function (assets) {
         var mapData = shared.getMap(map);
         forEachCell(mapData, function (tile, pos) {
             switch (tile) {
+                //chest:
                 case 'z': drawTile(ctx, pos, 0, 0);
                 break;
+                //bricks
                 case 'x': drawTile(ctx, pos, 1, 0);
                 break;
                 case 'c': drawTile(ctx, pos, 2, 0);
                 break;
                 case 'v': drawTile(ctx, pos, 3, 0);
                 break;
+                //pillars
                 case 'b': drawTile(ctx, pos, 4, 0);
                 break;
                 case 'n': drawTile(ctx, pos, 5, 0);
@@ -305,6 +308,32 @@ var frontend = function (assets) {
                 case '.': drawTile(ctx, pos, 1, 1);
                 break;
                 case ',': drawTile(ctx, pos, 2, 1);
+                break;
+                //ground above edge
+                case '/': drawTile(ctx, pos, 3, 1);
+                break;
+                //desert - empty and adjacent to empty
+                case '8': drawTile(ctx, pos, 1, 3);
+                break;
+                case '2': drawTile(ctx, pos, 1, 5);
+                break;
+                case '4': drawTile(ctx, pos, 0, 4);
+                break;
+                case '6': drawTile(ctx, pos, 2, 4);
+                break;
+                case '5': drawTile(ctx, pos, 1, 4);
+                break;
+                //diagonals (empty above and beside)
+                case '7': drawTile(ctx, pos, 3, 3);
+                break;
+                case '9': drawTile(ctx, pos, 4, 3);
+                break;
+                case '1': drawTile(ctx, pos, 3, 4);
+                break;
+                case '3': drawTile(ctx, pos, 4, 4);
+                break;
+                //solid on all sides
+                case 'q': drawTile(ctx, pos, 0, 3);
                 break;
                 default:
                 drawTile(ctx, pos, 0, 1);
