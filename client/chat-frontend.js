@@ -335,6 +335,28 @@ var frontend = function (assets) {
                 //solid on all sides
                 case 'q': drawTile(ctx, pos, 0, 3);
                 break;
+                //tree
+                case 'w': drawTile(ctx, pos, 5, 3);
+                break;
+                //water:
+                case 'Q': drawTile(ctx, pos, 6, 3);
+                break;
+                case 'W': drawTile(ctx, pos, 7, 3);
+                break;
+                case 'E': drawTile(ctx, pos, 8, 3);
+                break;
+                case 'A': drawTile(ctx, pos, 6, 4);
+                break;
+                case 'S': drawTile(ctx, pos, 7, 4);
+                break;
+                case 'D': drawTile(ctx, pos, 8, 4);
+                break;
+                case 'Z': drawTile(ctx, pos, 6, 5);
+                break;
+                case 'X': drawTile(ctx, pos, 7, 5);
+                break;
+                case 'C': drawTile(ctx, pos, 8, 5);
+                break;
                 default:
                 drawTile(ctx, pos, 0, 1);
             }
