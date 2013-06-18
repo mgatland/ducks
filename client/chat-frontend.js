@@ -32,7 +32,7 @@ var loader = function () {
 var frontend = function (assets) {
     "use strict";
 
-    var debug = true;
+    var debug = false;
  
     //get element by id
     function get (element) {
