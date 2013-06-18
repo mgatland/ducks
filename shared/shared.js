@@ -165,11 +165,18 @@
 						'7', '8', '9', '4', '6', '1', '2', '3',
 						'q', 'w' ];
 
+		var waterTiles = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C'];
 
 		grid.isWalkable = function (pos) {
 			var tile = this.get(pos);
 			if (wallTiles.indexOf(tile) !== -1) return false;
 			return true;
+		}
+
+		grid.isWater = function (pos) {
+			var tile = this.get(pos);
+			if (waterTiles.indexOf(tile) !== -1) return true;
+			return false;
 		}
 
 		grid.getWidth = function () {
@@ -198,6 +205,14 @@
 
     exports.getMap = function (pos) {
     	return maps[pos.x][pos.y];
+    }
+
+    exports.isSwimming = function (user) {
+    	var map = this.getMap(user.map);
+    	if (map.isWater(user.pos) === true) {
+    		return true;
+    	}
+    	return false;
     }
 
     exports.move = function (user, x, y) {

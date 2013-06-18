@@ -366,19 +366,26 @@ var frontend = function (assets) {
             if (user.name != false && shared.posAreEqual(user.map, map)) {
                 ctx.fillStyle = user.color;
                 var sprites = getSprites(user.color);
+                var swimming = shared.isSwimming(user);
                 if (user.act === 'quack') {
-                    drawDuck(ctx, sprites, user.pos, 1);
+                    drawDuck(ctx, sprites, user.pos, 1, swimming);
                 } else if (user.act === 'nap') {
-                    drawDuck(ctx, sprites, user.pos, 3);
+                    drawDuck(ctx, sprites, user.pos, 3, swimming);
                 } else {
-                    drawDuck(ctx, sprites, user.pos, 0);
+                    drawDuck(ctx, sprites, user.pos, 0, swimming);
                 }
             }
         });
     }
 
-    function drawDuck(ctx, sprites, pos, tX) {
-        ctx.drawImage(sprites, tX*duckTileSizeX, 0, duckTileSizeX, duckTileSizeY, pos.x * tileSize, pos.y * tileSize + duckYOffset, duckTileSizeX, duckTileSizeY);
+    function drawDuck(ctx, sprites, pos, tX, swimming) {
+        var yHeight = duckTileSizeY;
+        var yOffset = duckYOffset;
+        if (swimming === true) {
+            yHeight = 36;
+            yOffset += 6;
+        }
+        ctx.drawImage(sprites, tX*duckTileSizeX, 0, duckTileSizeX, yHeight, pos.x * tileSize, pos.y * tileSize + yOffset, duckTileSizeX, yHeight);
     }
 
     function sendMessage(msg) {
