@@ -140,13 +140,14 @@ io.sockets.on('connection', function (socket) {
 
     function processCommand(message) {
         message = message.toLowerCase();
-        console.log(message);
         if (!user.isReal()) {
             return;
         }
         if (user.moved === true) {
             user.queuedMoves.push(message);
-            console.log("move queue ++ to " + user.queuedMoves.length);
+            if (user.queuedMoves.length > 1) {
+                console.log("move queue: " + user.queuedMoves.length);
+            }
             return;
         }
         var netUpdate = false;
@@ -162,7 +163,6 @@ io.sockets.on('connection', function (socket) {
                 break;
             case 'south':
                 netUpdate = moveDuck(0,1);
-                console.log(user.act);
                 break;
             case 'quack':
                 netUpdate = moveDuck(0,0,'quack');
@@ -191,7 +191,6 @@ io.sockets.on('connection', function (socket) {
         user.moved = false;
         if (user.queuedMoves.length > 0) {
             var oldMove = user.queuedMoves.shift();
-            console.log(user.queuedMoves.length + " queued moves --");
             processCommand(oldMove);
         }
     }
