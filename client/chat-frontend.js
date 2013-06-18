@@ -290,6 +290,9 @@ var frontend = function (assets) {
                 //chest:
                 case 'z': drawTile(ctx, pos, 0, 0);
                 break;
+                //question block
+                case '?': drawTile(ctx, pos, 7, 0);
+                break;
                 //bricks
                 case 'x': drawTile(ctx, pos, 1, 0);
                 break;

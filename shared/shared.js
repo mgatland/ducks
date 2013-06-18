@@ -32,7 +32,7 @@
 		var gridData = [];
 		gridData[ 0] = "xxxxxxxxxxxx";
 		gridData[ 1] = "x          x";
-		gridData[ 2] = "x          x";
+		gridData[ 2] = "x       ?  x";
 		gridData[ 3] = "x  z       x";
 		gridData[ 4] = "xxxxx  xxxxx";
 		gridData[ 5] = "x           ";
@@ -69,7 +69,7 @@
 		gridData[ 0] = "xxxxvxccvcxx";
 		gridData[ 1] = "x  vc    xcx";
 		gridData[ 2] = "x      v   x";
-		gridData[ 3] = "x          c";
+		gridData[ 3] = "x        ? c";
 		gridData[ 4] = "x   c      v";
 		gridData[ 5] = "           x";
 		gridData[ 6] = "           c";
@@ -166,6 +166,8 @@
 						'q', 'w' ];
 
 		var waterTiles = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C'];
+
+		var hintTiles = ['?'];
 
 		grid.isWalkable = function (pos) {
 			var tile = this.get(pos);
