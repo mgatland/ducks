@@ -139,6 +139,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     function processCommand(message) {
+        message = message.toLowerCase();
         console.log(message);
         if (!user.isReal()) {
             return;
