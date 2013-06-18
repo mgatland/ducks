@@ -93,8 +93,8 @@
 		gridData[ 6] = "455ASSSSSD55";
 		gridData[ 7] = "455ASSSSSD55";
 		gridData[ 8] = "455ASSSSSD55";
-		gridData[ 9] = "455ZXXXXXC55";
-		gridData[10] = "q15555555555";
+		gridData[ 9] = "455ASSSSSD55";
+		gridData[10] = "q15ZXXXXXC55";
 		gridData[11] = "qq2222222222";
 		return gridData;
     }
@@ -163,7 +163,7 @@
 
 		var wallTiles = ['z', 'x', 'c', 'v', 'b', 'n', 'm',
 						'7', '8', '9', '4', '6', '1', '2', '3',
-						't', 'q' ];
+						'q', 'w' ];
 
 
 		grid.isWalkable = function (pos) {
