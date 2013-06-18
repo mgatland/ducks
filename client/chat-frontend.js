@@ -367,14 +367,18 @@ var frontend = function (assets) {
                 ctx.fillStyle = user.color;
                 var sprites = getSprites(user.color);
                 if (user.act === 'quack') {
-                    ctx.drawImage(sprites, 1*duckTileSizeX, 0, duckTileSizeX, duckTileSizeY, user.pos.x * tileSize, user.pos.y * tileSize + duckYOffset, duckTileSizeX, duckTileSizeY);
+                    drawDuck(ctx, sprites, user.pos, 1);
                 } else if (user.act === 'nap') {
-                    ctx.drawImage(sprites, 3*duckTileSizeX, 0, duckTileSizeX, duckTileSizeY, user.pos.x * tileSize, user.pos.y * tileSize + duckYOffset, duckTileSizeX, duckTileSizeY);
+                    drawDuck(ctx, sprites, user.pos, 3);
                 } else {
-                    ctx.drawImage(sprites, 0, 0, duckTileSizeX, duckTileSizeY, user.pos.x * tileSize, user.pos.y * tileSize + duckYOffset, duckTileSizeX, duckTileSizeY);
+                    drawDuck(ctx, sprites, user.pos, 0);
                 }
             }
         });
+    }
+
+    function drawDuck(ctx, sprites, pos, tX) {
+        ctx.drawImage(sprites, tX*duckTileSizeX, 0, duckTileSizeX, duckTileSizeY, pos.x * tileSize, pos.y * tileSize + duckYOffset, duckTileSizeX, duckTileSizeY);
     }
 
     function sendMessage(msg) {
