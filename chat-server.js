@@ -151,26 +151,37 @@ io.sockets.on('connection', function (socket) {
             return;
         }
         var netUpdate = false;
+        var moved = false;
         switch (message) {
             case 'east':
                 netUpdate = moveDuck(1,0);
+                moved = true;
                 break;
             case 'west':
                 netUpdate = moveDuck(-1,0);
+                moved = true;
                 break;
             case 'north':
                 netUpdate = moveDuck(0,-1);
+                moved = true;
                 break;
             case 'south':
                 netUpdate = moveDuck(0,1);
+                moved = true;
                 break;
             case 'quack':
                 netUpdate = moveDuck(0,0,'quack');
+                user.socket.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' quacked!' }});
+                user.socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' quacked!' }});
                 break;
             case 'sleep':
             case 'nap':
                 netUpdate = moveDuck(0,0,'nap');
                 break;
+        }
+        if (moved === true) {
+            //did we step onto a question mark
+            ////////
         }
         if (netUpdate === true) {
             var netUser = getNetUser(user);
