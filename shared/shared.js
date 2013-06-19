@@ -237,6 +237,12 @@
     }
 
     exports.move = function (user, x, y) {
+
+    	if (user.act === 'nap') {
+    		user.act = false;
+    		return true; //wake up, but don't move.
+    	}
+
         user.pos.x += x;
         user.pos.y += y;
 
