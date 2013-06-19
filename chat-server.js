@@ -23,7 +23,9 @@ function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
- 
+
+var echoMap = new shared.Pos(11,11);
+
 var colors = [  //in order of attractiveness
     '#fff8bc', //white
     '#dda0dd', //light pink
@@ -80,17 +82,9 @@ io.sockets.on('connection', function (socket) {
     socket.on('sendchat', function (data) {
 
         console.log((new Date()) + ' Received a message from '
-                    + user.name + ': ' + data);
-        
-        var obj = {
-            time: (new Date()).getTime(),
-            text: htmlEntities(data),
-            author: user.name,
-            color: user.color
-        };
-        history.push(obj);
-        unsentMessages.push(obj);
-        history = history.slice(-100);
+                    + user.name + ': ' + data);        
+        var obj = makeChatObject(user.name, user.color, data);
+        addMessage(obj);
     });
 
     socket.on('adduser', function(username){
@@ -175,8 +169,15 @@ io.sockets.on('connection', function (socket) {
                     sendServerMessage(user.socket, "You can't quack underwater.");
                 } else {
                     netUpdate = moveDuck(0,0,'quack');
-                    sendServerMessage(user.socket, user.name + ' quacked!');
-                    sendServerMessage(user.socket.broadcast, user.name + ' quacked!');
+                    var quackObj = makeChatObject(user.name, user.color, "QUACK!");
+                    addMessage(quackObj);
+                    if (shared.posAreEqual(user.map, echoMap)) {
+                        //there's an echo one second later.
+                        setTimeout(function () {
+                            var echoObj = makeChatObject("echo", "#660066", "QUACK!");
+                            addMessage(echoObj);
+                        }, 1000);
+                    }
                 }
                 break;
             case 'dive':
@@ -301,4 +302,20 @@ function broadcast(type, data) {
         var datagram = { type:type, data: data };
         users[i].socket.emit('updatechat', datagram);
     }
+}
+
+function addMessage(chatObj) {
+    history.push(chatObj);
+    unsentMessages.push(chatObj);
+    history = history.slice(-100);
+}
+
+function makeChatObject(name, color, message) {
+    var obj = {
+        time: (new Date()).getTime(),
+        text: htmlEntities(message),
+        author: name,
+        color: color
+    };
+    return obj;
 }
