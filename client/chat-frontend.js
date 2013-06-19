@@ -267,8 +267,10 @@ var frontend = function (assets) {
 
     function getCurrentMap() {
         var myDuck = getMyDuck();
-        var map = myDuck.map || shared.startingPos();
-        return map;
+        if (myDuck && myDuck.map) {
+            return myDuck.map;
+        }
+        return shared.startingPos();
     }
 
     function forEachCell(mapData, func) {
@@ -436,12 +438,14 @@ var frontend = function (assets) {
 
     function moveMyDuck(x, y) {
         var myDuck = getMyDuck();
-        shared.move(myDuck, x, y);
-        moved = true;
-        setTimeout(function(){
-            moved = false;
-        }, moveDelay);
-        drawEverything();
+        if (myDuck) {
+            shared.move(myDuck, x, y);
+            moved = true;
+            setTimeout(function(){
+                moved = false;
+            }, moveDelay);
+            drawEverything();
+        }
     }
 
     addEventListener("keydown", function (e) {
@@ -559,9 +563,11 @@ var frontend = function (assets) {
         arrowDiv.keyCode = keyCode;
         console.log("Binding " + arrowDiv + " to " + keyCode);
         arrowDiv.addEventListener('mousedown', setArrowKeyPress, false);
+        arrowDiv.addEventListener('touchstart', setArrowKeyPress, false);
+
         arrowDiv.addEventListener('mouseout', unsetArrowKeyPress, false);
         arrowDiv.addEventListener('mouseup', unsetArrowKeyPress, false);
-
+        arrowDiv.addEventListener('touchend', unsetArrowKeyPress, false);
     }
 
 /*   setInterval(function() {

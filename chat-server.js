@@ -18,6 +18,7 @@ var moveDelay = 1000/4;
 var history = [ ]; //totally unused
 var unsentMessages = [ ];
 var users = [ ];
+var lurkers = [ ];
 
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -72,9 +73,9 @@ io.sockets.on('connection', function (socket) {
     user.isReal = function() {
         return !(this.name === false);
     }
-    var index = users.push(user) - 1;
+    lurkers.push(user);
  
-    console.log((new Date()) + ' Connection accepted.');
+    console.log((new Date()) + ' Connection accepted. ' + lurkers.length + " lurkers.");
  
     sendNetUsersTo(user.socket);
 
@@ -91,6 +92,10 @@ io.sockets.on('connection', function (socket) {
         if (user.isReal()) {
             return;
         }
+
+        users.push(user);
+        var index = shared.getIndexOfUser(user.name, lurkers);
+        lurkers.splice(index, 1);
 
         //prevent duplicate usernames.
         while (shared.getIndexOfUser(username, users) !== null) {
@@ -128,9 +133,15 @@ io.sockets.on('connection', function (socket) {
             unusedColors.push(user.color);
             sendServerMessage(socket.broadcast, user.name + ' disappeared.');
             socket.broadcast.emit('updatechat', { type: 'playerleaves', data: user.name });
+            var index = shared.getIndexOfUser(user.name, users);
+            console.log("removing user " + user.name);
+            users.splice(index, 1);
+        } else {
+            var index = shared.getIndexOfUser(user.name, lurkers);
+            console.log("Removed a lurker, " + lurkers.length + " remain.");
+            lurkers.splice(index, 1);
         }
-        var index = shared.getIndexOfUser(user, users);
-        users.splice(index, 1);
+
     });
 
     function processCommand(message) {
@@ -297,10 +308,13 @@ function ack(user) {
 
 function broadcast(type, data) {
     // broadcast message to all connected users
+    var datagram = { type:type, data: data };
     for (var i=0; i < users.length; i++) {
-        //data.yourIndex = i;
-        var datagram = { type:type, data: data };
         users[i].socket.emit('updatechat', datagram);
+    }
+
+    for (var i=0; i < lurkers.length; i++) {
+        lurkers[i].socket.emit('updatechat', datagram);
     }
 }
 
