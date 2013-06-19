@@ -75,14 +75,14 @@ io.sockets.on('connection', function (socket) {
     }
     lurkers.push(user);
  
-    console.log((new Date()) + ' Connection accepted. ' + lurkers.length + " lurkers.");
+    console.log(getTimestamp() + ' Connection accepted. ' + lurkers.length + " lurkers.");
  
     sendNetUsersTo(user.socket);
 
 
     socket.on('sendchat', function (data) {
 
-        console.log((new Date()) + ' Received a message from '
+        console.log(getTimestamp() + ' > '
                     + user.name + ': ' + data);        
         var obj = makeChatObject(user.name, user.color, data);
         addMessage(obj);
@@ -127,7 +127,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('cmd', processCommand);
 
     socket.on('disconnect', function(){
-        console.log((new Date()) + " Peer "
+        console.log(getTimestamp() + " Peer "
             + user.name + " disconnected.");
         if (user.isReal()) {
             unusedColors.push(user.color);
@@ -326,10 +326,24 @@ function addMessage(chatObj) {
 
 function makeChatObject(name, color, message) {
     var obj = {
-        time: (new Date()).getTime(),
+//        time: (new Date()).getTime(),
         text: htmlEntities(message),
         author: name,
         color: color
     };
     return obj;
+}
+
+//convert single digit numbers to two digits
+function d2(num) {
+    if (num < 10) {
+        return "0" + num
+    }
+    return "" + num;
+}
+
+function getTimestamp() {
+    var d = new Date();
+    return d.getFullYear() + "-" + d2(d.getMonth()) + "-" + d.getDate() + 
+    " " + d2(d.getHours()) + ":" + d2(d.getMinutes()) + ":" + d2(d.getSeconds());
 }
