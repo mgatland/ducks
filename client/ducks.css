@@ -10,6 +10,7 @@ body {
 }
 
 #panel {
+    white-space: normal;
     display: inline-block;
     font-size: 24px; 
     margin: 20px;
@@ -19,11 +20,11 @@ body {
 #chat { 
     padding:4px; 
     background: darkblue; 
+    overflow-x: hidden;
     overflow-y: scroll;
     border: 3px solid #9CC; 
     margin-top:10px; 
     height: 190px;
-    overflow-x: hidden; 
     width: 400px;
 }
 
