@@ -290,7 +290,12 @@ var frontend = function (assets) {
         forEachCell(mapData, function (tile, pos) {
             switch (tile) {
                 //chest:
-                case 'z': drawTile(ctx, pos, 0, 0);
+                case 'z': 
+                if (showChestSecret()) {
+                    drawTile(ctx, pos, 8, 0);
+                } else {
+                    drawTile(ctx, pos, 0, 0);
+                }
                 break;
                 //question block (dungeon)
                 case '?': drawTile(ctx, pos, 7, 0);
@@ -452,7 +457,45 @@ var frontend = function (assets) {
         keysDown[e.keyCode] = false;
     }, false);
 
+
+    var chestSecretTimer = 0;
+    var chestMap = new shared.Pos(9,10);
+    var showingChest = false;
+    function updateSecrets() {
+        if (!users) return;
+        var myDuck = getMyDuck();
+        var everyoneAsleep = true;
+        var anyoneAsleep = false;
+        users.forEach(function(user) {
+            if (user.name != false && shared.posAreEqual(user.map, chestMap)) {
+                if (user.act === 'nap') {
+                    anyoneAsleep = true;
+                } else {
+                    everyoneAsleep = false;
+                }
+            }
+        });
+        if (everyoneAsleep === true && anyoneAsleep === true) {
+            chestSecretTimer++;
+            if (chestSecretTimer === 60*10) {
+                showingChest = true;
+                drawEverything();
+            }
+        } else {
+            chestSecretTimer = 0;
+            if (showingChest) {
+                drawEverything(); //make sure it gets drawn over
+            }
+        }
+    }
+
+    function showChestSecret() {
+        return (chestSecretTimer > 60 * 3);
+    }
+
     setInterval(function() {
+
+        updateSecrets();
         if (moved === false) {
             if (keysDown[KeyEvent.DOM_VK_DOWN] === true) {
                 sendMessage("/south");
@@ -493,9 +536,6 @@ var frontend = function (assets) {
         }
     }, 3000);*/
  
-    /**
-     * Add message to the chat window
-     */
     function addMessage(author, message, color) {
         var newMessage = document.createElement('div');
         var style = makeChatStyle(color);
