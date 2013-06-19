@@ -1,4 +1,6 @@
 var loader = function () {
+
+
     var itemsLoaded = 0;
     var itemsToLoad = 0;
     this.duckImage = loadImage("/client/duck.png");
@@ -370,7 +372,9 @@ var frontend = function (assets) {
                 ctx.fillStyle = user.color;
                 var sprites = getSprites(user.color);
                 var swimming = shared.isSwimming(user);
-                if (user.act === 'quack') {
+                if (user.diveMoves > 0) {
+                    drawDuck(ctx, sprites, user.pos, 2, swimming);
+                } else if (user.act === 'quack') {
                     drawDuck(ctx, sprites, user.pos, 1, swimming);
                 } else if (user.act === 'nap') {
                     drawDuck(ctx, sprites, user.pos, 3, swimming);

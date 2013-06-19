@@ -66,6 +66,7 @@ io.sockets.on('connection', function (socket) {
     user.act = false;
     user.queuedMoves = [];
     user.map = shared.startingPos();
+    user.diveMoves = 0;
     user.isReal = function() {
         return !(this.name === false);
     }
@@ -170,13 +171,36 @@ io.sockets.on('connection', function (socket) {
                 moved = true;
                 break;
             case 'quack':
-                netUpdate = moveDuck(0,0,'quack');
-                sendServerMessage(user.socket, user.name + ' quacked!');
-                sendServerMessage(user.socket.broadcast, user.name + ' quacked!');
+                if (user.diveMoves > 0) {
+                    sendServerMessage(user.socket, "You can't quack underwater.");
+                } else {
+                    netUpdate = moveDuck(0,0,'quack');
+                    sendServerMessage(user.socket, user.name + ' quacked!');
+                    sendServerMessage(user.socket.broadcast, user.name + ' quacked!');
+                }
+                break;
+            case 'dive':
+                if (user.diveMoves > 0) {
+                    netUpdate = moveDuck(0,0);
+                    if (netUpdate) {
+                        user.diveMoves = 0;
+                    }
+                } else if (shared.isSwimming(user)) {
+                    netUpdate = moveDuck(0,0);
+                    if (netUpdate) {
+                        user.diveMoves = 4;
+                    }
+                } else {
+                    sendServerMessage(user.socket, "You can't dive right now.");
+                }
                 break;
             case 'sleep':
             case 'nap':
-                netUpdate = moveDuck(0,0,'nap');
+                if (user.diveMoves > 0) {
+                    sendServerMessage(user.socket, "You can't nap underwater.");
+                } else {
+                    netUpdate = moveDuck(0,0,'nap');
+                }
                 break;
         }
         if (moved === true) {
@@ -255,6 +279,9 @@ function getNetUser (user) {
         netUser.color = user.color;
         netUser.act = user.act;
         netUser.map = user.map;
+        if (user.diveMoves > 0) {
+            netUser.diveMoves = user.diveMoves;
+        }
         return netUser;
     }
 

@@ -231,9 +231,15 @@
     	return false;
     }
 
+    undoMove = function (user, x, y) {
+    	user.pos.x -= x;
+    	user.pos.y -= y;
+    }
+
     exports.move = function (user, x, y) {
         user.pos.x += x;
         user.pos.y += y;
+
         var map = this.getMap(user.map);
         //map transitions
         if (map.isInMap(user.pos) === false) {
@@ -251,21 +257,33 @@
         		user.pos.y = 0;
         	} else {
         		console.log("Cancelling weird error off-screen move: " + user.name + " " + user.pos);
-	            //undo move
-	            user.pos.x -= x;
-	            user.pos.y -= y;
+	            undoMove(user, x, y);
 	            return false;
         	}
+        	user.diveMoves = 0;
         	return true;
+        }
+
+        //cancel dive if we try to leave the water - or if we've run out of air
+        if (user.diveMoves > 0) {
+        	if (map.isWater(user.pos) === false || user.diveMoves === 1) {
+        		user.diveMoves = 0;
+        		undoMove(user, x, y);
+        		return true; //we didn't move, but we did undive
+        	}
         }
 
         //normal movement
         if (map.isWalkable(user.pos) === false) {
-            //undo move
-            user.pos.x -= x;
-            user.pos.y -= y;
+            undoMove(user, x, y);
             return false;
         }
+
+        //diving
+        if (user.diveMoves > 0) {
+        	user.diveMoves--;
+        }
+
         return true;
     }
 
