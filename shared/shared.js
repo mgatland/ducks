@@ -135,6 +135,23 @@
 		return gridData;
     }
 
+    //secret room
+    var map_09_12 = function () {
+		var gridData = [];
+		gridData[ 0] = "qq88888888qq";
+		gridData[ 1] = "q75QWWWWWE9q";
+		gridData[ 2] = "455ASSSSSD56";
+		gridData[ 3] = "455ASSSSSD56";
+		gridData[ 4] = "455ASSSXXC56";
+		gridData[ 5] = "455ASSD55556";
+		gridData[ 6] = "455ASSD5w556";
+		gridData[ 7] = "455ZXXC55556";
+		gridData[ 8] = "455555555556";
+		gridData[ 9] = "4555w555w556";
+		gridData[10] = "q1555555553q";
+		gridData[11] = "qq22222222qq";
+		return gridData;
+    }
 
 	var createGrid = function (gridData) {
 
@@ -187,6 +204,21 @@
 			return false;
 		}
 
+		//any square with water above or below it is an underwater tunnel
+		grid.isUnderwaterTunnel = function (pos) {
+			if (this.isWalkable(pos) === false) { //it's a wall
+				var above = new exports.Pos(pos.x, pos.y - 1);
+				if (this.isWater(above)) {
+					return true;
+				}
+				var below = new exports.Pos(pos.x, pos.y + 1);
+				if (this.isWater(below)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		grid.getWidth = function () {
 			return levelWidth;
 		}
@@ -210,6 +242,8 @@
     maps[9][11] = createGrid(map_09_11());
     maps[10][11] = createGrid(map_10_11());
     maps[11][11] = createGrid(map_11_11());
+
+    maps[9][12] = createGrid(map_09_12());
 
     exports.getMap = function (pos) {
     	return maps[pos.x][pos.y];
@@ -237,6 +271,8 @@
     }
 
     exports.move = function (user, x, y) {
+    	var map = this.getMap(user.map);
+    	var wasInUnderwaterTunnel = map.isUnderwaterTunnel(user.pos);
 
     	if (user.act === 'nap') {
     		user.act = false;
@@ -246,7 +282,7 @@
         user.pos.x += x;
         user.pos.y += y;
 
-        var map = this.getMap(user.map);
+        
         //map transitions
         if (map.isInMap(user.pos) === false) {
         	if (user.pos.x === -1) {
@@ -266,17 +302,44 @@
 	            undoMove(user, x, y);
 	            return false;
         	}
-        	user.diveMoves = 0;
         	return true;
         }
-
-        //cancel dive if we try to leave the water - or if we've run out of air
+        
         if (user.diveMoves > 0) {
+        	
+        	var isTunnel = map.isUnderwaterTunnel(user.pos);
+
+        	if (isTunnel === true && user.diveMoves > 1 && wasInUnderwaterTunnel === false) {
+        		//we entered an underwater tunnel.
+        		user.diveMoves--;
+        		return true;
+        	}
+
+        	if (isTunnel === true && wasInUnderwaterTunnel === true) {
+        		//we're moving around in a tunnel - we don't run out of breath
+        		user.diveMoves--;
+        		if (user.diveMoves < 1) {
+        			user.diveMoves = 1;
+        		}
+        		return true;
+        	}
+
+        	if (isTunnel === false && wasInUnderwaterTunnel === true) {
+        		//we're leaving a tunnel - let us leave, even though we only have 1 breath
+        		if (map.isWater(user.pos) === true) {
+        			return; //leaving us with 1 breath.
+        		}
+        	}
+
+        	//cancel dive if we try to leave the water - or if we've run out of air	
         	if (map.isWater(user.pos) === false || user.diveMoves === 1) {
-        		user.diveMoves = 0;
+        		if (wasInUnderwaterTunnel === false) {
+        			user.diveMoves = 0;	 //unless we're under ground and can't come up
+        		}
         		undoMove(user, x, y);
         		return true; //we didn't move, but we did undive
         	}
+
         }
 
         //normal movement
