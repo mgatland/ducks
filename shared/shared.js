@@ -121,7 +121,7 @@
     var map_11_11 = function () {
 		var gridData = [];
 		gridData[ 0] = "8887555988qq";
-		gridData[ 1] = "55555555559q";
+		gridData[ 1] = "555555555*9q";
 		gridData[ 2] = "555555555559";
 		gridData[ 3] = "555555555553";
 		gridData[ 4] = "55555555322q";
@@ -167,7 +167,7 @@
 
 		var waterTiles = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C'];
 
-		var noteTiles = ['?'];
+		var noteTiles = ['?', '*'];
 
 		grid.isWalkable = function (pos) {
 			var tile = this.get(pos);

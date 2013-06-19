@@ -292,8 +292,11 @@ var frontend = function (assets) {
                 //chest:
                 case 'z': drawTile(ctx, pos, 0, 0);
                 break;
-                //question block
+                //question block (dungeon)
                 case '?': drawTile(ctx, pos, 7, 0);
+                break;
+                //question block (desert)
+                case '*': drawTile(ctx, pos, 5, 4);
                 break;
                 //bricks
                 case 'x': drawTile(ctx, pos, 1, 0);
