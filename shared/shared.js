@@ -167,7 +167,7 @@
 
 		var waterTiles = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C'];
 
-		var hintTiles = ['?'];
+		var noteTiles = ['?'];
 
 		grid.isWalkable = function (pos) {
 			var tile = this.get(pos);
@@ -178,6 +178,12 @@
 		grid.isWater = function (pos) {
 			var tile = this.get(pos);
 			if (waterTiles.indexOf(tile) !== -1) return true;
+			return false;
+		}
+
+		grid.isNote = function (pos) {
+			var tile = this.get(pos);
+			if (noteTiles.indexOf(tile) !== -1) return true;
 			return false;
 		}
 
@@ -207,6 +213,14 @@
 
     exports.getMap = function (pos) {
     	return maps[pos.x][pos.y];
+    }
+
+    exports.isUserOnNote = function (user) {
+    	var map = this.getMap(user.map);
+    	if (map.isNote(user.pos) === true) {
+    		return true;
+    	}
+    	return false;
     }
 
     exports.isSwimming = function (user) {

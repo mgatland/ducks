@@ -131,7 +131,7 @@ io.sockets.on('connection', function (socket) {
             + user.name + " disconnected.");
         if (user.isReal()) {
             unusedColors.push(user.color);
-            socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' disappeared.' }});
+            sendServerMessage(socket.broadcast, user.name + ' disappeared.');
             socket.broadcast.emit('updatechat', { type: 'playerleaves', data: user.name });
         }
         var index = shared.getIndexOfUser(user, users);
@@ -171,8 +171,8 @@ io.sockets.on('connection', function (socket) {
                 break;
             case 'quack':
                 netUpdate = moveDuck(0,0,'quack');
-                user.socket.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' quacked!' }});
-                user.socket.broadcast.emit('updatechat', { type: 'servermessage', data: { text: user.name + ' quacked!' }});
+                sendServerMessage(user.socket, user.name + ' quacked!');
+                sendServerMessage(user.socket.broadcast, user.name + ' quacked!');
                 break;
             case 'sleep':
             case 'nap':
@@ -180,13 +180,31 @@ io.sockets.on('connection', function (socket) {
                 break;
         }
         if (moved === true) {
-            //did we step onto a question mark
-            ////////
+            if (shared.isUserOnNote(user)) {
+                displayNoteFor(user);
+            }
         }
         if (netUpdate === true) {
             var netUser = getNetUser(user);
             broadcast('playerUpdate', netUser);
             setTimeout(clearMove, moveDelay);           
+        }
+    }
+
+    var notes = {};
+    notes['9:10'] = "Type /quack to quack!";
+    notes['11:10'] = "Feeling sleepy? Take a /nap";
+
+    function sendServerMessage(emitter, message) {
+        emitter.emit('updatechat', { type: 'servermessage', data: { text: message }});
+    }
+
+    function displayNoteFor (user) {
+        var note = notes[user.map.x + ":" + user.map.y];
+        if (note) {
+            sendServerMessage(user.socket, note);
+        } else {
+            console.log("Error: User found a missing note at map " + user.map.x + ":" + user.map.y);
         }
     }
 
