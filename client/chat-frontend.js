@@ -43,7 +43,10 @@ var frontend = function (assets) {
 
     //data from the server
     var users;
+
+
     var keysDown = [];
+    var lockedKeys = [];
 
     var socket = undefined;
     var port = "80";
@@ -444,7 +447,6 @@ var frontend = function (assets) {
     addEventListener("keydown", function (e) {
         keysDown[e.keyCode] = true;
         switch (e.keyCode) {
-
             case KeyEvent.DOM_VK_UP:
             case KeyEvent.DOM_VK_DOWN:
             case KeyEvent.DOM_VK_LEFT:
@@ -527,6 +529,41 @@ var frontend = function (assets) {
         }
     };
  
+    setupArrowKey("uparrow", KeyEvent.DOM_VK_UP);
+    setupArrowKey("downarrow", KeyEvent.DOM_VK_DOWN);
+    setupArrowKey("leftarrow", KeyEvent.DOM_VK_LEFT);
+    setupArrowKey("rightarrow", KeyEvent.DOM_VK_RIGHT);
+
+    function setupArrowKey(id, keyCode) {
+
+
+        var setOrUnsetArrowKeyPress = function (arrowDiv, value) {
+            lockedKeys[arrowDiv.keyCode] = value;
+            keysDown[arrowDiv.keyCode] = value; 
+            if (value === true) {
+                arrowDiv.className = "arrow pressed";
+            } else {
+                arrowDiv.className = "arrow";
+            }
+        }
+
+        var setArrowKeyPress = function () {
+            setOrUnsetArrowKeyPress(this, true);
+        }
+
+        var unsetArrowKeyPress = function () {
+            setOrUnsetArrowKeyPress(this, false);
+        }
+
+        var arrowDiv = get(id);
+        arrowDiv.keyCode = keyCode;
+        console.log("Binding " + arrowDiv + " to " + keyCode);
+        arrowDiv.addEventListener('mousedown', setArrowKeyPress, false);
+        arrowDiv.addEventListener('mouseout', unsetArrowKeyPress, false);
+        arrowDiv.addEventListener('mouseup', unsetArrowKeyPress, false);
+
+    }
+
 /*   setInterval(function() {
         if (connection.readyState !== 1) {
             status.innerHTML = 'Error';

@@ -4,6 +4,37 @@ body {
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 }
 
+#arrows {
+    white-space: nowrap;
+    text-align: center;
+
+    margin-top: 15px;
+
+    /*prevent text selection*/
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.arrow {
+    cursor:pointer;
+
+    display: inline-block;
+    margin-top: 18px;
+    border: 3px solid #9CC;
+    width: 77px;
+    height: 77px;
+    line-height: 77px; /*makes text display vertically in the center (if it's only one line) */
+    font-size: 40px;
+}
+
+.arrow.pressed {
+    background-color: #9CC;
+}
+
 #game {
     text-transform: uppercase;
     white-space: nowrap;
