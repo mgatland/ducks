@@ -241,7 +241,6 @@ var frontend = function (assets) {
         return image;
     }
 
-    // for better performance - to avoid searching in DOM
     var content = get('chat');
     var input = get('input');
     var status = get('status');
@@ -289,6 +288,13 @@ var frontend = function (assets) {
     }
 
     function drawEverything () {
+
+        //hack to make the canvas redraw. Sometimes, like 10% of the time, the canvas
+        //won't display anything. Doing this (just once) fixes it.
+        var canvasHack = get('gamescreen');
+        canvasHack.height = canvasHack.height + 1;
+        canvasHack.height = canvasHack.height - 1;
+
         //draw the tiles
         var map = getCurrentMap();
         var mapData = shared.getMap(map);
