@@ -89,13 +89,10 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('adduser', function(username){
+        username = htmlEntities(username);
         if (user.isReal()) {
             return;
         }
-
-        users.push(user);
-        var index = shared.getIndexOfUser(user.name, lurkers);
-        lurkers.splice(index, 1);
 
         //prevent duplicate usernames.
         while (shared.getIndexOfUser(username, users) !== null) {
@@ -113,6 +110,10 @@ io.sockets.on('connection', function (socket) {
         }
         user.color = unusedColors.shift();
         
+        users.push(user);
+        var index = shared.getIndexOfUser(user.name, lurkers);
+        lurkers.splice(index, 1);
+
         user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'You arrived in Duck Town.'} });
 
         user.socket.emit('updatechat', { type: 'loggedin', data: { name: user.name, color: user.color } });
