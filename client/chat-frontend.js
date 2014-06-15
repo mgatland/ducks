@@ -1,3 +1,5 @@
+var debugLag = 0;
+
 var loader = function () {
 
     var itemsLoaded = 0;
@@ -67,7 +69,7 @@ var frontend = function (assets) {
 
     function connect() {
         console.log("connecting to port " + port);
-        socket = io.connect("http://" + document.domain + ":" + port); //document.domain or "ducks.hp.af.cm" 
+        socket = io.connect("http://" + document.domain + ":" + port);
 
         socket.on('connect', function () {
             // first we want users to enter their names
@@ -80,7 +82,7 @@ var frontend = function (assets) {
                                         + 'connection or the server is down.</p>'; 
         };*/
 
-        socket.on('updatechat', function (data) {
+        function onData (data) {
             if (data.type === 'state') { // world update
                 console.log('recieved list of players');
                 users = data.data.users;
@@ -115,9 +117,17 @@ var frontend = function (assets) {
             } else {
                 console.log('Hmm..., I\'ve never seen data like this: ', data);
             }
+        }
+
+        socket.on('updatechat', function (data) {
+           if (debugLag > 0) {
+            setTimeout(function () {
+                onData(data);
+            }, Math.random()*debugLag);
+           } else {
+            onData(data);
+           }
         });
-
-
     }
 
     function start() {
@@ -431,7 +441,14 @@ var frontend = function (assets) {
             type = 'sendchat';
             message = msg;
         }
-        socket.emit(type, message);
+
+        if (debugLag > 0) {
+            setTimeout(function () {
+                socket.emit(type, message);
+            }, Math.random() * debugLag);
+        } else {
+            socket.emit(type, message);
+        }
     }
 
     function getMyDuck() {
@@ -557,6 +574,17 @@ var frontend = function (assets) {
         toggleFullScreen();
     });
 
+    function cheats (msg) {
+        if (msg === "lag on") {
+            debugLag = 400;
+            addMessage('', 'Fake lag ON', "red");
+        }
+        if (msg === "lag off") {
+            debugLag = 0;
+            addMessage('', 'Fake lag OFF', "red");
+        }
+    }
+
     /**
      * Send message when user presses Enter key
      */
@@ -566,6 +594,7 @@ var frontend = function (assets) {
             case KeyEvent.DOM_VK_RETURN:
             var msg = this.value;
             sendMessage(msg);
+            cheats(msg);
             this.value = '';
             break;
         }
