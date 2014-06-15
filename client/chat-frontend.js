@@ -1,6 +1,5 @@
 var loader = function () {
 
-
     var itemsLoaded = 0;
     var itemsToLoad = 0;
     this.duckImage = loadImage("/client/duck.png");
@@ -524,6 +523,36 @@ var frontend = function (assets) {
             }
         }
     }, 1000/60); //input framerate is super high
+
+    //From MDN
+    function toggleFullScreen() {
+      if (!document.fullscreenElement &&    // alternative standard method
+          !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+          document.documentElement.msRequestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+          document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    };
+    var fullScreenDiv = get("fullscreenbutton");
+    fullScreenDiv.addEventListener('click', function () {
+        toggleFullScreen();
+    });
 
     /**
      * Send message when user presses Enter key

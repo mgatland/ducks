@@ -3,24 +3,25 @@
     <head>
         <meta charset="utf-8">
         <title>let's be ducks</title>
-        <meta name="viewport" content="width=1024" />
+        <meta name="viewport" content="width=1024, user-scalable=no">
         <link href="./client/ducks.css" rel="stylesheet" type="text/css">
     </head>
     <body>
         <div id="game">
             <canvas id="gamescreen"></canvas>
             <div id="panel">
-                <div id="chat"></div>
                 <div id="inputline">
                     <span id="status">...</span>
                     <input type="text" id="input" autofocus size="20" maxlength="60"/>
-                </div> 
+                </div>
+                <div id="chat"></div>
                 <div id="arrows">
                     <div class="arrow" id="uparrow">&#8593;</div><br>
                     <div class="arrow" id="leftarrow">&#8592;</div>
                     <div class="arrow" id="downarrow">&#8595;</div>
                     <div class="arrow" id="rightarrow">&#8594;</div>
                 </div>
+                <div id="fullscreenbutton">full screen</div>
             </div>
         </div>
         <aside id="notes"></aside>

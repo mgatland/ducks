@@ -1,6 +1,10 @@
+html {
+    background-color: #309;
+}
+
 body { 
-    color: #fff; 
-    background: #309; 
+    margin: 0;
+    color: #fff;
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 }
 
@@ -38,14 +42,25 @@ body {
 #game {
     text-transform: uppercase;
     white-space: nowrap;
+    width: 1024px;
+    height: 576px;
+
+    /* absolute center */
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
 }
 
 #panel {
     white-space: normal;
     display: inline-block;
     font-size: 24px; 
-    margin: 20px;
+    margin-left: 20px;
     vertical-align: top;
+    max-width: 408px;
 }
 
 #chat { 
@@ -56,16 +71,12 @@ body {
     border: 3px solid #9CC; 
     margin-top:10px; 
     height: 190px;
-    width: 400px;
+    width: 380px;
 }
 
 .chatname {
     padding-right: 4px;
     padding-left: 4px;
-}
-
-#inputline { 
-    margin-top: 10px;
 }
 
 input { 
@@ -74,4 +85,9 @@ input {
     border: 3px solid #9CC;
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
     font-size: 24px; text-transform: uppercase;
+}
+
+#fullscreenbutton {
+    margin-top: 40px;
+    text-align: center;
 }
