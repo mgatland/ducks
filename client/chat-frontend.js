@@ -441,7 +441,6 @@ var frontend = function (assets) {
     }
 
     function moveMyDuck(x, y) {
-        if (moved) return;
         var myDuck = getMyDuck();
         if (myDuck) {
             shared.move(myDuck, x, y);
