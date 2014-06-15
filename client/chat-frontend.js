@@ -72,7 +72,7 @@ var frontend = function (assets) {
 
         socket.on('connect', function () {
             // first we want users to enter their names
-            status.innerHTML = 'NAME:';
+            status.innerHTML = 'YOUR DUCK NAME:';
         });
      
        /* connection.onerror = function (error) {
