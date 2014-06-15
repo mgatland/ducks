@@ -45,7 +45,6 @@ var frontend = function (assets) {
 
 
     var keysDown = [];
-    var lockedKeys = [];
 
     var socket = undefined;
     var port = "80";
@@ -442,6 +441,7 @@ var frontend = function (assets) {
     }
 
     function moveMyDuck(x, y) {
+        if (moved) return;
         var myDuck = getMyDuck();
         if (myDuck) {
             shared.move(myDuck, x, y);
@@ -504,9 +504,8 @@ var frontend = function (assets) {
         return (chestSecretTimer > 60 * 3);
     }
 
-    setInterval(function() {
-
-        updateSecrets();
+    //move if I'm ready to move and holding a direction button
+    function tryMoving() {
         if (moved === false) {
             if (keysDown[KeyEvent.DOM_VK_DOWN] === true) {
                 sendMessage("/south");
@@ -522,6 +521,11 @@ var frontend = function (assets) {
                 moveMyDuck(1,0);
             }
         }
+    }
+
+    setInterval(function() {
+        updateSecrets();
+        tryMoving();
     }, 1000/60); //input framerate is super high
 
     //From MDN
@@ -575,9 +579,7 @@ var frontend = function (assets) {
 
     function setupArrowKey(id, keyCode) {
 
-
         var setOrUnsetArrowKeyPress = function (arrowDiv, value) {
-            lockedKeys[arrowDiv.keyCode] = value;
             keysDown[arrowDiv.keyCode] = value; 
             if (value === true) {
                 arrowDiv.className = "arrow pressed";
@@ -588,6 +590,7 @@ var frontend = function (assets) {
 
         var setArrowKeyPress = function () {
             setOrUnsetArrowKeyPress(this, true);
+            tryMoving();
         }
 
         var unsetArrowKeyPress = function () {
