@@ -54,6 +54,14 @@ body {
     margin: auto;
 }
 
+@media screen and ( max-height: 576px ) {
+    /* Don't center if it doesn't fit, we don't want the top cut off */
+    #game {
+        position: static;
+    }
+
+}
+
 #panel {
     white-space: normal;
     display: inline-block;
