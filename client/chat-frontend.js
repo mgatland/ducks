@@ -1,4 +1,5 @@
 var debugLag = 0;
+var smartUpdates = true;
 
 var loader = function () {
 
@@ -101,7 +102,11 @@ var frontend = function (assets) {
                 //find the user to update in our array
                 var index = shared.getIndexOfUser(updatedUser.name, users);
                 if (index != null) {
-                    users[index] = updatedUser;
+                    if (updatedUser.name === myName) {
+                        updateMyself(updatedUser, index);
+                    } else {
+                        users[index] = updatedUser;    
+                    }
                 } else {
                     console.log("update for new user: " + updatedUser.name);
                     users.push(updatedUser);
@@ -258,6 +263,8 @@ var frontend = function (assets) {
     canvas.width = screenWidth*tileSize;
     canvas.height = screenWidth*tileSize;
 
+    var expectedUpdates = [];
+
     //from server
     var myName = false;
 
@@ -270,6 +277,21 @@ var frontend = function (assets) {
             DOM_VK_RIGHT: 39,
             DOM_VK_DOWN: 40,
         }
+    }
+
+    function updateMyself(data, index) {
+        if (expectedUpdates.length > 0) {
+            var expected = expectedUpdates.shift();
+            if (_.isEqual(data, expected)) {
+                //console.log("(ignore expected update from server)");
+                return;
+            } else {
+                console.log("Unexpected update from server.")
+                //No point keeping our future predictions then.
+                expectedUpdates.length = 0;
+            }
+        }
+        users[index] = data;
     }
 
     function getCurrentMap() {
@@ -469,6 +491,13 @@ var frontend = function (assets) {
         }
     }
 
+    function expectServerUpdate() {
+        if (smartUpdates) {
+            var myDuckClone = _.cloneDeep(getMyDuck());
+            expectedUpdates.push(myDuckClone);
+        }
+    }
+
     addEventListener("keydown", function (e) {
         keysDown[e.keyCode] = true;
         switch (e.keyCode) {
@@ -526,15 +555,19 @@ var frontend = function (assets) {
             if (keysDown[KeyEvent.DOM_VK_DOWN] === true) {
                 sendMessage("/south");
                 moveMyDuck(0,1);
+                expectServerUpdate();
             } else if (keysDown[KeyEvent.DOM_VK_UP] === true) {
                 sendMessage("/north");
                 moveMyDuck(0,-1);
+                expectServerUpdate();
             } else if (keysDown[KeyEvent.DOM_VK_LEFT] === true) {
                 sendMessage("/west");
                 moveMyDuck(-1,0);
+                expectServerUpdate();
             } else if (keysDown[KeyEvent.DOM_VK_RIGHT] === true) {
                 sendMessage("/east");
                 moveMyDuck(1,0);
+                expectServerUpdate();
             }
         }
     }
@@ -582,6 +615,14 @@ var frontend = function (assets) {
         if (msg === "lag off") {
             debugLag = 0;
             addMessage('', 'Fake lag OFF', "red");
+        }
+        if (msg === "smart on") {
+            smartUpdates = true;
+            addMessage('', 'smart updating ON', "red");
+        }
+        if (msg === "smart off") {
+            smartUpdates = false;
+            addMessage('', 'smart updating OFF', "red");
         }
     }
 
