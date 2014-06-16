@@ -85,7 +85,7 @@
     var map_09_11 = function () {
 		var gridData = [];
 		gridData[ 0] = "qq8875598888";
-		gridData[ 1] = "q75555555555";
+		gridData[ 1] = "q75555555*55";
 		gridData[ 2] = "455555555555";
 		gridData[ 3] = "455QWWWWWE55";
 		gridData[ 4] = "455ASSSSSD55";
@@ -121,7 +121,7 @@
     var map_11_11 = function () {
 		var gridData = [];
 		gridData[ 0] = "8887555988qq";
-		gridData[ 1] = "555555555*9q";
+		gridData[ 1] = "55555555559q";
 		gridData[ 2] = "555555555559";
 		gridData[ 3] = "555555555553";
 		gridData[ 4] = "55555555322q";

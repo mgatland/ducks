@@ -233,9 +233,9 @@ io.sockets.on('connection', function (socket) {
     }
 
     var notes = {};
-    notes['9:10'] = "Type /quack to quack!";
-    notes['11:10'] = "Feeling sleepy? Take a /nap";
-    notes['11:11'] = "It's hot here! A /dive would be nice.";
+    notes['9:10'] = "Feeling sleepy? Take a /nap"; 
+    notes['11:10'] = "Type /quack to quack!";
+    notes['9:11'] = "It's hot here! A /dive would be nice.";
 
     function sendServerMessage(emitter, message) {
         emitter.emit('updatechat', { type: 'servermessage', data: { text: message }});
