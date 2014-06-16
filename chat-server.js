@@ -16,7 +16,6 @@ var moveDelay = 1000/4;
 
 //globals
 var history = [ ]; //totally unused
-var unsentMessages = [ ];
 var users = [ ];
 var lurkers = [ ];
 
@@ -276,16 +275,6 @@ io.sockets.on('connection', function (socket) {
 
 });
 
-setInterval(function(){
-    if (unsentMessages.length === 0) {
-        return;
-    }
-    var state = {};
-    state.messages = unsentMessages;
-    broadcast("messages", state);
-    unsentMessages = [ ];
-}, 1000/4);
-
 function sendNetUsersTo(socket) {
     var state = getAllNetUsers();
     var datagram = { type:'state', data: state };
@@ -333,13 +322,16 @@ function broadcast(type, data) {
 
 function addMessage(chatObj) {
     history.push(chatObj);
-    unsentMessages.push(chatObj);
     history = history.slice(-100);
+
+    var state = {};
+    state.messages = [];
+    state.messages.push(chatObj);
+    broadcast("messages", state);
 }
 
 function makeChatObject(name, color, message) {
     var obj = {
-//        time: (new Date()).getTime(),
         text: htmlEntities(message),
         author: name,
         color: color
