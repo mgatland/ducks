@@ -201,7 +201,7 @@ io.sockets.on('connection', function (socket) {
                 }
                 break;
             case 'dive':
-                if (user.diveMoves > 0) {
+                if (user.diveMoves > 0 && shared.canSurface(user)) {
                     netUpdate = moveDuck(0,0);
                     if (netUpdate) {
                         user.diveMoves = 0;

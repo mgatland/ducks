@@ -295,6 +295,12 @@
     	user.pos.y -= y;
     }
 
+
+    exports.canSurface = function(user) {
+    	var map = this.getMap(user.map);
+    	return !map.isUnderwaterTunnel(user.pos);
+    }
+
     exports.move = function (user, x, y) {
     	var map = this.getMap(user.map);
     	var wasInUnderwaterTunnel = map.isUnderwaterTunnel(user.pos);
