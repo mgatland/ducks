@@ -81,11 +81,15 @@ io.sockets.on('connection', function (socket) {
 
 
     socket.on('sendchat', function (data) {
-
+        data = data.toLowerCase();
         console.log(getTimestamp() + ' > '
                     + user.name + ': ' + data);        
         var obj = makeChatObject(user.name, user.color, data);
         addMessage(obj);
+
+        if (data === "quack" || data === "dive" || data === "nap") {
+            user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'Try putting a slash in front like this: /' + data} });
+        }
     });
 
     socket.on('adduser', function(username){
@@ -283,7 +287,7 @@ function sendNetUsersTo(socket) {
 function getAllNetUsers() {
     var state = {};
     state.users = users.map( getNetUser );
-    return state;    
+    return state;
 }
 
 function getNetUser (user) {
