@@ -38,9 +38,8 @@ var frontend = function (assets) {
 
     var debug = false;
  
-    //get element by id
     function get (element) {
-        return document.getElementById(element);
+        return document.querySelector("." + element);
     }
 
     //data from the server
@@ -652,6 +651,19 @@ var frontend = function (assets) {
             smartUpdates = false;
             addMessage('', 'smart updating OFF', "red");
         }
+        if (msg === "editor on") {
+            var div = getByClass("editor");
+            div.classList.add("editing");
+            div.addEventListener("click", function (event) {
+                var coords = relMouseCoords(div, event);
+                console.log(coords);
+            });
+            var gameScreen = getByClass("gamescreen");
+            gameScreen.addEventListener("click", function (event) {
+                var coords = relMouseCoords(div, event);
+                console.log(coords);
+            });
+        }
     }
 
     /**
@@ -758,3 +770,22 @@ var frontend = function (assets) {
 };
 
 window.onload = loader;
+
+
+function relMouseCoords(currentElement, event){
+    var totalOffsetX = 0;
+    var totalOffsetY = 0;
+    var canvasX = 0;
+    var canvasY = 0;
+
+    do{
+        totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+        totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+    }
+    while(currentElement = currentElement.offsetParent)
+
+    canvasX = event.pageX - totalOffsetX;
+    canvasY = event.pageY - totalOffsetY;
+
+    return {x:canvasX, y:canvasY}
+}

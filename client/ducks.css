@@ -8,7 +8,7 @@ body {
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 }
 
-#arrows {
+.arrows {
     white-space: nowrap;
     text-align: center;
 
@@ -39,7 +39,7 @@ body {
     background-color: #9CC;
 }
 
-#game {
+.game {
     text-transform: uppercase;
     white-space: nowrap;
     width: 1024px;
@@ -56,13 +56,13 @@ body {
 
 @media screen and ( max-height: 576px ) {
     /* Don't center if it doesn't fit, we don't want the top cut off */
-    #game {
+    .game {
         position: static;
     }
 
 }
 
-#panel {
+.panel {
     white-space: normal;
     display: inline-block;
     font-size: 24px; 
@@ -71,7 +71,7 @@ body {
     max-width: 408px;
 }
 
-#chat { 
+.chat { 
     padding:4px; 
     background: darkblue; 
     overflow-x: hidden;
@@ -95,7 +95,15 @@ input {
     font-size: 24px; text-transform: uppercase;
 }
 
-#fullscreenbutton {
+.fullscreenbutton {
     margin-top: 40px;
     text-align: center;
+}
+
+.editor {
+    display: none;
+}
+
+.editor.editing {
+    display: block;
 }
