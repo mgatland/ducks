@@ -186,7 +186,8 @@ io.sockets.on('connection', function (socket) {
                 break;
             case 'quack':
                 if (user.diveMoves > 0) {
-                    sendServerMessage(user.socket, "You can't quack underwater.");
+                    var quackObj = makeChatObject(user.name, user.color, "glub glub glub");
+                    addMessage(quackObj);
                 } else {
                     netUpdate = moveDuck(0,0,'quack');
                     var quackObj = makeChatObject(user.name, user.color, "QUACK!");
