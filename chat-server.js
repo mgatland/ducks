@@ -10,7 +10,6 @@ console.log("listening on port " + port);
 
 var shared = require('./shared/shared');
 
-
 //consts
 var moveDelay = 1000/4;
 
@@ -78,7 +77,6 @@ io.sockets.on('connection', function (socket) {
  
     sendNetUsersTo(user.socket);
 
-
     socket.on('sendchat', function (data) {
         data = data.toLowerCase();
         console.log(getTimestamp() + ' > '
@@ -92,7 +90,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('adduser', function(username){
-        username = htmlEntities(username);
+        username = htmlEntities(username).toLowerCase();
         if (user.isReal()) {
             return;
         }
