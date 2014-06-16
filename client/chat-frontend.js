@@ -1,6 +1,8 @@
 var debugLag = 0;
 var smartUpdates = true;
 
+var editorTile = 0;
+
 var loader = function () {
 
     var itemsLoaded = 0;
@@ -312,7 +314,9 @@ var frontend = function (assets) {
         }
     }
 
-    function drawTile(ctx, pos, tX, tY) {
+    function drawTile(ctx, pos, num) {
+        var tX = num % 10;
+        var tY = Math.floor(num / 10); 
         ctx.drawImage(tilesImg, tX*tileSize, tY*tileSize, tileSize, tileSize, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
     }
 
@@ -328,90 +332,10 @@ var frontend = function (assets) {
         var map = getCurrentMap();
         var mapData = shared.getMap(map);
         forEachCell(mapData, function (tile, pos) {
-            switch (tile) {
-                //chest:
-                case 'z': 
-                if (showChestSecret()) {
-                    drawTile(ctx, pos, 8, 0);
-                } else {
-                    drawTile(ctx, pos, 0, 0);
-                }
-                break;
-                //question block (dungeon)
-                case '?': drawTile(ctx, pos, 7, 0);
-                break;
-                //question block (desert)
-                case '*': drawTile(ctx, pos, 5, 4);
-                break;
-                //bricks
-                case 'x': drawTile(ctx, pos, 1, 0);
-                break;
-                case 'c': drawTile(ctx, pos, 2, 0);
-                break;
-                case 'v': drawTile(ctx, pos, 3, 0);
-                break;
-                //pillars
-                case 'b': drawTile(ctx, pos, 4, 0);
-                break;
-                case 'n': drawTile(ctx, pos, 5, 0);
-                break;
-                case 'm': drawTile(ctx, pos, 6, 0);
-                break;
-                //grounds:
-                case '.': drawTile(ctx, pos, 1, 1);
-                break;
-                case ',': drawTile(ctx, pos, 2, 1);
-                break;
-                //ground above edge
-                case '/': drawTile(ctx, pos, 3, 1);
-                break;
-                //desert - empty and adjacent to empty
-                case '8': drawTile(ctx, pos, 1, 3);
-                break;
-                case '2': drawTile(ctx, pos, 1, 5);
-                break;
-                case '4': drawTile(ctx, pos, 0, 4);
-                break;
-                case '6': drawTile(ctx, pos, 2, 4);
-                break;
-                case '5': drawTile(ctx, pos, 1, 4);
-                break;
-                //diagonals (empty above and beside)
-                case '7': drawTile(ctx, pos, 3, 3);
-                break;
-                case '9': drawTile(ctx, pos, 4, 3);
-                break;
-                case '1': drawTile(ctx, pos, 3, 4);
-                break;
-                case '3': drawTile(ctx, pos, 4, 4);
-                break;
-                //solid on all sides
-                case 'q': drawTile(ctx, pos, 0, 3);
-                break;
-                //tree
-                case 'w': drawTile(ctx, pos, 5, 3);
-                break;
-                //water:
-                case 'Q': drawTile(ctx, pos, 6, 3);
-                break;
-                case 'W': drawTile(ctx, pos, 7, 3);
-                break;
-                case 'E': drawTile(ctx, pos, 8, 3);
-                break;
-                case 'A': drawTile(ctx, pos, 6, 4);
-                break;
-                case 'S': drawTile(ctx, pos, 7, 4);
-                break;
-                case 'D': drawTile(ctx, pos, 8, 4);
-                break;
-                case 'Z': drawTile(ctx, pos, 6, 5);
-                break;
-                case 'X': drawTile(ctx, pos, 7, 5);
-                break;
-                case 'C': drawTile(ctx, pos, 8, 5);
-                break;
-                default:
-                drawTile(ctx, pos, 0, 1);
+            if (tile === 0 && showChestSecret()) {
+                drawTile(ctx, pos, 8);
+            } else {
+                drawTile(ctx, pos, tile);
             }
         });
 
@@ -437,7 +361,7 @@ var frontend = function (assets) {
                 var pos = new shared.Pos(
                     Math.floor(Math.random()*12),
                     Math.floor(Math.random()*12));
-                drawTile(ctx, pos, Math.floor(Math.random()*9), 0); 
+                drawTile(ctx, pos, Math.floor(Math.random()*9)); 
             }
         }
     }
@@ -652,16 +576,26 @@ var frontend = function (assets) {
             addMessage('', 'smart updating OFF', "red");
         }
         if (msg === "editor on") {
-            var div = getByClass("editor");
-            div.classList.add("editing");
+            get("editor").classList.add("editing");
+
+            var div = get("editortiles");
             div.addEventListener("click", function (event) {
                 var coords = relMouseCoords(div, event);
-                console.log(coords);
+                coords.x = Math.floor(10 * coords.x / div.width);
+                coords.y = Math.floor(10 * coords.y / div.height);
+                editorTile = coords.x + 10 * coords.y;
+                console.log("Editor tile " + editorTile);
             });
-            var gameScreen = getByClass("gamescreen");
+            var gameScreen = get("gamescreen");
             gameScreen.addEventListener("click", function (event) {
-                var coords = relMouseCoords(div, event);
-                console.log(coords);
+                var coords = relMouseCoords(gameScreen, event);
+                coords.x = Math.floor(12 * coords.x / gameScreen.width);
+                coords.y = Math.floor(12 * coords.y / gameScreen.height);
+                var map = getCurrentMap();
+                var mapData = shared.getMap(map);
+                mapData.set(coords, editorTile);
+                drawEverything();
+                get("editorSave").innerHTML = mapData.raw();
             });
         }
     }

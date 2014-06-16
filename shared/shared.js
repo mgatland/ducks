@@ -32,155 +32,26 @@
     }
 
     //Lair of Deception!
-    var map_10_09 = function () {
-		var gridData = [];
-		gridData[ 0] = "xxxxxxxxxxxx";
-		gridData[ 1] = "x          x";
-		gridData[ 2] = "x       ,  x";
-		gridData[ 3] = "x   ,      x";
-		gridData[ 4] = "x          x";
-		gridData[ 5] = "x     ,    x";
-		gridData[ 6] = "x          x";
-		gridData[ 7] = "x          x";
-		gridData[ 8] = "x          x";
-		gridData[ 9] = "x ,     ,  x";
-		gridData[10] = "x          x";
-		gridData[11] = "xxxxxx xxxxx";
-		return gridData;
-    }
-
-
+    var map_10_09 = [1,1,1,1,1,1,1,1,1,1,1,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,12,10,10,1,1,10,10,10,12,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,12,10,10,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,12,10,10,10,10,10,12,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,1,1,1,1,1,1,10,1,1,1,1,1];
     //treasure room
-    var map_09_10 = function () {
-		var gridData = [];
-		gridData[ 0] = "xxxxxxxxxxxx";
-		gridData[ 1] = "x          x";
-		gridData[ 2] = "x       ?  x";
-		gridData[ 3] = "x  z       x";
-		gridData[ 4] = "xxxxx  xxxxx";
-		gridData[ 5] = "x           ";
-		gridData[ 6] = "x         , ";
-		gridData[ 7] = "xxxxx .xxxxx";
-		gridData[ 8] = "x    .     x";
-		gridData[ 9] = "x .     ., x";
-		gridData[10] = "x .  ,     x";
-		gridData[11] = "xxxxx//xxxxx";
-		return gridData;
-    }
-
+    var map_09_10 = [1,1,1,1,1,1,1,1,1,1,1,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,7,10,10,1,1,10,10,0,10,10,10,10,10,10,10,1,1,1,1,1,1,10,10,1,1,1,1,1,1,10,10,10,10,10,10,10,10,10,10,10,1,10,10,10,10,10,10,10,10,10,12,10,1,1,1,1,1,10,11,1,1,1,1,1,1,10,10,10,10,11,10,10,10,10,10,1,1,10,11,10,10,10,10,10,11,12,10,1,1,10,11,10,10,12,10,10,10,10,10,1,1,1,1,1,1,13,13,1,1,1,1,1];
     //home room
-    var map_10_10 = function () {
-		var gridData = [];
-		gridData[ 0] = "xxxxxxxxxxxx";
-		gridData[ 1] = "x          x";
-		gridData[ 2] = "x          x";
-		gridData[ 3] = "x          x";
-		gridData[ 4] = "x          x";
-		gridData[ 5] = "            ";
-		gridData[ 6] = "            ";
-		gridData[ 7] = "x          x";
-		gridData[ 8] = "x          x";
-		gridData[ 9] = "x ,        x";
-		gridData[10] = "x          x";
-		gridData[11] = "xxxxxxxxxxxx";
-		return gridData;
-    }
-
+    var map_10_10 = [1,1,1,1,1,1,1,1,1,1,1,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,1,10,10,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,1,10,12,10,10,10,10,10,10,10,10,1,1,10,10,10,10,10,10,10,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1];
     //pillar room
-    var map_11_10 = function () {
-		var gridData = [];
-		gridData[ 0] = "xxxxvxccvcxx";
-		gridData[ 1] = "x  vc    xcx";
-		gridData[ 2] = "x      v   x";
-		gridData[ 3] = "x        ? c";
-		gridData[ 4] = "x   c      v";
-		gridData[ 5] = "           x";
-		gridData[ 6] = "           c";
-		gridData[ 7] = "x          c";
-		gridData[ 8] = "x  m   m   v";
-		gridData[ 9] = "x  n   n   x";
-		gridData[10] = "xb        bc";
-		gridData[11] = "xxxx///xxxcc";
-		return gridData;
-    }
-
+    var map_11_10 = [1,1,1,1,3,1,2,2,3,2,1,1,1,10,10,3,2,10,10,10,10,1,2,1,1,10,10,10,10,10,10,3,10,10,10,1,1,10,10,10,10,10,10,10,10,7,10,2,1,10,10,10,2,10,10,10,10,10,10,3,10,10,10,10,10,10,10,10,10,10,10,1,10,10,10,10,10,10,10,10,10,10,10,2,1,10,10,10,10,10,10,10,10,10,10,2,1,10,10,6,10,10,10,6,10,10,10,3,1,10,10,5,10,10,10,5,10,10,10,1,1,4,10,10,10,10,10,10,10,10,4,2,1,1,1,1,13,13,13,1,1,1,2,2];
     //desert pond (below treasure room)
-    var map_09_11 = function () {
-		var gridData = [];
-		gridData[ 0] = "qq8875598888";
-		gridData[ 1] = "q75555555*55";
-		gridData[ 2] = "455555555555";
-		gridData[ 3] = "455QWWWWWE55";
-		gridData[ 4] = "455ASSSSSD55";
-		gridData[ 5] = "455ASSSSSD55";
-		gridData[ 6] = "455ASSSSSD55";
-		gridData[ 7] = "455ASSSSSD55";
-		gridData[ 8] = "455ASSSSSD55";
-		gridData[ 9] = "455ASSSSSD55";
-		gridData[10] = "q15ZXXXXXC55";
-		gridData[11] = "qq2222222222";
-		return gridData;
-    }
-
+    var map_09_11 = [30,30,31,31,33,41,41,34,31,31,31,31,30,33,41,41,41,41,41,41,41,45,41,41,40,41,41,41,41,41,41,41,41,41,41,41,40,41,41,36,37,37,37,37,37,38,41,41,40,41,41,46,47,47,47,47,47,48,41,41,40,41,41,46,47,47,47,47,47,48,41,41,40,41,41,46,47,47,47,47,47,48,41,41,40,41,41,46,47,47,47,47,47,48,41,41,40,41,41,46,47,47,47,47,47,48,41,41,40,41,41,46,47,47,47,47,47,48,41,41,30,43,41,56,57,57,57,57,57,58,41,41,30,30,51,51,51,51,51,51,51,51,51,51];
     //desert trees (below home screen)
-    var map_10_11 = function () {
-		var gridData = [];
-		gridData[ 0] = "888888888888";
-		gridData[ 1] = "555555555555";
-		gridData[ 2] = "555w5555w555";
-		gridData[ 3] = "555555555555";
-		gridData[ 4] = "555555555555";
-		gridData[ 5] = "555555555555";
-		gridData[ 6] = "555555555555";
-		gridData[ 7] = "555w5555w555";
-		gridData[ 8] = "555555555555";
-		gridData[ 9] = "555555555555";
-		gridData[10] = "555555555555";
-		gridData[11] = "222222222222";
-		return gridData;
-    }
-
+    var map_10_11 = [31,31,31,31,31,31,31,31,31,31,31,31,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,35,41,41,41,41,35,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,35,41,41,41,41,35,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,51,51,51,51,51,51,51,51,51,51,51,51];
     //desert tunnel, below pillar room
-    var map_11_11 = function () {
-		var gridData = [];
-		gridData[ 0] = "8887555988qq";
-		gridData[ 1] = "55555555559q";
-		gridData[ 2] = "555555555559";
-		gridData[ 3] = "555555555553";
-		gridData[ 4] = "55555555322q";
-		gridData[ 5] = "555555556qqq";
-		gridData[ 6] = "555555556qqq";
-		gridData[ 7] = "555555556qqq";
-		gridData[ 8] = "55555553qqqq";
-		gridData[ 9] = "5553222qqqqq";
-		gridData[10] = "553qqqqqqqqq";
-		gridData[11] = "22qqqqqqqqqq";
-		return gridData;
-    }
-
+    var map_11_11 = [31,31,31,33,41,41,41,34,31,31,30,30,41,41,41,41,41,41,41,41,41,41,34,30,41,41,41,41,41,41,41,41,41,41,41,34,41,41,41,41,41,41,41,41,41,41,41,44,41,41,41,41,41,41,41,41,44,51,51,30,41,41,41,41,41,41,41,41,42,30,30,30,41,41,41,41,41,41,41,41,42,30,30,30,41,41,41,41,41,41,41,41,42,30,30,30,41,41,41,41,41,41,41,44,30,30,30,30,41,41,41,44,51,51,51,30,30,30,30,30,41,41,44,30,30,30,30,30,30,30,30,30,51,51,30,30,30,30,30,30,30,30,30,30];
     //secret room
-    var map_09_12 = function () {
-		var gridData = [];
-		gridData[ 0] = "qq88888888qq";
-		gridData[ 1] = "q75QWWWWWE9q";
-		gridData[ 2] = "455ASSSSSD56";
-		gridData[ 3] = "455ASSSSSD56";
-		gridData[ 4] = "455ASSSXXC56";
-		gridData[ 5] = "455ASSD55556";
-		gridData[ 6] = "455ASSD5w556";
-		gridData[ 7] = "455ZXXC55556";
-		gridData[ 8] = "455555555556";
-		gridData[ 9] = "4555w555w556";
-		gridData[10] = "q1555555553q";
-		gridData[11] = "qq22222222qq";
-		return gridData;
-    }
+    var map_09_12 = [30,30,31,31,31,31,31,31,31,31,30,30,30,33,41,36,37,37,37,37,37,38,34,30,40,41,41,46,47,47,47,47,47,48,41,42,40,41,41,46,47,47,47,47,47,48,41,42,40,41,41,46,47,47,47,57,57,58,41,42,40,41,41,46,47,47,48,41,41,41,41,42,40,41,41,46,47,47,48,41,35,41,41,42,40,41,41,56,57,57,58,41,41,41,41,42,40,41,41,41,41,41,41,41,41,41,41,42,40,41,41,41,35,41,41,41,35,41,41,42,30,43,41,41,41,41,41,41,41,41,44,30,30,30,51,51,51,51,51,51,51,51,30,30];
 
 	var createGrid = function (gridData) {
 
-		var levelWidth = gridData[0].length;
-		var levelHeight = gridData.length;
-
+		var levelWidth = 12;
+		var levelHeight = 12;
 		var grid = {};
 
 		grid.isInMap = function (pos) {
@@ -195,19 +66,19 @@
 
 		grid.get = function (pos) {
 			if (!this.isInMap(pos)) {
-				return "x";
+				return 1; //A wall
 			}
-			return gridData[pos.y][pos.x]; 
+			return gridData[pos.y*levelWidth + pos.x]; 
 		};
 
+		grid.set = function (pos, value) {
+			gridData[pos.y*levelWidth + pos.x] = value;
+		}
 
-		var wallTiles = ['z', 'x', 'c', 'v', 'b', 'n', 'm',
-						'7', '8', '9', '4', '6', '1', '2', '3',
-						'q', 'w' ];
-
-		var waterTiles = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C'];
-
-		var noteTiles = ['?', '*'];
+		var wallTiles = [0, 1, 2, 3, 4, 5, 6, 8, 
+			30, 31, 33, 34, 35, 40, 42, 43, 44, 51];
+		var waterTiles = [36, 37, 38, 46, 47, 48, 56, 57, 58];
+		var noteTiles = [7, 45];
 
 		grid.isWalkable = function (pos) {
 			var tile = this.get(pos);
@@ -250,6 +121,10 @@
 			return levelHeight;
 		}
 
+		grid.raw = function () {
+			return gridData;
+		}
+
 		return grid;
 	}    
 
@@ -258,17 +133,17 @@
     maps[10] = [];
     maps[11] = [];
 
-		maps[10][9] = createGrid(map_10_09());
+	maps[10][9] = createGrid(map_10_09);
 
-    maps[9][10] = createGrid(map_09_10());
-    maps[10][10] = createGrid(map_10_10());
-    maps[11][10] = createGrid(map_11_10());
+    maps[9][10] = createGrid(map_09_10);
+    maps[10][10] = createGrid(map_10_10);
+    maps[11][10] = createGrid(map_11_10);
 
-    maps[9][11] = createGrid(map_09_11());
-    maps[10][11] = createGrid(map_10_11());
-    maps[11][11] = createGrid(map_11_11());
+    maps[9][11] = createGrid(map_09_11);
+    maps[10][11] = createGrid(map_10_11);
+    maps[11][11] = createGrid(map_11_11);
 
-    maps[9][12] = createGrid(map_09_12());
+    maps[9][12] = createGrid(map_09_12);
 
     exports.getMap = function (pos) {
     	return maps[pos.x][pos.y];
