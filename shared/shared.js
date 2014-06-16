@@ -17,6 +17,10 @@
 		return (p1.x === p2.x && p1.y === p2.y); 
 	}
 
+	exports.distanceBetweenPos = function (p1, p2) {
+		return (Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y));
+	}
+
    exports.getIndexOfUser = function (name, users) {
         var index = null;
         users.forEach(function(user, idx) {
@@ -26,6 +30,25 @@
         });
         return index;
     }
+
+    //Lair of Deception!
+    var map_10_09 = function () {
+		var gridData = [];
+		gridData[ 0] = "xxxxxxxxxxxx";
+		gridData[ 1] = "x          x";
+		gridData[ 2] = "x       ,  x";
+		gridData[ 3] = "x   ,      x";
+		gridData[ 4] = "x          x";
+		gridData[ 5] = "x     ,    x";
+		gridData[ 6] = "x          x";
+		gridData[ 7] = "x          x";
+		gridData[ 8] = "x          x";
+		gridData[ 9] = "x ,     ,  x";
+		gridData[10] = "x          x";
+		gridData[11] = "xxxxxx xxxxx";
+		return gridData;
+    }
+
 
     //treasure room
     var map_09_10 = function () {
@@ -234,6 +257,8 @@
     maps[9] = [];
     maps[10] = [];
     maps[11] = [];
+
+		maps[10][9] = createGrid(map_10_09());
 
     maps[9][10] = createGrid(map_09_10());
     maps[10][10] = createGrid(map_10_10());

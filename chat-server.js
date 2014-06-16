@@ -180,6 +180,14 @@ io.sockets.on('connection', function (socket) {
                 netUpdate = moveDuck(0,1);
                 moved = true;
                 break;
+            case 'wilberforce':
+                netUpdate = true;
+                moved = true;
+                user.map.x = 10;
+                user.map.y = 9;
+                user.pos.x = 5;
+                user.pos.y = 5;
+                break;
             case 'quack':
                 if (user.diveMoves > 0) {
                     sendServerMessage(user.socket, "You can't quack underwater.");

@@ -432,6 +432,15 @@ var frontend = function (assets) {
                 }
             }
         });
+
+        if (nightmare) {
+            for (var i = 0; i < nightmareTimer/2; i++) {
+                var pos = new shared.Pos(
+                    Math.floor(Math.random()*12),
+                    Math.floor(Math.random()*12));
+                drawTile(ctx, pos, Math.floor(Math.random()*9), 0); 
+            }
+        }
     }
 
     function drawDuck(ctx, sprites, pos, tX, swimming) {
@@ -516,7 +525,11 @@ var frontend = function (assets) {
 
     var chestSecretTimer = 0;
     var chestMap = new shared.Pos(9,10);
+    var chestPos = new shared.Pos(3, 3);
     var showingChest = false;
+    var nightmare = false;
+    var nightmareTimer = 0;
+
     function updateSecrets() {
         if (!users) return;
         var myDuck = getMyDuck();
@@ -537,9 +550,23 @@ var frontend = function (assets) {
                 showingChest = true;
                 drawEverything();
             }
+            if (chestSecretTimer > 60*20
+                && shared.distanceBetweenPos(chestPos, myDuck.pos) === 1) {
+                nightmare = true;
+                nightmareTimer++;
+                drawEverything(); //Must redraw every frame
+                if (nightmareTimer === 60*6) {
+                    sendMessage("/wilberforce");
+                }
+            } else {
+                nightmare = false;
+                nightmareTimer = 0;
+            }
         } else {
             chestSecretTimer = 0;
-            if (showingChest) {
+            if (showingChest || nightmare) {
+                showingChest = false;
+                nightmare = false;
                 drawEverything(); //make sure it gets drawn over
             }
         }
