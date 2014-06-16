@@ -433,7 +433,7 @@ var frontend = function (assets) {
             }
         });
 
-        if (nightmare) {
+        if (nightmareTimer > 0) {
             for (var i = 0; i < nightmareTimer/2; i++) {
                 var pos = new shared.Pos(
                     Math.floor(Math.random()*12),
@@ -526,11 +526,10 @@ var frontend = function (assets) {
     var chestSecretTimer = 0;
     var chestMap = new shared.Pos(9,10);
     var chestPos = new shared.Pos(3, 3);
-    var showingChest = false;
-    var nightmare = false;
     var nightmareTimer = 0;
 
     function updateSecrets() {
+        var forceRedraw = false;
         if (!users) return;
         var myDuck = getMyDuck();
         var everyoneAsleep = true;
@@ -547,28 +546,30 @@ var frontend = function (assets) {
         if (everyoneAsleep === true && anyoneAsleep === true) {
             chestSecretTimer++;
             if (chestSecretTimer === 60*10) {
-                showingChest = true;
-                drawEverything();
+                forceRedraw = true;
             }
             if (chestSecretTimer > 60*20
                 && shared.distanceBetweenPos(chestPos, myDuck.pos) === 1) {
-                nightmare = true;
+                forceRedraw = true; //must draw nightmare every frame
                 nightmareTimer++;
-                drawEverything(); //Must redraw every frame
                 if (nightmareTimer === 60*6) {
                     sendMessage("/wilberforce");
                 }
             } else {
-                nightmare = false;
-                nightmareTimer = 0;
+                if (nightmareTimer > 0) {
+                    forceRedraw = true;
+                    nightmareTimer = 0;
+                }
             }
         } else {
-            chestSecretTimer = 0;
-            if (showingChest || nightmare) {
-                showingChest = false;
-                nightmare = false;
-                drawEverything(); //make sure it gets drawn over
+            if (chestSecretTimer > 0 || nightmareTimer > 0) {
+                forceRedraw = true;
+                chestSecretTimer = 0;
+                nightmareTimer = 0;
             }
+        }
+        if (forceRedraw) {
+            drawEverything();
         }
     }
 
