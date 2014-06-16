@@ -140,10 +140,9 @@ io.sockets.on('connection', function (socket) {
             users.splice(index, 1);
         } else {
             var index = shared.getIndexOfUser(user.name, lurkers);
-            console.log("Removed a lurker, " + lurkers.length + " remain.");
             lurkers.splice(index, 1);
+            console.log("Removed a lurker, " + lurkers.length + " remain.");
         }
-
     });
 
     function processCommand(message) {
