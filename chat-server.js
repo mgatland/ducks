@@ -180,7 +180,7 @@ io.sockets.on('connection', function (socket) {
                 netUpdate = true;
                 moved = true;
                 user.map.x = 10;
-                user.map.y = 9;
+                user.map.y = 8;
                 user.pos.x = 5;
                 user.pos.y = 5;
                 break;
