@@ -378,6 +378,7 @@ var frontend = function (assets) {
     }
 
     function sendMessage(msg) {
+        msg = msg.trim();
         if (!msg) {
             return;
         }
