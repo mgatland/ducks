@@ -10,22 +10,25 @@
         <div class="game">
             <canvas class="gamescreen"></canvas>
             <div class="panel">
-                <div class="editor">
+                <div class="editor hide">
                     <img class="editortiles" src="./client/tiles.png" width="400">
                     <div class="editorSave"></div>
                 </div>
                 <div class="inputline">
-                    <span class="status">...</span>
+                    <div class="status">...</div>
                     <input type="text" class="input" autofocus size="20" maxlength="60"/>
+                    <div class="chatButton button">OK</div>
                 </div>
-                <div class="chat"></div>
-                <div class="arrows">
-                    <div class="arrow uparrow">&#8593;</div><br>
-                    <div class="arrow leftarrow">&#8592;</div>
-                    <div class="arrow downarrow">&#8595;</div>
-                    <div class="arrow rightarrow">&#8594;</div>
+                <div class="ingame hide">
+                    <div class="chat"></div>
+                    <div class="arrows">
+                        <div class="arrow uparrow">&#8593;</div><br>
+                        <div class="arrow leftarrow">&#8592;</div>
+                        <div class="arrow downarrow">&#8595;</div>
+                        <div class="arrow rightarrow">&#8594;</div>
+                    </div>
+                    <div class="fullscreenbutton button">full screen</div>
                 </div>
-                <div class="fullscreenbutton">full screen</div>
             </div>
         </div>
         <aside class="notes"></aside>

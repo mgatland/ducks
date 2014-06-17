@@ -93,6 +93,7 @@ var frontend = function (assets) {
                 myName = data.data.name;
                 status.innerHTML = myName + ':';
                 status.style.color = data.data.color;
+                get("ingame").classList.remove("hide");
             } else if (data.type === 'messages') {
                 addMessages(data.data.messages);
             } else if (data.type === 'servermessage') {
@@ -300,7 +301,7 @@ var frontend = function (assets) {
         if (myDuck && myDuck.map) {
             return myDuck.map;
         }
-        return shared.startingPos();
+        return shared.titleMap();
     }
 
     function forEachCell(mapData, func) {
@@ -576,7 +577,7 @@ var frontend = function (assets) {
             addMessage('', 'smart updating OFF', "red");
         }
         if (msg === "editor on") {
-            get("editor").classList.add("editing");
+            get("editor").classList.remove("hide");
 
             var div = get("editortiles");
             div.addEventListener("click", function (event) {
@@ -587,7 +588,8 @@ var frontend = function (assets) {
                 console.log("Editor tile " + editorTile);
             });
             var gameScreen = get("gamescreen");
-            gameScreen.addEventListener("click", function (event) {
+
+            var paint = function (event) {
                 var coords = relMouseCoords(gameScreen, event);
                 coords.x = Math.floor(12 * coords.x / gameScreen.width);
                 coords.y = Math.floor(12 * coords.y / gameScreen.height);
@@ -595,9 +597,21 @@ var frontend = function (assets) {
                 var mapData = shared.getMap(map);
                 mapData.set(coords, editorTile);
                 drawEverything();
-                get("editorSave").innerHTML = mapData.raw();
+                get("editorSave").innerHTML = mapData.raw(); 
+            }
+
+            gameScreen.addEventListener("click", paint);
+            gameScreen.addEventListener("mousemove", function (e) {
+                if (e.shiftKey) paint(e); //hold shift to paint
             });
         }
+    }
+
+    var sendChatMessage = function () {
+        var msg = input.value;
+        sendMessage(msg);
+        cheats(msg);
+        input.value = ''; 
     }
 
     /**
@@ -607,13 +621,12 @@ var frontend = function (assets) {
         switch (e.keyCode) {
             case KeyEvent.DOM_VK_ENTER:
             case KeyEvent.DOM_VK_RETURN:
-            var msg = this.value;
-            sendMessage(msg);
-            cheats(msg);
-            this.value = '';
+            sendChatMessage();
             break;
         }
     };
+
+    get("chatButton").addEventListener("click", sendChatMessage);
  
     setupArrowKey("uparrow", KeyEvent.DOM_VK_UP);
     setupArrowKey("downarrow", KeyEvent.DOM_VK_DOWN);

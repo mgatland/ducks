@@ -35,6 +35,10 @@ body {
     font-size: 40px;
 }
 
+.hide {
+    display: none;
+}
+
 .arrow.pressed {
     background-color: #9CC;
 }
@@ -95,15 +99,18 @@ input {
     font-size: 24px; text-transform: uppercase;
 }
 
-.fullscreenbutton {
-    margin-top: 40px;
-    text-align: center;
-}
-
-.editor {
-    display: none;
-}
-
-.editor.editing {
+.fullscreenbutton.button {
     display: block;
+    margin: 40px auto;
+    text-align: center;
+    background: #330;
+    width:200px;
+}
+
+.button {
+    background: #5AA;
+    display: inline-block;
+    padding: 3px;
+    color: white;
+    cursor: pointer;
 }
