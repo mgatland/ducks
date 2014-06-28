@@ -541,6 +541,12 @@ var frontend = function (assets) {
         tryMoving();
     }, 1000/60); //input framerate is super high
 
+    function doISupportFullScreen() {
+        return (document.documentElement.requestFullscreen
+            || document.documentElement.msRequestFullscreen
+            || document.documentElement.mozRequestFullScreen
+            || document.documentElement.webkitRequestFullscreen);
+    }
     //From MDN
     function toggleFullScreen() {
       if (!document.fullscreenElement &&    // alternative standard method
@@ -567,9 +573,12 @@ var frontend = function (assets) {
       }
     };
     var fullScreenDiv = get("fullscreenbutton");
-    fullScreenDiv.addEventListener('click', function () {
-        toggleFullScreen();
-    });
+    if (doISupportFullScreen()) {
+        fullScreenDiv.addEventListener('click', toggleFullScreen);
+    } else {
+        fullScreenDiv.classList.add("hide");
+    }
+
 
     function cheats (msg) {
         if (msg === "lag on") {
