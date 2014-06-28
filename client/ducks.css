@@ -12,7 +12,7 @@ body {
     white-space: nowrap;
     text-align: center;
 
-    margin-top: 15px;
+    margin-top: 0px;
 
     /*prevent text selection*/
     -webkit-touch-callout: none;
@@ -91,6 +91,13 @@ body {
     padding-left: 4px;
 }
 
+.inputline {
+    /* on iOS full-screen you cannot interact 
+    with the top 40 physical pixels.
+    24 are used by status, we need about 20 more. */
+    margin-top: 20px;
+}
+
 input { 
     color: #fff; 
     background-color: #330; 
@@ -101,7 +108,7 @@ input {
 
 .fullscreenbutton.button {
     display: block;
-    margin: 40px auto;
+    margin: 15px auto;
     text-align: center;
     background: #330;
     width:200px;

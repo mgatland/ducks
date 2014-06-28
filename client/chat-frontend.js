@@ -5,6 +5,17 @@ var editorTile = 0;
 
 var loader = function () {
 
+    //iOS Safari 7.1 has a bug, in full screen mode it lets you
+    //scroll past the end of the page. Rotating can trigger it.
+    //this workaround scrolls you back to the top.
+    var scrollToTop = function () {
+        if (window.pageYOffset > 0) {
+            window.scrollTo(0, 0);
+        }
+    }
+    window.addEventListener('orientationchange', scrollToTop);
+    window.addEventListener('scroll', scrollToTop);
+
     var itemsLoaded = 0;
     var itemsToLoad = 0;
     this.duckImage = loadImage("/client/duck.png");
