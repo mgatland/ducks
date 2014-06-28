@@ -375,7 +375,14 @@ var frontend = function (assets) {
                 var pos = new shared.Pos(
                     Math.floor(Math.random()*12),
                     Math.floor(Math.random()*12));
-                drawTile(ctx, pos, Math.floor(Math.random()*9)); 
+                if (chestRedPositions[pos.y] 
+                    && chestRedPositions[pos.y].indexOf(pos.x) !== -1
+                    && nightmareTimer > Math.random() * chestNightmareDuration * 0.8) {
+                    var tile = 9;
+                } else {
+                    var tile = Math.floor(Math.random()*9);
+                }
+                drawTile(ctx, pos, tile);
             }
         }
     }
@@ -479,9 +486,15 @@ var frontend = function (assets) {
     }
 
     var chestSecretTimer = 0;
+    var chestShowSecretAfter = 60*10; //const
+    var chestShowNightmareAfter = 60*14; //const
+    var chestNightmareDuration = 60*10; //const
     var chestMap = new shared.Pos(9,10);
     var chestPos = new shared.Pos(3, 3);
     var nightmareTimer = 0;
+    var chestRedPositions = []; //y,x
+    chestRedPositions[3] = [2,3,4,7,8,9];
+    //chestRedPositions[8] = [3,4,5,6,7,8];
 
     function updateSecrets() {
         var forceRedraw = false;
@@ -500,14 +513,14 @@ var frontend = function (assets) {
         });
         if (everyoneAsleep === true && anyoneAsleep === true) {
             chestSecretTimer++;
-            if (chestSecretTimer === 60*10) {
+            if (chestSecretTimer === chestShowSecretAfter) {
                 forceRedraw = true;
             }
-            if (chestSecretTimer > 60*20
+            if (chestSecretTimer > chestShowNightmareAfter
                 && shared.distanceBetweenPos(chestPos, myDuck.pos) === 1) {
                 forceRedraw = true; //must draw nightmare every frame
                 nightmareTimer++;
-                if (nightmareTimer === 60*6) {
+                if (nightmareTimer === chestNightmareDuration) {
                     sendMessage("/wilberforce");
                 }
             } else {
@@ -529,7 +542,7 @@ var frontend = function (assets) {
     }
 
     function showChestSecret() {
-        return (chestSecretTimer > 60 * 3);
+        return (chestSecretTimer >= chestShowSecretAfter);
     }
 
     //move if I'm ready to move and holding a direction button
