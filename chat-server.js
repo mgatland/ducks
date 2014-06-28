@@ -232,12 +232,38 @@ io.sockets.on('connection', function (socket) {
             if (shared.isUserBelowNPC(user)) {
                 displayNPCMessageFor(user);
             }
+            var noteCode = shared.getMapNoteForUser(user);
+            if (noteCode !== null) {
+                sendServerMessage(user.socket, getMapNote(noteCode));
+            }
         }
         if (netUpdate === true) {
             var netUser = getNetUser(user);
             broadcast('playerUpdate', netUser);
             setTimeout(clearMove, moveDelay);           
         }
+    }
+
+    var mapNotes = [];
+    mapNotes["crypt1"] = "CROWN OF DUCK PRINCE";
+    mapNotes["crypt2"] = "CUTSMITH THE SWORD";
+    mapNotes["crypt3"] = "SHOE OF LONGEST JOURNEY";
+    mapNotes["crypt4"] = "(IT'S BLANK)";
+    mapNotes["crypt5"] = "LUSTROUS EARRINGS";
+    mapNotes["crypt6"] = "LARGE TOMATO";
+    mapNotes["crypt7"] = "RING OF HOLDING";
+    mapNotes["crypt8"] = "RARE COMIC BOOKS";
+    mapNotes["cryptEntrance"] = "Old treasure room. The treasure is missing";
+    mapNotes["statue1"] = "KING WALFRED DUCK I 107-143";
+    mapNotes["statue2"] = "KING WALFRED DUCK II 128-202";
+    mapNotes["statue3"] = "QUEEN PERSIMMON I 152-221";
+    mapNotes["statue4"] = "MAYOR ROLLYDUCK WHO SOLVED THE INK CRISIS";
+    mapNotes["statue5"] = "THE STRANGEST DUCK WHO SAVED US ALL";
+    mapNotes["statue6"] = "ANNA DUCK WHO CURED THE DUCK PLAGUE";
+    mapNotes["statue7"] = "THE LOST BROTHERS WE WILL NOT FORGET";
+
+    function getMapNote(code) {
+        return mapNotes[code];
     }
 
     var notes = {};

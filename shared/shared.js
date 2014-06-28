@@ -35,6 +35,12 @@
         return index;
     }
 
+    var Note = function (x, y, number) {
+        this.x = x;
+        this.y = y;
+        this.number = number;
+    }
+
     //Lair of Deception!
     var map_10_08 = [15,15,15,15,15,15,15,15,15,15,15,15,15,14,14,14,14,14,14,14,14,14,14,15,15,14,15,14,15,14,15,14,14,14,14,15,15,14,15,14,15,14,15,14,15,15,15,15,15,14,15,14,15,15,15,14,14,14,14,15,15,14,15,14,15,14,15,15,15,15,14,15,15,14,14,14,15,14,14,14,14,14,14,15,15,15,14,15,15,15,15,15,15,15,15,15,15,14,14,15,14,14,14,14,14,14,14,15,15,14,15,15,14,15,15,15,15,15,14,15,15,14,14,14,14,15,14,14,14,14,14,15,15,15,15,15,15,15,14,15,15,15,15,15];
     var map_09_09 = [15,15,15,15,15,15,15,15,15,15,15,15,15,14,14,14,14,14,14,14,14,14,14,15,15,14,17,14,14,14,14,14,14,14,15,15,15,14,14,14,14,14,14,14,14,14,14,14,15,14,17,14,14,14,14,14,14,14,15,15,15,14,14,14,14,14,14,14,18,14,14,15,15,14,17,14,14,14,14,14,14,14,14,15,15,14,14,14,14,14,14,14,18,14,14,15,15,14,14,14,14,14,14,14,14,14,14,14,15,14,14,14,14,14,14,14,18,14,14,15,15,14,14,14,14,14,14,14,14,14,14,15,15,15,15,15,15,15,15,15,15,15,15,15];
@@ -54,7 +60,7 @@
     //secret room
     var map_09_12 = [30,30,31,31,31,31,31,31,31,31,30,30,30,33,41,36,37,37,37,37,37,38,34,30,40,41,41,46,47,47,47,47,47,48,41,42,40,41,41,46,47,47,47,47,47,48,41,42,40,41,41,46,47,47,47,57,57,58,41,42,40,41,41,46,47,47,48,41,41,41,41,42,40,41,41,46,47,47,48,41,35,41,41,42,40,41,41,56,57,57,58,41,41,41,41,42,40,41,41,41,41,41,41,41,41,41,41,42,40,41,41,41,35,41,41,41,35,41,41,42,30,43,41,41,41,41,41,41,41,41,44,30,30,30,51,51,51,51,51,51,51,51,30,30];
 
-	var createGrid = function (gridData) {
+	var createGrid = function (gridData, notes) {
 
 		var levelWidth = 12;
 		var levelHeight = 12;
@@ -138,6 +144,18 @@
 			return false;
 		}
 
+        grid.getNote = function (pos) {
+            var noteNum = null;
+            if (notes) {
+                notes.forEach(function (note) {
+                    if (note.x === pos.x && note.y === pos.y) {
+                        noteNum = note.number;
+                    }
+                });
+            }
+            return noteNum;
+        }
+
 		grid.getWidth = function () {
 			return levelWidth;
 		}
@@ -161,12 +179,34 @@
     maps[12] = [];
     maps[13] = [];
 
+    //title screen
     maps[0][0] = createGrid([41,41,44,31,31,31,31,31,31,31,31,31,41,44,33,41,41,41,41,41,41,41,41,41,44,33,41,41,41,41,41,41,41,41,41,41,40,41,41,41,41,41,41,41,41,41,41,41,40,41,41,41,41,41,41,41,41,35,41,41,33,41,41,41,41,41,41,41,41,41,41,41,37,37,37,37,37,37,37,37,37,37,37,37,47,47,47,47,47,47,47,47,47,47,47,47,57,57,57,57,57,57,57,57,57,57,57,57,41,41,41,41,41,41,41,41,41,41,41,41,41,45,41,45,41,45,41,45,41,45,41,45,41,41,41,41,41,41,41,41,41,41,41,41]);
 
     maps[10][8] = createGrid(map_10_08);
 
-    maps[9][9] = createGrid(map_09_09);
-	maps[10][9] = createGrid(map_10_09);
+    //Lair of Deception - room with 6 duck head statues
+    notes_statueroom = [];
+    notes_statueroom.push(new Note(3,2,"statue1"));
+    notes_statueroom.push(new Note(3,4,"statue2"));
+    notes_statueroom.push(new Note(3,6,"statue3"));
+    notes_statueroom.push(new Note(7,5,"statue4"));
+    notes_statueroom.push(new Note(7,7,"statue5"));
+    notes_statueroom.push(new Note(7,9,"statue6"));
+    maps[9][9] = createGrid(map_09_09, notes_statueroom);
+
+    //Lair of Deception - room in two parts with 8 tombs (?) and 2 duck heads
+    notes_10_09 = [];
+    notes_10_09.push(new Note(4,3,"crypt1"));
+    notes_10_09.push(new Note(6,3,"crypt2"));
+    notes_10_09.push(new Note(8,3,"crypt3"));
+    notes_10_09.push(new Note(10,3,"crypt4"));
+    notes_10_09.push(new Note(4,5,"crypt5"));
+    notes_10_09.push(new Note(6,5,"crypt6"));
+    notes_10_09.push(new Note(8,5,"crypt7"));
+    notes_10_09.push(new Note(10,5,"crypt8"));
+    notes_10_09.push(new Note(6,0,"cryptEntrance"));
+    notes_10_09.push(new Note(6,10,"statue7"));
+	maps[10][9] = createGrid(map_10_09, notes_10_09);
 
     maps[9][10] = createGrid(map_09_10);
     maps[10][10] = createGrid(map_10_10);
@@ -200,6 +240,11 @@
     		return true;
     	}
     	return false;
+    }
+
+    exports.getMapNoteForUser = function (user) {
+        var map = this.getMap(user.map);
+        return map.getNote(user.pos);
     }
 
     exports.isUserBelowNPC = function (user) {
