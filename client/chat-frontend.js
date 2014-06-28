@@ -656,7 +656,10 @@ var frontend = function (assets) {
             }
         }
 
-        var setArrowKeyPress = function () {
+        var setArrowKeyPress = function (e) {
+            if (e.type === "touchstart") {
+                e.preventDefault(); //stop mouse events being sent
+            }
             setOrUnsetArrowKeyPress(this, true);
             tryMoving();
         }
@@ -674,6 +677,7 @@ var frontend = function (assets) {
         arrowDiv.addEventListener('mouseout', unsetArrowKeyPress, false);
         arrowDiv.addEventListener('mouseup', unsetArrowKeyPress, false);
         arrowDiv.addEventListener('touchend', unsetArrowKeyPress, false);
+        arrowDiv.addEventListener('touchcancel', unsetArrowKeyPress, false);
     }
 
 /*   setInterval(function() {
