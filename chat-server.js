@@ -68,6 +68,7 @@ io.sockets.on('connection', function (socket) {
     user.queuedMoves = [];
     user.map = shared.startingPos();
     user.diveMoves = 0;
+    user.secrets = {}; //not replicated
     user.isReal = function() {
         return !(this.name === false);
     }
@@ -262,6 +263,7 @@ io.sockets.on('connection', function (socket) {
             }
             if (shared.isUserBelowNPC(user)) {
                 displayNPCMessageFor(user);
+                netUpdate = true; //Only because user inventory might change.
             }
             var noteCode = shared.getMapNoteForUser(user);
             if (noteCode !== null) {
@@ -311,6 +313,9 @@ io.sockets.on('connection', function (socket) {
         if (user.map.x === 9 && user.map.y === 10) {
             return {message: "The chest is locked. From the inside?"};
         }
+        if (user.map.x === 12 && user.map.y === 12) {
+            return {message: "You catch a forest lizard.", item: "lizard"};
+        }
     }
 
     var notes = {};
@@ -323,11 +328,17 @@ io.sockets.on('connection', function (socket) {
     var npc = {};
     npc["13:10"] = function (user) {
         if (user.item === "violin") {
+            user.item = null;
+            user.secrets.gaveViolin = true;
             return "MY VIOLIN!\nA GIFT FROM THE\nLOST BROTHERS";
         } else if (user.item === "dirt") {
             return "THE TOWN HALL\nWAS ONCE CLEAN\nAND GRAND";
+        } else if (user.item === "lizard") {
+            return "IS THAT A\nDELICIOUS\nLIZARD?";
         } else if (user.item === "red apple") {
             return "MY HUSBAND USED\nTO LOVE APPLES\nHE IS GONE NOW";
+        } else if (user.secrets.gaveViolin) {
+            return "THERE ARE MANY\nSECRETS TO FIND\nIN DUCKTOWN."
         } else {
             return "PLEASE LOOK FOR\nMY VIOLIN ITS\nBY SOME ROCKS"
         }
