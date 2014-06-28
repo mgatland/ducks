@@ -302,6 +302,15 @@ io.sockets.on('connection', function (socket) {
         if (user.map.x === 10 && user.map.y === 10) {
             return {message: "You found some dirt.", item: "dirt"};
         }
+        if (user.map.x === 11 && user.map.y === 11) {
+            return {message: "You found a violin.", item: "violin"};
+        }
+        if (user.map.x === 9 && user.map.y === 12) {
+            return {message: "You found a red apple.", item: "red apple"};
+        }
+        if (user.map.x === 9 && user.map.y === 10) {
+            return {message: "The chest is locked. From the inside?"};
+        }
     }
 
     var notes = {};
@@ -310,9 +319,18 @@ io.sockets.on('connection', function (socket) {
     notes['9:11'] = "It's hot here! A /dive would be nice.";
 
     //max 15 characters * 3 lines
+    //123456789012345\n123456789012345\n123456789012345
     var npc = {};
     npc["13:10"] = function (user) {
-        return "THE DARK RUINS\nWERE ONCE THE\nHEART OF TOWN";
+        if (user.item === "violin") {
+            return "MY VIOLIN!\nA GIFT FROM THE\nLOST BROTHERS";
+        } else if (user.item === "dirt") {
+            return "THE TOWN HALL\nWAS ONCE CLEAN\nAND GRAND";
+        } else if (user.item === "red apple") {
+            return "MY HUSBAND USED\nTO LOVE APPLES\nHE IS GONE NOW";
+        } else {
+            return "PLEASE LOOK FOR\nMY VIOLIN ITS\nBY SOME ROCKS"
+        }
     }
 
     function sendServerMessage(emitter, message) {
