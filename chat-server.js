@@ -147,6 +147,10 @@ io.sockets.on('connection', function (socket) {
 
     function processCommand(message) {
         message = message.toLowerCase();
+        //remove everything after a space
+        if (message.indexOf(" ") !== -1) {
+            message = message.substring(0, message.indexOf(" "));
+        }
         if (!user.isReal()) {
             return;
         }
@@ -224,6 +228,33 @@ io.sockets.on('connection', function (socket) {
                     netUpdate = moveDuck(0,0,'nap');
                 }
                 break;
+            case 'look':
+                var lookFind = lookForStuff(user);
+                if (lookFind) {
+                    sendServerMessage(user.socket, lookFind.message);
+                    if (lookFind.item) {
+                        if (user.item === lookFind.item) {
+                            sendServerMessage(user.socket, "You already have that.");
+                        } else if (user.item) {
+                            sendServerMessage(user.socket, "You need to /drop your " + user.item + " first.");
+                        } else {
+                            user.item = lookFind.item;
+                            netUpdate = true;
+                        }
+                    }
+                } else {
+                    sendServerMessage(user.socket, "You find nothing.");
+                }
+                break;
+            case 'drop':
+                if (user.item) {
+                    sendServerMessage(user.socket, "You drop " + user.item);
+                    user.item = null;
+                    netUpdate = true;
+                } else {
+                    sendServerMessage(user.socket, "You have nothing to drop.");
+                }
+                break;
         }
         if (moved === true) {
             if (shared.isUserOnNote(user)) {
@@ -264,6 +295,13 @@ io.sockets.on('connection', function (socket) {
 
     function getMapNote(code) {
         return mapNotes[code];
+    }
+
+
+    function lookForStuff(user) {
+        if (user.map.x === 10 && user.map.y === 10) {
+            return {message: "You found some dirt.", item: "dirt"};
+        }
     }
 
     var notes = {};
@@ -340,6 +378,7 @@ function getNetUser (user) {
         netUser.color = user.color;
         netUser.act = user.act;
         netUser.map = user.map;
+        netUser.item = user.item;
         if (user.diveMoves > 0) {
             netUser.diveMoves = user.diveMoves;
         }
