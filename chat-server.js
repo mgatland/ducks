@@ -229,6 +229,9 @@ io.sockets.on('connection', function (socket) {
             if (shared.isUserOnNote(user)) {
                 displayNoteFor(user);
             }
+            if (shared.isUserBelowNPC(user)) {
+                displayNPCMessageFor(user);
+            }
         }
         if (netUpdate === true) {
             var netUser = getNetUser(user);
@@ -242,8 +245,18 @@ io.sockets.on('connection', function (socket) {
     notes['11:10'] = "Type /quack to quack!";
     notes['9:11'] = "It's hot here! A /dive would be nice.";
 
+    //max 15 characters * 3 lines
+    var npc = {};
+    npc["13:10"] = function (user) {
+        return "THE DARK RUINS\nWERE ONCE THE\nHEART OF TOWN";
+    }
+
     function sendServerMessage(emitter, message) {
         emitter.emit('updatechat', { type: 'servermessage', data: { text: message }});
+    }
+
+    function sendNPCMessage(emitter, message) {
+        emitter.emit('updatechat', { type: 'npc', data: { text: message }});
     }
 
     function displayNoteFor (user) {
@@ -252,6 +265,15 @@ io.sockets.on('connection', function (socket) {
             sendServerMessage(user.socket, note);
         } else {
             console.log("Error: User found a missing note at map " + user.map.x + ":" + user.map.y);
+        }
+    }
+
+    function displayNPCMessageFor (user) {
+        var npcMessage = npc[user.map.x + ":" + user.map.y](user);
+        if (npcMessage) {
+            sendNPCMessage(user.socket, npcMessage);
+        } else {
+            console.log("Error: User found a glitched NPC at map " + user.map.x + ":" + user.map.y);
         }
     }
 

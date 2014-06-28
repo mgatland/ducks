@@ -110,6 +110,8 @@ var frontend = function (assets) {
             } else if (data.type === 'servermessage') {
                 //input.disabled = false;
                 addServerMessage(data.data.text);
+            } else if (data.type === 'npc') {
+                showNPCMessage(data.data.text);
             } else if (data.type === 'playerUpdate') {
                 var updatedUser = data.data;
                 //find the user to update in our array
@@ -459,6 +461,23 @@ var frontend = function (assets) {
     }, false);
 
 
+    var npcMessage = "";
+    var npcMessageProgress = 0;
+    var npcTimer = 0;
+
+    function updateNPCMessage() {
+        if (npcMessage.length > npcMessageProgress) {
+            npcTimer++;
+            if (npcTimer > 4) {
+                npcTimer = 0;
+                var letter = npcMessage[npcMessageProgress];
+                if (letter === "\n") letter = "<br>";
+                get("npc-message").innerHTML += letter;
+                npcMessageProgress++;
+            }
+        }
+    }
+
     var chestSecretTimer = 0;
     var chestMap = new shared.Pos(9,10);
     var chestPos = new shared.Pos(3, 3);
@@ -520,25 +539,34 @@ var frontend = function (assets) {
                 sendMessage("/south");
                 moveMyDuck(0,1);
                 expectServerUpdate();
+                return true;
             } else if (keysDown[KeyEvent.DOM_VK_UP] === true) {
                 sendMessage("/north");
                 moveMyDuck(0,-1);
                 expectServerUpdate();
+                return true;
             } else if (keysDown[KeyEvent.DOM_VK_LEFT] === true) {
                 sendMessage("/west");
                 moveMyDuck(-1,0);
                 expectServerUpdate();
+                return true;
             } else if (keysDown[KeyEvent.DOM_VK_RIGHT] === true) {
                 sendMessage("/east");
                 moveMyDuck(1,0);
                 expectServerUpdate();
+                return true;
             }
         }
+        return false;
     }
 
     setInterval(function() {
         updateSecrets();
-        tryMoving();
+        updateNPCMessage();
+        var moved = tryMoving();
+        if (moved) {
+            hideNPCMessage();
+        }
     }, 1000/60); //input framerate is super high
 
     function doISupportFullScreen() {
@@ -604,7 +632,7 @@ var frontend = function (assets) {
             div.addEventListener("click", function (event) {
                 var coords = relMouseCoords(div, event);
                 coords.x = Math.floor(10 * coords.x / div.width);
-                coords.y = Math.floor(10 * coords.y / div.height);
+                coords.y = Math.floor(20 * coords.y / div.height);
                 editorTile = coords.x + 10 * coords.y;
                 console.log("Editor tile " + editorTile);
             });
@@ -713,6 +741,23 @@ var frontend = function (assets) {
         newMessage.innerHTML = message;
         content.insertBefore(newMessage, null);
         content.scrollTop = content.scrollHeight; //scroll to bottom of div 
+    }
+
+    function hideNPCMessage() {
+        if (npcMessage.length > 0) {
+            npcMessage = "";
+            get("npc-box").classList.add("hide");
+            get("npc-message").innerHTML = "";
+        }
+    }
+
+    function showNPCMessage(message) {
+        if (message.length > 0) {
+            get("npc-box").classList.remove("hide");
+            npcMessage = message;
+            npcMessageProgress = 0;
+            npcTimer = 0;
+        }
     }
 
     function makeChatStyle(color) {
