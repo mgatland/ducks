@@ -147,7 +147,7 @@
                 console.log("Error: This map has no door destination");
                 return new exports.Pos(10, 10);
             }
-            return doorDestination;
+            return new exports.Pos(doorDestination.x, doorDestination.y);
         }
 
         grid.getDoorPos = function () {
@@ -270,7 +270,6 @@
     maps[12][12] = createGrid(
         [30,30,30,30,30,50,30,30,30,30,30,30,30,30,30,30,30,50,30,30,30,30,30,30,30,30,30,30,30,50,30,30,30,30,30,30,30,30,30,30,30,50,30,30,30,30,30,30,30,30,30,31,31,50,31,31,55,31,30,30,81,81,81,73,41,41,41,41,41,41,41,74,60,60,60,70,41,41,41,41,41,41,41,72,60,60,60,70,41,41,41,41,74,73,41,72,60,60,60,70,41,41,41,41,64,63,41,72,60,60,60,70,41,41,41,41,41,41,41,72,60,60,60,60,73,41,41,41,41,41,74,60,60,60,60,60,60,81,81,81,81,81,60,60]
         , null, new exports.Pos(0, 1));
-
 
     exports.getMap = function (pos) {
         if (maps[pos.x] === undefined || maps[pos.x][pos.y] === undefined) {
