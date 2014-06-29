@@ -99,15 +99,29 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('adduser', function(username){
-        username = htmlEntities(username).toLowerCase();
         if (user.isReal()) {
             return;
+        }
+
+        username = htmlEntities(username).toLowerCase();
+
+        if (username.length > 10) {
+            username = username.substring(0,8) + "~1";
         }
 
         //prevent duplicate usernames.
         while (shared.getIndexOfUser(username, users) !== null) {
             console.log("duplicate username " + username);
-            username = "_" + username + "_";
+            var num = parseInt(username.slice(-1), 10);
+            //if it has a number, increment it
+            if (isNaN(num)) {
+                username = username.substring(0,8) + "~1";
+            } else if (num === 9) {
+                //just give up and let it get longer.
+                username = "_" + username;
+            } else {
+                username = username.slice(0, -1) + (num + 1);
+            }
         }
 
         console.log("setting name: " + username);
