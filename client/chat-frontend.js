@@ -791,13 +791,13 @@ var frontend = function (assets) {
         if (npcMessage.length > 0) {
             npcMessage = "";
             get("npc-box").classList.add("hide");
-            get("npc-message").innerHTML = "";
         }
     }
 
     function showNPCMessage(message) {
         if (message.length > 0) {
             get("npc-box").classList.remove("hide");
+            get("npc-message").innerHTML = "";
             npcMessage = message;
             npcMessageProgress = 0;
             npcTimer = 0;
