@@ -423,6 +423,58 @@ io.sockets.on('connection', function (socket) {
             return "PLEASE LOOK FOR\nMY VIOLIN ITS\nBY SOME ROCKS"
         }
     }
+    npc["0:1"] = function (user, users) {
+
+        if (user.item === "curse") {
+            return "DON'T TOUCH ME\nYOU HAVE CURSE\nFACE";
+        }
+
+        if (user.item === "dirt" && !user.secrets.gaveDirt) {
+            user.item = null;
+            user.secrets.gaveDirt = true;
+            return "THANK YOU FOR\nTHE DIRT NOW\nI'll SHARE MINE"
+        }
+
+        if (!user.secrets.gaveDirt) {
+            return "BRING ME SOME\nDIRT AND I WILL\nTELL ALL";
+        }
+
+        var roomsWithUsers = [];
+        var gossips = [];
+        users.forEach(function (other) {
+            if (other === user) return; //no self-gossip
+            if (other.item === "curse") {
+                gossips.push(other.name + "\nis cursed!");
+            }
+            if (other.item === "red apple") {
+                gossips.push(other.name + " \nhas a red apple!");
+            }
+            var room = other.map.x + other.map.y * 100;
+            if (roomsWithUsers[room] === undefined) {
+                roomsWithUsers[room] = [];
+            }
+            roomsWithUsers[room].push(other.name);
+        });
+        //Find people alone together.
+        roomsWithUsers.forEach(function (names) {
+            console.log("Room " + names);
+            if (names.length === 2) {
+                gossips.push(names[0] + " and\n" 
+                    + names[1] + " are\nalone together!");
+            }
+        });
+        if (gossips.length === 0) {
+            if (users.length === 1) {
+                return "YOU ARE THE\nONLY DUCK IN\nTOWN"
+            } else {
+                return "I have no\nstories now"
+            }
+        }
+        gossips.forEach(function (gos) {
+            console.log(gos);
+        });
+        return gossips[Math.floor(Math.random()*gossips.length)];
+    }
 
     function sendServerMessage(emitter, message) {
         emitter.emit('updatechat', { type: 'servermessage', data: { text: message }});
@@ -442,7 +494,7 @@ io.sockets.on('connection', function (socket) {
     }
 
     function displayNPCMessageFor (user) {
-        var npcMessage = npc[user.map.x + ":" + user.map.y](user);
+        var npcMessage = npc[user.map.x + ":" + user.map.y](user, users);
         if (npcMessage) {
             sendNPCMessage(user.socket, npcMessage);
         } else {
