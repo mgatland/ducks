@@ -362,7 +362,7 @@ io.sockets.on('connection', function (socket) {
     mapNotes["crypt6"] = "LARGE TOMATO";
     mapNotes["crypt7"] = "RING OF HOLDING";
     mapNotes["crypt8"] = "RARE COMIC BOOKS";
-    mapNotes["cryptEntrance"] = "Old treasure room. The treasure is missing";
+    mapNotes["cryptEntrance"] = "The treasures are missing";
     mapNotes["statue1"] = "KING WALFRED DUCK I 107-143";
     mapNotes["statue2"] = "KING WALFRED DUCK II 128-202";
     mapNotes["statue3"] = "QUEEN PERSIMMON I 152-221";
