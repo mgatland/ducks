@@ -21,6 +21,10 @@
 		return (p1.x === p2.x && p1.y === p2.y); 
 	}
 
+    exports.posIsAt = function (pos, x, y) {
+        return (pos.x === x && pos.y === y);
+    }
+
 	exports.distanceBetweenPos = function (p1, p2) {
 		return (Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y));
 	}
@@ -176,7 +180,7 @@
             var noteNum = null;
             if (notes) {
                 notes.forEach(function (note) {
-                    if (note.x === pos.x && note.y === pos.y) {
+                    if (exports.posAreEqual(note, pos)) {
                         noteNum = note.number;
                     }
                 });

@@ -328,10 +328,8 @@ io.sockets.on('connection', function (socket) {
     function tryLoseCurse (user) {
         var usersUnderMe = users.filter(function (other) {
             return (other !== user
-                && other.map.x === user.map.x 
-                && other.map.y === user.map.y
-                && other.pos.x === user.pos.x
-                && other.pos.y === user.pos.y);
+                && shared.posAreEqual(user.map, other.map)
+                && shared.posAreEqual(user.pos, other.pos));
         });
         if (usersUnderMe.length > 0) {
             var other = usersUnderMe.pop();
@@ -379,19 +377,19 @@ io.sockets.on('connection', function (socket) {
 
 
     function lookForStuff(user) {
-        if (user.map.x === 10 && user.map.y === 10) {
+        if (shared.posIsAt(user.map, 10, 10)) {
             return {message: "You found some dirt.", item: "dirt"};
         }
-        if (user.map.x === 11 && user.map.y === 11) {
+        if (shared.posIsAt(user.map, 11, 11)) {
             return {message: "You found a violin.", item: "violin"};
         }
-        if (user.map.x === 9 && user.map.y === 12) {
+        if (shared.posIsAt(user.map, 9, 12)) {
             return {message: "You found a red apple.", item: "red apple"};
         }
-        if (user.map.x === 9 && user.map.y === 10) {
+        if (shared.posIsAt(user.map, 9, 10)) {
             return {message: "The chest is locked. From the inside?"};
         }
-        if (user.map.x === 12 && user.map.y === 12) {
+        if (shared.posIsAt(user.map, 12, 12)) {
             return {message: "You catch a forest lizard.", item: "lizard"};
         }
     }
