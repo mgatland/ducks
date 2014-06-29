@@ -774,7 +774,7 @@ var frontend = function (assets) {
         var style = makeChatStyle(color);
         if (classes) newMessage.classList.add(classes);
         newMessage.innerHTML = '<span class="chatname" style="' + style + '">' + author + ':</span>'
-             + ' ' + message;
+             + ' <span class="chatmessage">' + message + '</span>';
         content.insertBefore(newMessage, null);
         content.scrollTop = content.scrollHeight; //scroll to bottom of div
     }
