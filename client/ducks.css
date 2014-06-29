@@ -86,6 +86,10 @@ body {
     width: 380px;
 }
 
+.chat .distant {
+    color: grey;
+}
+
 .chatname {
     padding-right: 4px;
     padding-left: 4px;

@@ -755,9 +755,23 @@ var frontend = function (assets) {
         }
     }, 3000);*/
  
-    function addMessage(author, message, color) {
+    function addMessage(author, message, color, map) {
+        var classes = null;
+        var myDuck = getMyDuck();
+        if (map && myDuck) {
+            var distance = shared.distanceBetweenPos(map, myDuck.map);
+            if (distance > 0) {
+                classes = "distant";
+            }
+            if (distance > 1) {
+                console.log("ERROR: Got far away chat message. Not displaying it.");
+                console.log(message);
+                return;
+            }
+        }
         var newMessage = document.createElement('div');
         var style = makeChatStyle(color);
+        if (classes) newMessage.classList.add(classes);
         newMessage.innerHTML = '<span class="chatname" style="' + style + '">' + author + ':</span>'
              + ' ' + message;
         content.insertBefore(newMessage, null);
@@ -808,7 +822,7 @@ var frontend = function (assets) {
     function addMessages(messages) {
         for (var i=0; i < messages.length; i++) {
                 addMessage(messages[i].author, messages[i].text,
-                           messages[i].color);
+                           messages[i].color, messages[i].map);
             }
     }
 

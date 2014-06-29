@@ -90,7 +90,7 @@ io.sockets.on('connection', function (socket) {
             data = cursedMessages[Math.floor(Math.random()*cursedMessages.length)];
         }
 
-        var obj = makeChatObject(user.name, user.color, data);
+        var obj = makeChatObject(user.name, user.color, data, user.map);
         addMessage(obj);
 
         if (data === "quack" || data === "dive" || data === "nap") {
@@ -240,16 +240,16 @@ io.sockets.on('connection', function (socket) {
                 break;
             case 'quack':
                 if (user.diveMoves > 0) {
-                    var quackObj = makeChatObject(user.name, user.color, "glub glub glub");
+                    var quackObj = makeChatObject(user.name, user.color, "glub glub glub", user.map);
                     addMessage(quackObj);
                 } else {
                     netUpdate = moveDuck(0,0,'quack');
-                    var quackObj = makeChatObject(user.name, user.color, "QUACK!");
+                    var quackObj = makeChatObject(user.name, user.color, "QUACK!", user.map);
                     addMessage(quackObj);
                     if (shared.posAreEqual(user.map, echoMap)) {
                         //there's an echo one second later.
                         setTimeout(function () {
-                            var echoObj = makeChatObject("echo", "#660066", "QUACK!");
+                            var echoObj = makeChatObject("echo", "#660066", "QUACK!", echoMap);
                             addMessage(echoObj);
                         }, 1000);
                     }
@@ -582,17 +582,33 @@ function addMessage(chatObj) {
     history.push(chatObj);
     history = history.slice(-100);
 
-    var state = {};
-    state.messages = [];
-    state.messages.push(chatObj);
-    broadcast("messages", state);
+    var data = {};
+    data.messages = [];
+    data.messages.push(chatObj);
+
+    var datagram = { type:"messages", data: data };
+
+    users.forEach(function (usr) {
+        var distance = chatObj.map ? shared.distanceBetweenPos(usr.map, chatObj.map) : 0;
+        if (distance < 2) {
+            usr.socket.emit('updatechat', datagram);    
+        }
+    });
+
+    lurkers.forEach(function (usr) {
+        var distance = chatObj.map ? shared.distanceBetweenPos(shared.startingPos, chatObj.map) : 0;
+        if (distance < 2) {
+            usr.socket.emit('updatechat', datagram);
+        }
+    });
 }
 
-function makeChatObject(name, color, message) {
+function makeChatObject(name, color, message, map) {
     var obj = {
         text: htmlEntities(message),
         author: name,
-        color: color
+        color: color,
+        map: map
     };
     return obj;
 }
