@@ -78,10 +78,18 @@ io.sockets.on('connection', function (socket) {
  
     sendNetUsersTo(user.socket);
 
+    var cursedMessages = ["woof woof!", "i'm so happy!", "hey everyone i found a secret", "meet me by the fountain", "dinosaur rawr!"];
+
     socket.on('sendchat', function (data) {
+        var cursed = user.item === "curse";
         data = data.toLowerCase();
         console.log(getTimestamp() + ' > '
-                    + user.name + ': ' + data);        
+                    + user.name + ': ' + data + (cursed ? " (CURSED)" : ""));
+
+        if (cursed) {
+            data = cursedMessages[Math.floor(Math.random()*cursedMessages.length)];
+        }
+
         var obj = makeChatObject(user.name, user.color, data);
         addMessage(obj);
 
@@ -104,6 +112,13 @@ io.sockets.on('connection', function (socket) {
 
         console.log("setting name: " + username);
         user.name = username;
+
+        //cheats for testing
+        if (user.name === "pi") {
+            user.item = "curse";
+        }
+        //end cheats
+
         if (unusedColors.length === 0) {
             //This allows duplicate colors for ever, but I don't mind.
             //ideally we would issue a random color from the set of "least used colors"
@@ -188,6 +203,8 @@ io.sockets.on('connection', function (socket) {
                 user.map.y = 8;
                 user.pos.x = 5;
                 user.pos.y = 5;
+                user.item = "curse";
+                sendServerMessage(user.socket, "You feel strange");
                 break;
             case 'quack':
                 if (user.diveMoves > 0) {
@@ -234,7 +251,14 @@ io.sockets.on('connection', function (socket) {
                 if (lookFind) {
                     sendServerMessage(user.socket, lookFind.message);
                     if (lookFind.item) {
-                        if (user.item === lookFind.item) {
+                        if (user.item === "curse" && lookFind.item === "red apple") {
+                            sendServerMessage(user.socket, "You eat it and feel better!");
+                            user.item = null;
+                            user.secrets.curseGiver = null;
+                            netUpdate = true;
+                        } else if (user.item === "curse") {
+                            sendServerMessage(user.socket, "You feel too strange to take it.");
+                        } else if (user.item === lookFind.item) {
                             sendServerMessage(user.socket, "You already have that.");
                         } else if (user.item) {
                             sendServerMessage(user.socket, "You need to /drop your " + user.item + " first.");
@@ -248,7 +272,9 @@ io.sockets.on('connection', function (socket) {
                 }
                 break;
             case 'drop':
-                if (user.item) {
+                if (user.item === "curse") {
+                    sendServerMessage(user.socket, "You have nothing to drop.");
+                } else if (user.item) {
                     sendServerMessage(user.socket, "You drop " + user.item);
                     user.item = null;
                     netUpdate = true;
@@ -269,12 +295,46 @@ io.sockets.on('connection', function (socket) {
             if (noteCode !== null) {
                 sendServerMessage(user.socket, getMapNote(noteCode));
             }
+            if (user.item === "curse") {
+                netUpdate = tryLoseCurse(user) || netUpdate;
+            }
         }
         if (netUpdate === true) {
             var netUser = getNetUser(user);
             broadcast('playerUpdate', netUser);
             setTimeout(clearMove, moveDelay);           
         }
+    }
+
+    //return true if requires network update
+    function tryLoseCurse (user) {
+        var usersUnderMe = users.filter(function (other) {
+            return (other !== user
+                && other.map.x === user.map.x 
+                && other.map.y === user.map.y
+                && other.pos.x === user.pos.x
+                && other.pos.y === user.pos.y);
+        });
+        if (usersUnderMe.length > 0) {
+            var other = usersUnderMe.pop();
+            if (other.item === 'curse') {
+                return false;
+            }
+            if (user.secrets.curseGiver === other.name) {
+                sendServerMessage(user.socket, "Can't give the curse back.");
+                return false;
+            }
+            user.item = null;
+            other.item = "curse";
+            other.secrets.curseGiver = user.name;
+            var otherNetUser = getNetUser(other);
+            broadcast('playerUpdate', otherNetUser);
+            sendServerMessage(other.socket, user.name + " put a curse on you :(");
+            sendServerMessage(user.socket, "You put the curse on " + other.name);
+            console.log(user.name + " cursed " + other.name);
+            return true;
+        }
+        return false;
     }
 
     var mapNotes = [];
@@ -331,6 +391,8 @@ io.sockets.on('connection', function (socket) {
             user.item = null;
             user.secrets.gaveViolin = true;
             return "MY VIOLIN!\nA GIFT FROM THE\nLOST BROTHERS";
+        } else if (user.item === "curse") {
+            return "YOU ARE CURSED\nYOU NEED APPLE\nCAN YOU SWIM?";
         } else if (user.item === "dirt") {
             return "THE TOWN HALL\nWAS ONCE CLEAN\nAND GRAND";
         } else if (user.item === "lizard") {

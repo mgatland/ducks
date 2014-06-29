@@ -358,15 +358,18 @@ var frontend = function (assets) {
                 ctx.fillStyle = user.color;
                 var sprites = getSprites(user.color);
                 var swimming = shared.isSwimming(user);
+                var frame;
                 if (user.diveMoves > 0) {
-                    drawDuck(ctx, sprites, user.pos, 2, swimming);
+                    frame = 2;
                 } else if (user.act === 'quack') {
-                    drawDuck(ctx, sprites, user.pos, 1, swimming);
+                    frame = 1;
                 } else if (user.act === 'nap') {
-                    drawDuck(ctx, sprites, user.pos, 3, swimming);
+                    frame = 3;
                 } else {
-                    drawDuck(ctx, sprites, user.pos, 0, swimming);
+                    frame = 0;
                 }
+                var redEyes = (user.item === "curse" && (frame === 0 || frame === 1));
+                drawDuck(ctx, sprites, user.pos, frame, swimming, redEyes);
             }
         });
 
@@ -387,7 +390,12 @@ var frontend = function (assets) {
         }
     }
 
-    function drawDuck(ctx, sprites, pos, tX, swimming) {
+    //hack takes color from inside duck's mouth to draw red pixels
+    function drawRedPixelHack(ctx, sprites, pos, yOffset, x, y) {
+        ctx.drawImage(sprites, 1*duckTileSizeX+5, 12, 3, 3, pos.x * tileSize + x*3, pos.y * tileSize + yOffset + y*3, 3, 3);
+    }
+
+    function drawDuck(ctx, sprites, pos, tX, swimming, redEyes) {
         var yHeight = duckTileSizeY;
         var yOffset = duckYOffset;
         if (swimming === true) {
@@ -395,6 +403,14 @@ var frontend = function (assets) {
             yOffset += 6;
         }
         ctx.drawImage(sprites, tX*duckTileSizeX, 0, duckTileSizeX, yHeight, pos.x * tileSize, pos.y * tileSize + yOffset, duckTileSizeX, yHeight);
+        
+        if (redEyes) {
+            //hacks to draw red eyes on the duck.
+            drawRedPixelHack(ctx, sprites, pos, yOffset, 3, 2);
+            drawRedPixelHack(ctx, sprites, pos, yOffset, 5, 2);
+            drawRedPixelHack(ctx, sprites, pos, yOffset, 3, 3);
+            drawRedPixelHack(ctx, sprites, pos, yOffset, 5, 3);
+        }
     }
 
     function sendMessage(msg) {
