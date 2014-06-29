@@ -563,39 +563,39 @@ var frontend = function (assets) {
 
     //move if I'm ready to move and holding a direction button
     function tryMoving() {
+        var didSomething = false;
         if (moved === false) {
             if (keysDown[KeyEvent.DOM_VK_DOWN] === true) {
                 sendMessage("/south");
                 moveMyDuck(0,1);
                 expectServerUpdate();
-                return true;
+                didSomething = true;
             } else if (keysDown[KeyEvent.DOM_VK_UP] === true) {
                 sendMessage("/north");
                 moveMyDuck(0,-1);
                 expectServerUpdate();
-                return true;
+                didSomething = true;
             } else if (keysDown[KeyEvent.DOM_VK_LEFT] === true) {
                 sendMessage("/west");
                 moveMyDuck(-1,0);
                 expectServerUpdate();
-                return true;
+                didSomething = true;
             } else if (keysDown[KeyEvent.DOM_VK_RIGHT] === true) {
                 sendMessage("/east");
                 moveMyDuck(1,0);
                 expectServerUpdate();
-                return true;
+                didSomething = true;
             }
         }
-        return false;
+        if (didSomething) {
+            hideNPCMessage();
+        }
     }
 
     setInterval(function() {
         updateSecrets();
         updateNPCMessage();
-        var moved = tryMoving();
-        if (moved) {
-            hideNPCMessage();
-        }
+        tryMoving();
     }, 1000/60); //input framerate is super high
 
     function doISupportFullScreen() {
@@ -689,7 +689,8 @@ var frontend = function (assets) {
         var msg = input.value;
         sendMessage(msg);
         cheats(msg);
-        input.value = ''; 
+        input.value = '';
+        hideNPCMessage(); //on any use action
     }
 
     /**
