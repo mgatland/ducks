@@ -124,6 +124,8 @@ input {
     background: #5AA;
     display: inline-block;
     padding: 3px;
+    min-width: 64px;
+    text-align: center;
     color: white;
     cursor: pointer;
 }
