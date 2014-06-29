@@ -757,9 +757,10 @@ var frontend = function (assets) {
  
     function addMessage(author, message, color, map) {
         var classes = null;
-        var myDuck = getMyDuck();
-        if (map && myDuck) {
-            var distance = shared.distanceBetweenPos(map, myDuck.map);
+        if (map) {
+            var myDuck = getMyDuck();
+            var myMap = myDuck ? myDuck.map : shared.startingPos();
+            var distance = shared.distanceBetweenPos(map, myMap);
             if (distance > 0) {
                 classes = "distant";
             }

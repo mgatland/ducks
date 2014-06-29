@@ -596,7 +596,7 @@ function addMessage(chatObj) {
     });
 
     lurkers.forEach(function (usr) {
-        var distance = chatObj.map ? shared.distanceBetweenPos(shared.startingPos, chatObj.map) : 0;
+        var distance = chatObj.map ? shared.distanceBetweenPos(shared.startingPos(), chatObj.map) : 0;
         if (distance < 2) {
             usr.socket.emit('updatechat', datagram);
         }
