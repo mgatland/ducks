@@ -273,6 +273,10 @@
 
 
     exports.getMap = function (pos) {
+        if (maps[pos.x] === undefined || maps[pos.x][pos.y] === undefined) {
+            console.log("Invalid map! " + pos.x + "," + pos.y);
+            return maps[0][0]; //try to stop the server crashing
+        }
     	return maps[pos.x][pos.y];
     }
 

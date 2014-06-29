@@ -169,6 +169,12 @@ io.sockets.on('connection', function (socket) {
         }
     });
 
+    function parseIntOrZero(string) {
+        var num = parseInt(string, 10);
+        if (isNaN(num)) return 0;
+        return num;
+    }
+
     function processCommand(message) {
         var fullMessage = message;
         message = message.toLowerCase();
@@ -190,19 +196,18 @@ io.sockets.on('connection', function (socket) {
         var netUpdate = false;
         var moved = false;
 
-        //cheats - todo: prevent people crashing the server with these
         if (user.name === "pi") {
             var args = fullMessage.split(" ");
             switch (message) {
                 case 'map':
-                    user.map.x = parseInt(args[1], 10);
-                    user.map.y = parseInt(args[2], 10);
+                    user.map.x = parseIntOrZero(args[1]);
+                    user.map.y = parseIntOrZero(args[2]);
                     netUpdate = true;
                     moved = true;
                     break;
                 case 'go':
-                    user.pos.x = parseInt(args[1], 10);
-                    user.pos.y = parseInt(args[2], 10);
+                    user.pos.x = parseIntOrZero(args[1]);
+                    user.pos.y = parseIntOrZero(args[2]);
                     netUpdate = true;
                     moved = true;
                     break;
