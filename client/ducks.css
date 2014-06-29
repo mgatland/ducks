@@ -112,7 +112,9 @@ input {
 
 .fullscreenbutton.button {
     display: block;
-    margin: 15px auto;
+    margin-top: 25px;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
     background: #330;
     width:200px;
