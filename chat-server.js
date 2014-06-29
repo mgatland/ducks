@@ -113,12 +113,6 @@ io.sockets.on('connection', function (socket) {
         console.log("setting name: " + username);
         user.name = username;
 
-        //cheats for testing
-        if (user.name === "pi") {
-            user.item = "curse";
-        }
-        //end cheats
-
         if (unusedColors.length === 0) {
             //This allows duplicate colors for ever, but I don't mind.
             //ideally we would issue a random color from the set of "least used colors"
@@ -162,6 +156,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     function processCommand(message) {
+        var fullMessage = message;
         message = message.toLowerCase();
         //remove everything after a space
         if (message.indexOf(" ") !== -1) {
@@ -177,8 +172,31 @@ io.sockets.on('connection', function (socket) {
             }
             return;
         }
+
         var netUpdate = false;
         var moved = false;
+
+        //cheats - todo: prevent people crashing the server with these
+        if (user.name === "pi") {
+            var args = fullMessage.split(" ");
+            switch (message) {
+                case 'map':
+                    user.map.x = parseInt(args[1], 10);
+                    user.map.y = parseInt(args[2], 10);
+                    netUpdate = true;
+                    moved = true;
+                    break;
+                case 'go':
+                    user.pos.x = parseInt(args[1], 10);
+                    user.pos.y = parseInt(args[2], 10);
+                    netUpdate = true;
+                    moved = true;
+                    break;
+                case 'info':
+                    sendServerMessage(user.socket, "At " + user.map.x + "," + user.map.y);             
+            }
+        }
+
         switch (message) {
             case 'east':
                 netUpdate = moveDuck(1,0);
