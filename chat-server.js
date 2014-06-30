@@ -241,6 +241,7 @@ io.sockets.on('connection', function (socket) {
                 user.pos.x = 5;
                 user.pos.y = 5;
                 user.item = "curse";
+                console.log(user.name + " got cursed");
                 sendServerMessage(user.socket, "You feel strange");
                 break;
             case 'quack':
@@ -293,6 +294,7 @@ io.sockets.on('connection', function (socket) {
                             user.item = null;
                             user.secrets.curseGiver = null;
                             netUpdate = true;
+                            console.log(user.name + " cured curse");
                         } else if (user.item === "curse") {
                             sendServerMessage(user.socket, "You feel too strange to take it.");
                         } else if (user.item === lookFind.item) {
@@ -474,7 +476,6 @@ io.sockets.on('connection', function (socket) {
         });
         //Find people alone together.
         roomsWithUsers.forEach(function (names) {
-            console.log("Room " + names);
             if (names.length === 2) {
                 gossips.push(names[0] + " and\n" 
                     + names[1] + " are\nalone together!");
@@ -487,9 +488,6 @@ io.sockets.on('connection', function (socket) {
                 return "I have no\nstories now"
             }
         }
-        gossips.forEach(function (gos) {
-            console.log(gos);
-        });
         return gossips[Math.floor(Math.random()*gossips.length)];
     }
 
@@ -514,6 +512,7 @@ io.sockets.on('connection', function (socket) {
         var npcMessage = npc[user.map.x + ":" + user.map.y](user, users);
         if (npcMessage) {
             sendNPCMessage(user.socket, npcMessage);
+            console.log("npc to " + user.name + ": " + npcMessage.split("\n").join("\\n").toLowerCase());
         } else {
             console.log("Error: User found a glitched NPC at map " + user.map.x + ":" + user.map.y);
         }
