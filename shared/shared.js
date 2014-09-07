@@ -4,10 +4,10 @@
 	exports.Pos = function(x, y) {
 	    this.x = x;
 	    this.y = y;
-	    this.toString = function() {
-	        return "(" + this.x + "," + this.y + ")";
-	    }
 	}
+    exports.Pos.prototype.toString = function() {
+        return "(" + this.x + "," + this.y + ")";
+    }
 
 	exports.titleMap = function() {
 		return new exports.Pos(0,0);
