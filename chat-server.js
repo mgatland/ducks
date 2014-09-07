@@ -425,22 +425,27 @@ io.sockets.on('connection', function (socket) {
     //123456789012345\n123456789012345\n123456789012345
     var npc = {};
     npc["13:10"] = function (user) {
+        if (!user.secrets.gaveViolin) {
+            if (user.item === "violin") {
+                user.item = null;
+                user.secrets.gaveViolin = true;
+                return "MY VIOLIN!\nA GIFT FROM THE\nLOST BROTHERS";
+            } else {
+                return "PLEASE LOOK FOR\nMY VIOLIN ITS\nBY SOME ROCKS";
+            }  
+        }
         if (user.item === "violin") {
-            user.item = null;
-            user.secrets.gaveViolin = true;
-            return "MY VIOLIN!\nA GIFT FROM THE\nLOST BROTHERS";
+            return "HEY YOU FOUND\nANOTHER VIOLIN!\n";
         } else if (user.item === "curse") {
-            return "YOU ARE CURSED\nYOU NEED APPLE\nCAN YOU SWIM?";
+            return "YOU ARE CURSED\nYOU NEED APPLE\nCAN YOU DIVE?";
         } else if (user.item === "dirt") {
             return "THE TOWN HALL\nWAS ONCE CLEAN\nAND GRAND";
         } else if (user.item === "lizard") {
             return "IS THAT A\nDELICIOUS\nLIZARD?";
         } else if (user.item === "red apple") {
             return "MY HUSBAND USED\nTO LOVE APPLES\nHE IS GONE NOW";
-        } else if (user.secrets.gaveViolin) {
-            return "THERE ARE MANY\nSECRETS TO FIND\nIN DUCKTOWN."
         } else {
-            return "PLEASE LOOK FOR\nMY VIOLIN ITS\nBY SOME ROCKS"
+            return "THERE ARE MANY\nSECRETS TO FIND\nIN DUCKTOWN.";
         }
     }
     npc["0:1"] = function (user, users) {
