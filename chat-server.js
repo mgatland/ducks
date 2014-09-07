@@ -93,7 +93,7 @@ io.sockets.on('connection', function (socket) {
         var obj = makeChatObject(user.name, user.color, data, user.map);
         addMessage(obj);
 
-        if (data === "quack" || data === "dive" || data === "nap") {
+        if (data === "quack" || data === "dive" || data === "nap" || data === "look") {
             user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'Try putting a slash in front like this: /' + data} });
         }
     });
@@ -419,6 +419,7 @@ io.sockets.on('connection', function (socket) {
     notes['9:10'] = "Feeling sleepy? Take a /nap"; 
     notes['11:10'] = "Type /quack to quack!";
     notes['9:11'] = "It's hot here! A /dive would be nice.";
+    notes['12:12'] = "Type /look to find items";
 
     //max 15 characters * 3 lines
     //123456789012345\n123456789012345\n123456789012345
@@ -485,7 +486,7 @@ io.sockets.on('connection', function (socket) {
             if (users.length === 1) {
                 return "YOU ARE THE\nONLY DUCK IN\nTOWN"
             } else {
-                return "I have no\nstories now"
+                return "THOSE WHO SLEEP\nIN BAD PLACE\nARE LOST"
             }
         }
         return gossips[Math.floor(Math.random()*gossips.length)];
