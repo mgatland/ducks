@@ -9,6 +9,7 @@ var io = require('socket.io').listen(app.listen(port));
 console.log("listening on port " + port);
 
 var shared = require('./shared/shared');
+var profanity = require('./server/profanity');
 
 //consts
 var moveDelay = 1000/4;
@@ -115,7 +116,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('sendchat', function (data) {
         var cursed = user.item === "curse";
         data = data.toLowerCase();
-        console.log(getTimestamp() + ' > '
+        console.log(getTimestamp() + " " 
                     + user.name + ': ' + data + (cursed ? " (CURSED)" : ""));
 
         if (cursed) {
@@ -123,7 +124,7 @@ io.sockets.on('connection', function (socket) {
         }
 
         var obj = makeChatObject(user.name, user.color, data, user.map);
-        addMessage(obj);
+        addMessage(obj, user);
 
         if (data === "quack" || data === "dive" || data === "nap" || data === "look") {
             user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'Try putting a slash in front like this: /' + data} });
@@ -624,7 +625,9 @@ function broadcast(type, data) {
     }
 }
 
-function addMessage(chatObj) {
+//user is optional. If present, the user will be sent
+//the message before profanity filtering.
+function addMessage(chatObj, user) {
     history.push(chatObj);
     history = history.slice(-100);
 
@@ -634,7 +637,13 @@ function addMessage(chatObj) {
 
     var datagram = { type:"messages", data: data };
 
+    //send to the author without profanity filtering.
+    if (user) user.socket.emit('updatechat', datagram);
+
+    chatObj.text = profanity.filter(chatObj.text);
+
     users.forEach(function (usr) {
+        if (usr === user) return;
         var distance = chatObj.map ? shared.distanceBetweenPos(usr.map, chatObj.map) : 0;
         if (distance < 2) {
             usr.socket.emit('updatechat', datagram);    
