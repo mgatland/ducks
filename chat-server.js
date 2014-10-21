@@ -56,6 +56,38 @@ io.configure(function () {
   io.set("polling duration", 10); 
 });
 
+//email
+
+var sendEmail;
+if (process.env.emailpw !== undefined) {
+    console.log("enabling email");
+    var email = require('./node_modules/emailjs/email');
+
+    var mailserver  = email.server.connect({
+       user:    "ducksalerts@gmail.com", 
+       password: process.env.emailpw, 
+       host:    "smtp.gmail.com", 
+       ssl:     true
+    });
+
+    sendEmail = function (message) {
+        mailserver.send({
+           text:    message, 
+           from:    "Ducks Alerts <ducksalerts@gmail.com>", 
+           to:      "Matthew Gatland <support@matthewgatland.com>",
+           subject: "ducks"
+        }, function(err, message) { console.log(err || message); });  
+    }
+} else {
+    console.log("WARNING: Email is disabled");
+    var mailserver = {};
+    sendEmail = function (message) {
+        console.log("(email is disabled)");
+    }
+}
+
+
+
 io.sockets.on('connection', function (socket) {
 
     var user = {};
@@ -124,7 +156,6 @@ io.sockets.on('connection', function (socket) {
             }
         }
 
-        console.log("setting name: " + username);
         user.name = username;
 
         if (unusedColors.length === 0) {
@@ -148,6 +179,11 @@ io.sockets.on('connection', function (socket) {
         var netUser = getNetUser(user);
         broadcast('playerUpdate', netUser);
 
+        var address = socket.handshake.address;
+
+        var logMsg = "New user " + user.name + " with IP " + address.address + ":" + address.port;
+        console.log(logMsg);
+        sendEmail(logMsg);
     });
 
     socket.on('cmd', processCommand);
