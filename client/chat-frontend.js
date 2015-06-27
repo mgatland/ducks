@@ -200,17 +200,13 @@ var frontend = function (assets) {
 
         var spriteCanvas = document.createElement("canvas");
         spriteCanvas.width = duckTemplateImgData.width;
-        spriteCanvas.height = duckTemplateImgData.height;
+        spriteCanvas.height = duckTemplateImgData.height*2;
         var s_ctx = spriteCanvas.getContext("2d");
-        var spriteImgData = s_ctx.getImageData(0, 0, duckTemplateImgData.width, duckTemplateImgData.height);
-        for (var rgbI = 0; rgbI < spriteImgData.data.length; rgbI++) {
-            spriteImgData.data[rgbI] = duckTemplateImgData.data[rgbI];
-        }
-
+        var spriteImgData = s_ctx.getImageData(0, 0, duckTemplateImgData.width, duckTemplateImgData.height*2);
         var newColor = hexToRgb(color);
 
         var r, g, b, i;
-        for (var rgbI = 0; rgbI < spriteImgData.data.length; rgbI+=4) {
+        for (var rgbI = 0; rgbI < spriteImgData.data.length/2; rgbI+=4) {
             i = duckTemplateImgData.data[rgbI+3];
             if (i !== 0) {
                 r = duckTemplateImgData.data[rgbI+0];
@@ -228,6 +224,20 @@ var frontend = function (assets) {
                 spriteImgData.data[rgbI+2] = b;
                 spriteImgData.data[rgbI+3] = i;
             }
+        }
+
+        //draw them flipped, underneath
+        var xPos = 0;
+        var tileWidth = duckTileSizeX; //in true pixels
+        var offset = spriteImgData.data.length/2;
+        for (var rgbI = 0; rgbI < spriteImgData.data.length/2; rgbI+=4) {
+            //copy rgbi in correct order
+            for (var part = 0; part < 4; part++) {
+                var newX = offset+rgbI+part + (tileWidth - 1 - xPos * 2)*4;
+                spriteImgData.data[newX] = spriteImgData.data[rgbI+part];
+            }
+            xPos++;
+            if (xPos === tileWidth) xPos = 0;
         }
 
         s_ctx.putImageData(spriteImgData, 0, 0);
@@ -369,7 +379,7 @@ var frontend = function (assets) {
                     frame = 0;
                 }
                 var redEyes = (user.item === "curse" && (frame === 0 || frame === 1));
-                drawDuck(ctx, sprites, user.pos, frame, swimming, redEyes);
+                drawDuck(ctx, sprites, user.pos, user.dir, frame, swimming, redEyes);
             }
         });
 
@@ -395,21 +405,28 @@ var frontend = function (assets) {
         ctx.drawImage(sprites, 1*duckTileSizeX+5, 12, 3, 3, pos.x * tileSize + x*3, pos.y * tileSize + yOffset + y*3, 3, 3);
     }
 
-    function drawDuck(ctx, sprites, pos, tX, swimming, redEyes) {
+    function drawDuck(ctx, sprites, pos, dir, tX, swimming, redEyes) {
         var yHeight = duckTileSizeY;
         var yOffset = duckYOffset;
+        var yStart = (dir === 1) ? duckTileSizeY : 0;
         if (swimming === true) {
             yHeight = 36;
             yOffset += 6;
         }
-        ctx.drawImage(sprites, tX*duckTileSizeX, 0, duckTileSizeX, yHeight, pos.x * tileSize, pos.y * tileSize + yOffset, duckTileSizeX, yHeight);
+        ctx.drawImage(sprites, tX*duckTileSizeX, yStart, duckTileSizeX, yHeight, pos.x * tileSize, pos.y * tileSize + yOffset, duckTileSizeX, yHeight);
         
         if (redEyes) {
             //hacks to draw red eyes on the duck.
-            drawRedPixelHack(ctx, sprites, pos, yOffset, 3, 2);
-            drawRedPixelHack(ctx, sprites, pos, yOffset, 5, 2);
-            drawRedPixelHack(ctx, sprites, pos, yOffset, 3, 3);
-            drawRedPixelHack(ctx, sprites, pos, yOffset, 5, 3);
+            var eye1X = 3;
+            var eye2X = 5;
+            if (dir === 1) {
+                eye1X = 16 - 4;
+                eye2X = 16 - 6;
+            }
+            drawRedPixelHack(ctx, sprites, pos, yOffset, eye1X, 2);
+            drawRedPixelHack(ctx, sprites, pos, yOffset, eye2X, 2);
+            drawRedPixelHack(ctx, sprites, pos, yOffset, eye1X, 3);
+            drawRedPixelHack(ctx, sprites, pos, yOffset, eye2X, 3);
         }
     }
 

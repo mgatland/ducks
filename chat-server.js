@@ -599,6 +599,7 @@ function getNetUser (user) {
         netUser.act = user.act;
         netUser.map = user.map;
         netUser.item = user.item;
+        netUser.dir = user.dir;
         if (user.diveMoves > 0) {
             netUser.diveMoves = user.diveMoves;
         }

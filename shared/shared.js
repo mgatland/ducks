@@ -332,6 +332,12 @@
         user.pos.x += x;
         user.pos.y += y;
 
+        if (x > 0) {
+            user.dir = 1;
+        }
+        if (x < 0) {
+            user.dir = 0;
+        }
         
         //map transitions (note, don't allow leaving the map from a door)
         if (!wasOnDoor && map.isInMap(user.pos) === false) {
