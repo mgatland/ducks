@@ -57,9 +57,10 @@
 	var baseSwears = [
 		"ass",
 		"asshole",
+		"bitch",
 		"cock",
 		"cunt",
-		"dick", /*could be someone's name though*/
+		"dick",
 		"fag",
 		"faggot",
 		"fuck",
