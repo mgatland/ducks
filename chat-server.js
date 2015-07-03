@@ -25,6 +25,7 @@ function htmlEntities(str) {
 }
 
 var echoMap = new shared.Pos(11,11);
+var echoPos = new shared.Pos(6, 8);
 
 var colors = [  //in order of attractiveness
     '#fff8bc', //white
@@ -290,11 +291,36 @@ io.sockets.on('connection', function (socket) {
                     var quackObj = makeChatObject(user.name, user.color, "QUACK!", user.map);
                     addMessage(quackObj);
                     if (shared.posAreEqual(user.map, echoMap)) {
-                        //there's an echo one second later.
-                        setTimeout(function () {
-                            var echoObj = makeChatObject("echo", "#660066", "QUACK!", echoMap);
-                            addMessage(echoObj);
-                        }, 1000);
+                        //there's an echo soon after.
+                        var dist = shared.distanceBetweenPos(user.pos, echoPos);
+                        console.log(dist);
+                        var msg = null;
+                        if (dist == 0) {
+                            netUpdate = true;
+                            moved = true;
+                            user.map.x = 10;
+                            user.map.y = 15;
+                            user.pos.x = 5;
+                            user.pos.y = 5;
+                            console.log(user.name + " got echoed");
+                            sendServerMessage(user.socket, "You fall through sand");
+                        } else if (dist <= 2) {
+                            msg = "QUACK!!!";
+                        } else if (dist <= 4) {
+                            msg = "QUACK!!";
+                        } else if (dist <= 6) {
+                            msg = "QUACK!";
+                        } else if (dist <= 8) {
+                            msg = "QUACK";
+                        } else {
+                            msg = "...";
+                        }
+                        if (msg != null) {
+                                setTimeout(function () {
+                                var echoObj = makeChatObject("echo", "#660066", msg, echoMap);
+                                addMessage(echoObj);
+                            }, 200);
+                        }
                     }
                 }
                 break;
@@ -457,6 +483,11 @@ io.sockets.on('connection', function (socket) {
     notes['11:10'] = "Type /quack to quack!";
     notes['9:11'] = "It's hot here! A /dive would be nice.";
     notes['12:12'] = "Type /look to find items";
+
+    //echo world
+    notes['9:15'] = "stay here forever."; 
+    notes['11:15'] = "there is no future.";
+    notes['9:16'] = "cold water is cold.";
 
     //max 15 characters * 3 lines
     //123456789012345\n123456789012345\n123456789012345
