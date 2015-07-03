@@ -27,6 +27,7 @@ function htmlEntities(str) {
 
 var echoMap = new shared.Pos(11,11);
 var echoPos = new shared.Pos(6, 8);
+var echoReturnMap = new shared.Pos(11,16);
 
 var colors = [  //in order of attractiveness
     '#fff8bc', //white
@@ -322,6 +323,16 @@ io.sockets.on('connection', function (socket) {
                                 addMessage(echoObj);
                             }, 200);
                         }
+                    }
+                    if (shared.posAreEqual(user.map, echoReturnMap)) {
+                        netUpdate = true;
+                        moved = true;
+                        user.map.x = 10;
+                        user.map.y = 11;
+                        user.pos.x = 5;
+                        user.pos.y = 5;
+                        console.log(user.name + " returned from echo world");
+                        sendServerMessage(user.socket, "You fall through sand");
                     }
                 }
                 break;
