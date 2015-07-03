@@ -523,7 +523,18 @@ io.sockets.on('connection', function (socket) {
         if (shared.posIsAt(user.map, 12, 12)) {
             return {message: "You catch a forest lizard.", item: "lizard"};
         }
-        if (shared.posIsAt(user.map, 09, 15)) {
+
+        //echo world
+        if (shared.posIsAt(user.map, 10, 15)) {
+            return {message: "You found some dirt.", item: "dirt"};
+        }
+        if (shared.posIsAt(user.map, 11, 15)) {
+            return {message: "You found a drum.", item: "drum"};
+        }
+        if (shared.posIsAt(user.map, 9, 17)) {
+            return {message: "You found a grey apple.", item: "grey apple"};
+        }
+        if (shared.posIsAt(user.map, 9, 15)) {
             //chest room
             if (potStuff.length === 2) {
                 return {message: "The pot has boiled " + potStuff[0] + " and " + potStuff[1] + ". Maybe /drink it!"};
@@ -565,6 +576,10 @@ io.sockets.on('connection', function (socket) {
             return "YOU ARE CURSED\nYOU NEED APPLE\nCAN YOU DIVE?";
         } else if (user.item === "dirt") {
             return "THE TOWN HALL\nWAS ONCE CLEAN\nAND GRAND";
+        } else if (user.item === "drum") {
+            return "NICE DRUM\nI CAN PLAY\nTHE DRUMS TOO";
+        } else if (user.item === "grey apple") {
+            return "GREY APPLES ARE\nFROM BAD PLACE";
         } else if (user.item === "lizard") {
             return "IS THAT A\nDELICIOUS\nLIZARD?";
         } else if (user.item === "red apple") {
