@@ -20,6 +20,7 @@ var loader = function () {
     var itemsToLoad = 0;
     this.duckImage = loadImage("/client/duck.png");
     this.srcTilesImg = loadImage("/client/tiles.png");
+    this.srcHatsImg = loadImage("/client/hats.png")
 
     function loadImage(name)
     {
@@ -150,18 +151,21 @@ var frontend = function (assets) {
         });
     }
 
+    var tilesImg;
+    var hatsImg;
     function start() {
         initializeSprites(assets.duckImage);
-        createTileSet();
+        tilesImg = createTileSet(assets.srcTilesImg);
+        hatsImg = createTileSet(assets.srcHatsImg);
         connect();
     }
 
-    var tilesImg;
-    function createTileSet() {
+
+    function createTileSet(src) {
         var tilesCanvas = document.createElement("canvas");
-        drawScaledUpImageOnCanvas(tilesCanvas, assets.srcTilesImg, scale);
+        drawScaledUpImageOnCanvas(tilesCanvas, src, scale);
         var tileImgUrl = tilesCanvas.toDataURL();
-        tilesImg = loadGeneratedImage(tileImgUrl, null);
+        return loadGeneratedImage(tileImgUrl, null);
     }
 
     var duckTemplateImgData;
@@ -344,6 +348,14 @@ var frontend = function (assets) {
         ctx.drawImage(tilesImg, tX*tileSize, tY*tileSize, tileSize, tileSize, pos.x*tileSize,pos.y*tileSize,tileSize,tileSize);
     }
 
+    function drawHat(ctx, pos, hatNum, hatX, hatY) {
+        var tX = hatNum;
+        var tY = 0;
+        ctx.drawImage(hatsImg, tX * tileSize, tY * tileSize, tileSize, tileSize, 
+            pos.x*tileSize + hatX * scale, pos.y*tileSize + hatY * scale,
+            tileSize,tileSize);
+    }
+
     function drawEverything () {
 
         //hack to make the canvas redraw. Sometimes, like 10% of the time, the canvas
@@ -379,7 +391,7 @@ var frontend = function (assets) {
                     frame = 0;
                 }
                 var redEyes = (user.item === "curse" && (frame === 0 || frame === 1));
-                drawDuck(ctx, sprites, user.pos, user.dir, frame, swimming, redEyes);
+                drawDuck(ctx, sprites, user.pos, user.dir, frame, swimming, redEyes, user.hat);
             }
         });
 
@@ -405,7 +417,7 @@ var frontend = function (assets) {
         ctx.drawImage(sprites, 1*duckTileSizeX+5, 12, 3, 3, pos.x * tileSize + x*3, pos.y * tileSize + yOffset + y*3, 3, 3);
     }
 
-    function drawDuck(ctx, sprites, pos, dir, tX, swimming, redEyes) {
+    function drawDuck(ctx, sprites, pos, dir, tX, swimming, redEyes, hat) {
         var yHeight = duckTileSizeY;
         var yOffset = duckYOffset;
         var yStart = (dir === 1) ? duckTileSizeY : 0;
@@ -427,6 +439,27 @@ var frontend = function (assets) {
             drawRedPixelHack(ctx, sprites, pos, yOffset, eye2X, 2);
             drawRedPixelHack(ctx, sprites, pos, yOffset, eye1X, 3);
             drawRedPixelHack(ctx, sprites, pos, yOffset, eye2X, 3);
+        }
+
+        var hatX = -3;
+        var hatY = 0;
+        if (tX === 0 || tX === 1) {
+            hatY = -6;
+        } else if (tX == 3) {
+            hatX = -2;
+            hatY = -2;
+        } else {
+            //don't show hat
+            hat = undefined;
+        }
+        if (swimming === true) {
+            hatY += 2;
+        }
+        if (dir === 1) {
+            hatX = -hatX;
+        }
+        if (hat !== undefined) {
+            drawHat(ctx, pos, hat, hatX, hatY);
         }
     }
 

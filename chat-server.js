@@ -295,7 +295,6 @@ io.sockets.on('connection', function (socket) {
                     if (shared.posAreEqual(user.map, echoMap)) {
                         //there's an echo soon after.
                         var dist = shared.distanceBetweenPos(user.pos, echoPos);
-                        console.log(dist);
                         var msg = null;
                         if (dist == 0) {
                             netUpdate = true;
@@ -421,10 +420,27 @@ io.sockets.on('connection', function (socket) {
                     } else if (user.item) {
                         sendServerMessage(user.socket, "You must /drop what you're holding before you can drink.");
                     } else {
+                        if (potStuff.indexOf("drum") >= 0 && potStuff.indexOf("violin") >= 0) {
+                            user.hat = 2;
+                        } else if (potStuff.indexOf("grey apple") >= 0 && potStuff.indexOf("red apple") >= 0) {
+                            user.hat = 4;
+                        } else if (potStuff.indexOf("dirt") >= 0) {
+                            user.hat = 0;
+                        } else if (potStuff.indexOf("red apple") >= 0) {
+                            user.hat = 1;
+                        } else if (potStuff.indexOf("lizard") >= 0) {
+                            user.hat = 3;
+                        } else if (potStuff.indexOf("grey apple") >= 0) {
+                            user.hat = 5;
+                        } else if (potStuff.indexOf("drum") >= 0) {
+                            user.hat = 6;                            
+                        } else { //i.e. violin, violin
+                            user.hat = 7;
+                        }
+                        console.log("found hat " + user.hat);
                         potStuff = [];
-                        user.item = "hat";
+                        
                         netUpdate = true;
-                        user.color = "#ffffff";
                         //sendServerMessage(user.socket, "You drank the broth!");
                         var drinkMsg = makeChatObject(user.name, user.color, "drank the mixture!", user.map);
                         addMessage(drinkMsg);
@@ -705,6 +721,7 @@ function getNetUser (user) {
         netUser.map = user.map;
         netUser.item = user.item;
         netUser.dir = user.dir;
+        netUser.hat = user.hat;
         if (user.diveMoves > 0) {
             netUser.diveMoves = user.diveMoves;
         }
