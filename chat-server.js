@@ -18,6 +18,7 @@ var moveDelay = 1000/4;
 var history = [ ]; //totally unused
 var users = [ ];
 var lurkers = [ ];
+var potStuff = [];
 
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -302,7 +303,7 @@ io.sockets.on('connection', function (socket) {
                             user.map.y = 15;
                             user.pos.x = 5;
                             user.pos.y = 5;
-                            console.log(user.name + " got echoed");
+                            console.log(user.name + " found echo secret");
                             sendServerMessage(user.socket, "You fall through sand");
                         } else if (dist <= 2) {
                             msg = "QUACK!!!";
@@ -382,6 +383,41 @@ io.sockets.on('connection', function (socket) {
                     netUpdate = true;
                 } else {
                     sendServerMessage(user.socket, "You have nothing to drop.");
+                }
+                break;
+            case 'add':
+                //pot room
+                if (shared.posIsAt(user.map, 09, 15)) {
+                    if (user.item === "curse" || !user.item) {
+                        sendServerMessage(user.socket, "You have nothing to add.");
+                    } else if (potStuff.length < 2) {
+                        sendServerMessage(user.socket, "You add " + user.item + " to the pot.");
+                        potStuff.push(user.item);
+                        user.item = null;
+                        netUpdate = true;
+                    } else {
+                        sendServerMessage(user.socket, "The pot was already full.");
+                    }
+                }
+                break;
+            case 'drink':
+                //pot room
+                if (shared.posIsAt(user.map, 09, 15)) {
+                    if (potStuff.length < 2) {
+                        sendServerMessage(user.socket, "It needs more ingredients before you can drink.");
+                    } else if (user.item === "curse") {
+                        sendServerMessage(user.socket, "You feel too strange to drink.");
+                    } else if (user.item) {
+                        sendServerMessage(user.socket, "You must /drop what you're holding before you can drink.");
+                    } else {
+                        potStuff = [];
+                        user.item = "hat";
+                        netUpdate = true;
+                        user.color = "#ffffff";
+                        //sendServerMessage(user.socket, "You drank the broth!");
+                        var drinkMsg = makeChatObject(user.name, user.color, "drank the mixture!", user.map);
+                        addMessage(drinkMsg);
+                    }
                 }
                 break;
         }
@@ -475,6 +511,16 @@ io.sockets.on('connection', function (socket) {
         }
         if (shared.posIsAt(user.map, 12, 12)) {
             return {message: "You catch a forest lizard.", item: "lizard"};
+        }
+        if (shared.posIsAt(user.map, 09, 15)) {
+            //chest room
+            if (potStuff.length === 2) {
+                return {message: "The pot has boiled " + potStuff[0] + " and " + potStuff[1] + ". Maybe /drink it!"};
+            } else if (potStuff.length === 1) {
+                return {message: "The pot has boiled " + potStuff[0] + ". You can /add one more thing."};
+            } else {
+                return {message: "The pot is empty. You can /add something if you have something."};
+            }
         }
     }
 
