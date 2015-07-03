@@ -555,12 +555,14 @@ io.sockets.on('connection', function (socket) {
                     + names[1] + " are\nalone together!");
             }
         });
-        if (gossips.length === 0) {
-            if (users.length === 1) {
-                return "YOU ARE THE\nONLY DUCK IN\nTOWN"
-            } else {
-                return "THOSE WHO SLEEP\nIN BAD PLACE\nARE LOST"
-            }
+        if (users.length === 1) {
+            gossips.push("YOU ARE THE\nONLY DUCK IN\nTOWN");
+        };
+        //less likely than other gossips
+        if (Math.random()>0.5) {
+            gossips.push("THOSE WHO SLEEP\nIN BAD PLACE\nARE LOST");
+        } else {
+            gossips.push("A DUCK'S QUACK\nDOES NOT ECHO\nANYWHERE");    
         }
         return gossips[Math.floor(Math.random()*gossips.length)];
     }
