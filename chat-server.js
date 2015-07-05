@@ -18,7 +18,18 @@ var moveDelay = 1000/4;
 var history = [ ]; //totally unused
 var users = [ ];
 var lurkers = [ ];
+var spies = [];
 var potStuff = [];
+
+function log(message) {
+    console.log(message);
+    var chatObj = {author:"#", text:message};
+    history.push(chatObj);
+    history = history.slice(-100);
+    spies.forEach(function (usr) {
+        usr.socket.emit("spy", [chatObj]);
+    });
+}
 
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -47,6 +58,10 @@ var unusedColors = colors.slice(0);
 // routing
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
+});
+
+app.get('/spy.html', function (req, res) {
+  res.sendfile(__dirname + '/spy.html');
 });
 
 app.use("/client", express.static(__dirname + '/client'));
@@ -134,6 +149,15 @@ io.sockets.on('connection', function (socket) {
         }
     });
 
+    socket.on('spy', function(msg) {
+        console.log('new spy');
+        var index = shared.getIndexOfUser(user.name, lurkers);
+        lurkers.splice(index, 1);
+        spies.push(user);
+        user.isSpy = true;
+        socket.emit('spy', history);
+    });
+
     socket.on('adduser', function(username){
         if (user.isReal()) {
             return;
@@ -186,22 +210,25 @@ io.sockets.on('connection', function (socket) {
         var address = socket.handshake.address;
 
         var logMsg = "New user " + user.name + " with IP " + address.address + ":" + address.port;
-        console.log(logMsg);
+        log(logMsg);
         sendEmail(logMsg);
     });
 
     socket.on('cmd', processCommand);
 
     socket.on('disconnect', function(){
-        console.log(getTimestamp() + " Peer "
-            + user.name + " disconnected.");
+        console.log(getTimestamp() + user.name + " disconnected.");
         if (user.isReal()) {
             unusedColors.push(user.color);
             sendServerMessage(socket.broadcast, user.name + ' disappeared.');
             socket.broadcast.emit('updatechat', { type: 'playerleaves', data: user.name });
             var index = shared.getIndexOfUser(user.name, users);
-            console.log("removing user " + user.name);
+            log("user " + user.name + " logged off");
             users.splice(index, 1);
+        } else if (user.isSpy) {
+            var index = shared.getIndexOfUser(user.name, spies);
+            spies.splice(index, 1);
+            console.log("removed a spy");
         } else {
             var index = shared.getIndexOfUser(user.name, lurkers);
             lurkers.splice(index, 1);
@@ -281,7 +308,7 @@ io.sockets.on('connection', function (socket) {
                 user.pos.x = 5;
                 user.pos.y = 5;
                 user.item = "curse";
-                console.log(user.name + " got cursed");
+                log(user.name + " got cursed");
                 sendServerMessage(user.socket, "You feel strange");
                 break;
             case 'quack':
@@ -303,7 +330,7 @@ io.sockets.on('connection', function (socket) {
                             user.map.y = 15;
                             user.pos.x = 5;
                             user.pos.y = 5;
-                            console.log(user.name + " found echo secret");
+                            log(user.name + " fell through sand");
                             sendServerMessage(user.socket, "You fall through sand");
                         } else if (dist <= 2) {
                             msg = "QUACK!!!";
@@ -330,7 +357,7 @@ io.sockets.on('connection', function (socket) {
                         user.map.y = 11;
                         user.pos.x = 5;
                         user.pos.y = 5;
-                        console.log(user.name + " returned from echo world");
+                        log(user.name + " returned from echo world");
                         sendServerMessage(user.socket, "You fall through sand");
                     }
                 }
@@ -368,7 +395,7 @@ io.sockets.on('connection', function (socket) {
                             user.item = null;
                             user.secrets.curseGiver = null;
                             netUpdate = true;
-                            console.log(user.name + " cured curse");
+                            log(user.name + " cured curse with apple");
                         } else if (user.item === "curse") {
                             sendServerMessage(user.socket, "You feel too strange to take it.");
                         } else if (user.item === lookFind.item) {
@@ -378,6 +405,7 @@ io.sockets.on('connection', function (socket) {
                         } else {
                             user.item = lookFind.item;
                             netUpdate = true;
+                            log(user.name + " found " + user.item);
                         }
                     }
                 } else {
@@ -402,6 +430,7 @@ io.sockets.on('connection', function (socket) {
                         sendServerMessage(user.socket, "You have nothing to add.");
                     } else if (potStuff.length < 2) {
                         sendServerMessage(user.socket, "You add " + user.item + " to the pot.");
+                        log(user.name + " added " + user.item + " to the pot");
                         potStuff.push(user.item);
                         user.item = null;
                         netUpdate = true;
@@ -437,7 +466,7 @@ io.sockets.on('connection', function (socket) {
                         } else { //i.e. violin, violin
                             user.hat = 7;
                         }
-                        console.log("found hat " + user.hat);
+                        log(user.name + " found hat " + user.hat);
                         potStuff = [];
                         
                         netUpdate = true;
@@ -494,7 +523,7 @@ io.sockets.on('connection', function (socket) {
             broadcast('playerUpdate', otherNetUser);
             sendServerMessage(other.socket, user.name + " put a curse on you :(");
             sendServerMessage(user.socket, "You put the curse on " + other.name);
-            console.log(user.name + " cursed " + other.name);
+            log(user.name + " cursed " + other.name);
             return true;
         }
         return false;
@@ -781,6 +810,10 @@ function addMessage(chatObj, user) {
         if (distance < 2) {
             usr.socket.emit('updatechat', datagram);
         }
+    });
+
+    spies.forEach(function (usr) {
+        usr.socket.emit("spy", [chatObj]);
     });
 }
 
