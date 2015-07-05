@@ -8,14 +8,13 @@ function makeChatStyle(color) {
 }
 
 function addMessage(author, message, color, map) {
-    var classes = null;
     var newMessage = document.createElement('div');
     var style = makeChatStyle(color);
-    if (classes) newMessage.classList.add(classes);
+    var div = document.querySelector(".logs");
     var mapString = map ? "<i>" + map.x + ":" + map.y + "</i>" : "";
     newMessage.innerHTML = '<span class="chatname" style="' + style + '">' + author + ':</span>'
          + mapString + ' <span class="chatmessage">' + message + '</span>';
-    document.body.insertBefore(newMessage, null);
+    div.insertBefore(newMessage, null);
 }
 
 function connect() {
@@ -24,6 +23,13 @@ function connect() {
 
 	socket.on('connect', function () {
 		socket.emit("spy", "spy");
+	});
+
+	document.querySelector(".kick").addEventListener('click', function () {
+		var name = document.querySelector(".name").value;
+		var pass = document.querySelector(".password").value;
+		addMessage("sent...");
+		socket.emit("kick", {name:name, pass:pass});
 	});
 
 	function onData (data) {

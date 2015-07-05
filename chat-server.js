@@ -19,6 +19,9 @@ var history = [ ]; //totally unused
 var users = [ ];
 var lurkers = [ ];
 var spies = [];
+
+var kickedIps = [];
+
 var potStuff = [];
 
 function log(message) {
@@ -75,6 +78,14 @@ io.configure(function () {
   io.set("polling duration", 10); 
 });
 
+//admin password
+var password;
+if (process.env.adminpw !== undefined) {
+    password = process.env.adminpw;
+} else {
+    password = "a";
+}
+
 //email
 
 var sendEmail;
@@ -108,6 +119,16 @@ if (process.env.emailpw !== undefined) {
 
 
 io.sockets.on('connection', function (socket) {
+
+    var address = socket.handshake.address.address;
+    if (kickedIps.indexOf(address) >= 0) {
+        log("Kicked user " + address + " tried to rejoin");
+        socket.emit('updatechat', { type: 'servermessage', data: { text: 'Sorry, you have been banned. Try again tomorrow.'} });
+        setTimeout(function () {
+            socket.disconnect(true);
+        }, 5000);
+        return;
+    }
 
     var user = {};
     user.socket = socket;
@@ -156,6 +177,11 @@ io.sockets.on('connection', function (socket) {
         spies.push(user);
         user.isSpy = true;
         socket.emit('spy', history);
+
+        //only for spies
+        socket.on("kick", function(msg) {
+            kickUser(msg);
+        })
     });
 
     socket.on('adduser', function(username){
@@ -728,6 +754,35 @@ io.sockets.on('connection', function (socket) {
             var oldMove = user.queuedMoves.shift();
             processCommand(oldMove);
         }
+    }
+
+    function kickUser(data) {
+        var name = data.name;
+        var pass = data.pass;
+        if (pass != password) {
+            log("Failed to kick " + name + " - wrong password.");
+            return;
+        }
+        var kickedList = users.filter(function (other) {
+            return (other.name === name);
+        });
+        if (kickedList.length != 1) {
+            log("Failed to kick " + name + " - wrong name?");
+            return;
+        }
+
+        var kicked = kickedList[0];
+
+        var ip = kicked.socket.handshake.address.address;
+        kickedIps.push(ip);
+
+        unusedColors.push(kicked.color);
+        sendServerMessage(socket.broadcast, kicked.name + ' was kicked.');
+        socket.broadcast.emit('updatechat', { type: 'playerleaves', data: kicked.name });
+        var index = shared.getIndexOfUser(kicked.name, users);
+        log("user " + kicked.name + '(' + ip + ') was kicked');
+        users.splice(index, 1);
+        kicked.socket.disconnect(true);
     }
 
 });
