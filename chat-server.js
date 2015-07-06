@@ -5,7 +5,13 @@ process.title = 'node-chat';
 var express = require("express");
 var app = express();
 var port = process.env.PORT || 80;
-var io = require('socket.io').listen(app.listen(port));
+
+var io = require('socket.io')({
+    //Force xhr-polling, this means no websockets (because appfog doesn't support websockets)
+  transports: ["xhr-polling"],
+  "polling duration": 10
+}).listen(app.listen(port));
+
 console.log("listening on port " + port);
 
 var shared = require('./shared/shared');
@@ -72,12 +78,6 @@ app.use("/shared", express.static(__dirname + '/shared'));
 
 io.set('log level', 1); // reduce logging
 
-//Force xhr-polling, this means no websockets (because appfog doesn't support websockets)
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});
-
 //admin password
 var password;
 if (process.env.adminpw !== undefined) {
@@ -120,9 +120,9 @@ if (process.env.emailpw !== undefined) {
 
 io.sockets.on('connection', function (socket) {
 
-    var address = socket.handshake.address.address;
-    if (kickedIps.indexOf(address) >= 0) {
-        log("Kicked user " + address + " tried to rejoin");
+    var client_ip = socket.request.connection.remoteAddress;
+    if (kickedIps.indexOf(client_ip) >= 0) {
+        log("Kicked user " + client_ip + " tried to rejoin");
         socket.emit('updatechat', { type: 'servermessage', data: { text: 'Sorry, you have been banned. Try again tomorrow.'} });
         setTimeout(function () {
             socket.disconnect(true);
@@ -132,6 +132,7 @@ io.sockets.on('connection', function (socket) {
 
     var user = {};
     user.socket = socket;
+    user.ip = client_ip;
     user.pos = new shared.Pos(5,5);
     user.name = false;
     user.color = false;
@@ -233,9 +234,7 @@ io.sockets.on('connection', function (socket) {
         var netUser = getNetUser(user);
         broadcast('playerUpdate', netUser);
 
-        var address = socket.handshake.address;
-
-        var logMsg = "New user " + user.name + " with IP " + address.address + ":" + address.port;
+        var logMsg = "New user " + user.name + " with IP " + user.ip;
         log(logMsg);
         sendEmail(logMsg);
     });
@@ -773,14 +772,13 @@ io.sockets.on('connection', function (socket) {
 
         var kicked = kickedList[0];
 
-        var ip = kicked.socket.handshake.address.address;
-        kickedIps.push(ip);
+        kickedIps.push(kicked.ip);
 
         unusedColors.push(kicked.color);
         sendServerMessage(socket.broadcast, kicked.name + ' was kicked.');
         socket.broadcast.emit('updatechat', { type: 'playerleaves', data: kicked.name });
         var index = shared.getIndexOfUser(kicked.name, users);
-        log("user " + kicked.name + '(' + ip + ') was kicked');
+        log("user " + kicked.name + '(' + kicked.ip + ') was kicked');
         users.splice(index, 1);
         kicked.socket.disconnect(true);
     }
