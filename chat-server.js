@@ -18,7 +18,7 @@ var shared = require('./shared/shared');
 var profanity = require('./server/profanity');
 
 //consts
-var moveDelay = 1000/4;
+var moveDelay = shared.moveDelay;
 
 //globals
 var history = [ ]; //totally unused
@@ -474,22 +474,23 @@ io.sockets.on('connection', function (socket) {
                     } else if (user.item) {
                         sendServerMessage(user.socket, "You must /drop what you're holding before you can drink.");
                     } else {
-                        if (potStuff.indexOf("drum") >= 0 && potStuff.indexOf("violin") >= 0) {
-                            user.hat = 2;
+                        //dirt, love note, violin, red apple, lizard, drum, grey apple
+                        if (potStuff.indexOf("drum") >= 0 && potStuff.indexOf("love note") >= 0) {
+                            user.hat = 2; //Amar's hat, for finding Amar's things
                         } else if (potStuff.indexOf("grey apple") >= 0 && potStuff.indexOf("red apple") >= 0) {
-                            user.hat = 4;
-                        } else if (potStuff.indexOf("dirt") >= 0) {
-                            user.hat = 0;
-                        } else if (potStuff.indexOf("red apple") >= 0) {
-                            user.hat = 1;
+                            user.hat = 7; //apple hat
+                        } else if (potStuff.indexOf("drum") >= 0 && potStuff.indexOf("violin") >= 0) {
+                            user.hat = 4; //musical hat
+                        } else if (potStuff.indexOf("red apple") >= 0 && potStuff.indexOf("lizard") >= 0) {
+                            user.hat = 5; //delicious hat
                         } else if (potStuff.indexOf("lizard") >= 0) {
-                            user.hat = 3;
+                            user.hat = 6;
                         } else if (potStuff.indexOf("grey apple") >= 0) {
-                            user.hat = 5;
+                            user.hat = 3;
                         } else if (potStuff.indexOf("drum") >= 0) {
-                            user.hat = 6;                            
-                        } else { //i.e. violin, violin
-                            user.hat = 7;
+                            user.hat = 1;                            
+                        } else {
+                            user.hat = 0; //black hat is most common, i.e. dirt + dirt
                         }
                         log(user.name + " found hat " + user.hat);
                         potStuff = [];
@@ -576,10 +577,12 @@ io.sockets.on('connection', function (socket) {
         return mapNotes[code];
     }
 
-
     function lookForStuff(user) {
         if (shared.posIsAt(user.map, 10, 10)) {
             return {message: "You found some dirt.", item: "dirt"};
+        }
+        if (shared.posIsAt(user.map, 11, 10)) {
+            return {message: "You found a love note!", item: "love note"};
         }
         if (shared.posIsAt(user.map, 11, 11)) {
             return {message: "You found a violin.", item: "violin"};
@@ -648,15 +651,17 @@ io.sockets.on('connection', function (socket) {
         } else if (user.item === "curse") {
             return "YOU ARE CURSED\nYOU NEED APPLE\nCAN YOU DIVE?";
         } else if (user.item === "dirt") {
-            return "THE TOWN HALL\nWAS ONCE CLEAN\nAND GRAND";
+            return "DIRT FROM OLD  \nTOWN HALL. IT  \nWAS NICE BEFORE.";
         } else if (user.item === "drum") {
-            return "NICE DRUM\nI CAN PLAY\nTHE DRUMS TOO";
+            return "THIS DRUM SAYS \n'AMAR's DRUM!' \nSEE THE LABEL?";
         } else if (user.item === "grey apple") {
-            return "GREY APPLES ARE\nFROM BAD PLACE";
+            return "GREY APPLES ARE\nOF ECHO WORLD. \nNOT VERY TASTY.";
         } else if (user.item === "lizard") {
             return "IS THAT A\nDELICIOUS\nLIZARD?";
         } else if (user.item === "red apple") {
             return "MY HUSBAND USED\nTO LOVE APPLES\nHE IS GONE NOW";
+        } else if (user.item === "love note") {
+            return "THE NOTE SAYS  \nANNA DUCK I ♥ U\nYRU IGNORING ME";
         } else {
             return "THERE ARE MANY\nSECRETS TO FIND\nIN DUCKTOWN.";
         }
@@ -675,6 +680,10 @@ io.sockets.on('connection', function (socket) {
 
         if (!user.secrets.gaveDirt) {
             return "BRING ME SOME\nDIRT AND I WILL\nTELL ALL";
+        }
+
+        if (user.item === "love note") {
+            return "THAT NOTE IS IN\nAMAR DUCK's    \nWRITING!";
         }
 
         var roomsWithUsers = [];
@@ -704,10 +713,12 @@ io.sockets.on('connection', function (socket) {
             gossips.push("YOU ARE THE\nONLY DUCK IN\nTOWN");
         };
         //less likely than other gossips
-        if (Math.random()>0.5) {
+        if (Math.random()>0.33) {
             gossips.push("THOSE WHO SLEEP\nIN BAD PLACE\nARE LOST");
+        } else if (Math.random()>0.33) {
+            gossips.push("IF YOU FIND ANY\nGOSSIP, BRING  \nIT TO ME!");
         } else {
-            gossips.push("A DUCK'S QUACK\nDOES NOT ECHO\nANYWHERE");    
+            gossips.push("A DUCK'S QUACK\nDOES NOT ECHO\nANYWHERE");
         }
         return gossips[Math.floor(Math.random()*gossips.length)];
     }

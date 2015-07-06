@@ -79,7 +79,7 @@ var frontend = function (assets) {
 
     var hasSentName = false;
     var moved = false;
-    var moveDelay = 1000/4;
+    var moveDelay = shared.moveDelay;
 
     function connect() {
         console.log("connecting to port " + port);
