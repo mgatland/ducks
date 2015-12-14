@@ -141,7 +141,7 @@ if (sendgrid_api_key) {
 
 io.sockets.on('connection', function (socket) {
 
-    var client_ip = socket.handshake.address;
+    var client_ip = getClientIp(socket);
     if (kickedIps.indexOf(client_ip) >= 0) {
         log("Kicked user " + client_ip + " tried to rejoin");
         socket.emit('updatechat', { type: 'servermessage', data: { text: 'Sorry, you have been banned. Try again tomorrow.'} });
@@ -925,3 +925,24 @@ function getTimestamp() {
     return d.getFullYear() + "-" + d2(d.getMonth()) + "-" + d.getDate() + 
     " " + d2(d.getHours()) + ":" + d2(d.getMinutes()) + ":" + d2(d.getSeconds());
 }
+
+function getClientIp(clientSocket) {
+  var ipAddress;
+  // Amazon EC2 / Heroku workaround to get real client IP
+  var forwardedIpsStr = clientSocket.handshake.headers['x-forwarded-for']
+  if (forwardedIpsStr) {
+    // 'x-forwarded-for' header may return multiple IP addresses in
+    // the format: "client IP, proxy 1 IP, proxy 2 IP" so take the
+    // heroku guarantees the last entry is the real one. Others might be spoofed
+    var forwardedIps = forwardedIpsStr.split(',');
+    ipAddress = forwardedIps[forwardedIps.length - 1];
+  }
+  if (!ipAddress) {
+    // Ensure getting client IP address still works in
+    // development environment
+    ipAddress = clientSocket.handshake.address;
+  }
+  return ipAddress;
+};
+
+
