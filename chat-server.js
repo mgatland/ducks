@@ -76,8 +76,6 @@ app.get('/spy.html', function (req, res) {
 app.use("/client", express.static(__dirname + '/client'));
 app.use("/shared", express.static(__dirname + '/shared'));
 
-io.set('log level', 1); // reduce logging
-
 //admin password
 var password;
 if (process.env.adminpw !== undefined) {
@@ -86,8 +84,8 @@ if (process.env.adminpw !== undefined) {
     password = "a";
 }
 
-//email
-
+//email - old version which works locally but not on Heroku, connects directly to Gmail with username+password
+/*
 var sendEmail;
 if (process.env.emailpw !== undefined) {
     console.log("enabling email");
@@ -114,13 +112,36 @@ if (process.env.emailpw !== undefined) {
     sendEmail = function (message) {
         console.log("(email is disabled)");
     }
+}*/
+
+//new email, using a 3rd party service.
+var sendEmail;
+var sendgrid_api_key = process.env.sendgrid_api_key;
+if (sendgrid_api_key) {
+    var sendgrid  = require('sendgrid')(sendgrid_api_key);
+    var sendEmail = function (message) {
+        sendgrid.send({
+          to:       'Matthew Gatland <support@matthewgatland.com>',
+          from:     'Ducks Alerts <ducksalerts@gmail.com>',
+          subject:  'ducks',
+          text:     message
+        }, function(err, json) {
+          if (err) { return console.error(err); }
+          console.log(json);
+        });
+    }
+} else {
+    sendEmail = function (message) {
+        console.log("(email is disabled)");
+    }
 }
+
 
 
 
 io.sockets.on('connection', function (socket) {
 
-    var client_ip = socket.request.connection.remoteAddress;
+    var client_ip = socket.handshake.address;
     if (kickedIps.indexOf(client_ip) >= 0) {
         log("Kicked user " + client_ip + " tried to rejoin");
         socket.emit('updatechat', { type: 'servermessage', data: { text: 'Sorry, you have been banned. Try again tomorrow.'} });
