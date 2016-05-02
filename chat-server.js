@@ -122,7 +122,7 @@ if (sendgrid_api_key) {
     var sendEmail = function (message) {
         sendgrid.send({
           to:       'Matthew Gatland <support@matthewgatland.com>',
-          from:     'Ducks Alerts <ducksalerts@gmail.com>',
+          from:     'Ducks Alerts <hi+ducks@mgatland.com>',
           subject:  'ducks',
           text:     message
         }, function(err, json) {
