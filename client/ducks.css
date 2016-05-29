@@ -146,5 +146,7 @@ input {
 .npc-message {
     font-size: 48px;
     line-height: 48px;
-    margin: 12px;
+    margin: 11px;
+    white-space: normal;
+    word-break: break-all;
 }

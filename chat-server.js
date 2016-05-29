@@ -29,6 +29,7 @@ var spies = [];
 var kickedIps = [];
 
 var potStuff = [];
+var memoryTree = {};
 
 function log(message) {
     console.log(message);
@@ -189,6 +190,11 @@ io.sockets.on('connection', function (socket) {
 
         if (data === "quack" || data === "dive" || data === "nap" || data === "look") {
             user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'Try putting a slash in front like this: /' + data} });
+        }
+
+        //in presence of memory tree
+        if (shared.posIsAt(user.map, 09, 12)) {
+        	memoryTree[user.name] = profanity.filter(data);
         }
     });
 
@@ -640,6 +646,11 @@ io.sockets.on('connection', function (socket) {
         }
     }
 
+	var randomKey = function (obj) {
+	    var keys = Object.keys(obj)
+	    return keys[ keys.length * Math.random() << 0];
+	};
+
     var notes = {};
 
     notes['10:10'] = "~happy holidays~ be careful where you quack this summer!"; //the 'news' post
@@ -743,6 +754,15 @@ io.sockets.on('connection', function (socket) {
             gossips.push("A DUCK'S QUACK\nDOES NOT ECHO\nANYWHERE");
         }
         return gossips[Math.floor(Math.random()*gossips.length)];
+    }
+    npc["9:12"] = function (user) {
+    	if (Object.keys(memoryTree).length > 0) {
+    		console.log(memoryTree);
+    		var key = randomKey(memoryTree);
+    		var message = key + " said " + memoryTree[key];
+    		return message.substring(0, 15*3).toUpperCase();
+    	}
+    	return "I AM A MEMORY\nTREE. I CAN\nHEAR YOU!";
     }
 
     function sendServerMessage(emitter, message) {
