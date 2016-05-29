@@ -63,7 +63,7 @@ var frontend = function (assets) {
     var keysDown = [];
 
     var socket = undefined;
-    var port = "80";
+    var port = location.port;
 
     //stuff    
     var tileSize = 48;

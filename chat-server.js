@@ -4,7 +4,7 @@
 process.title = 'node-chat';
 var express = require("express");
 var app = express();
-var port = process.env.PORT || 80;
+var port = process.env.PORT || 8080;
 
 var io = require('socket.io')({
     //Force xhr-polling, this means no websockets (because appfog doesn't support websockets)
