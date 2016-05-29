@@ -652,6 +652,7 @@ io.sockets.on('connection', function (socket) {
     //echo world
     notes['9:15'] = "stay here forever."; 
     notes['11:15'] = "there is no future.";
+    notes['11:16'] = "do not quack.";
     notes['9:16'] = "cold water is cold.";
 
     //max 15 characters * 3 lines
