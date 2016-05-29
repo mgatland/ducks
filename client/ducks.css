@@ -84,6 +84,8 @@ body {
     margin-top:10px; 
     height: 190px;
     width: 380px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .distant .chatmessage {
