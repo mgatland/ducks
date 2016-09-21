@@ -688,11 +688,11 @@ io.sockets.on('connection', function (socket) {
         } else if (user.item === "drum") {
             return "THIS DRUM SAYS \n'AMAR's DRUM!' \nSEE THE LABEL?";
         } else if (user.item === "grey apple") {
-            return "GREY APPLES ARE\nOF ECHO WORLD. \nNOT VERY TASTY.";
+            return "MY HUSBAND USED\nTO LOVE APPLES\nHE IS GONE NOW";
         } else if (user.item === "lizard") {
             return "IS THAT A\nDELICIOUS\nLIZARD?";
         } else if (user.item === "red apple") {
-            return "MY HUSBAND USED\nTO LOVE APPLES\nHE IS GONE NOW";
+            return "DIVE SECRET... \nNAP SECRET...  \nQUACK SECRET...";
         } else if (user.item === "love note") {
             return "THE NOTE SAYS  \nANNA DUCK I ♥ U\nYRU IGNORING ME";
         } else {
@@ -746,9 +746,9 @@ io.sockets.on('connection', function (socket) {
             gossips.push("YOU ARE THE\nONLY DUCK IN\nTOWN");
         };
         //less likely than other gossips
-        if (Math.random()>0.33) {
+        if (Math.random()<0.33) {
             gossips.push("THOSE WHO SLEEP\nIN BAD PLACE\nARE LOST");
-        } else if (Math.random()>0.33) {
+        } else if (Math.random()<0.5) {
             gossips.push("IF YOU FIND ANY\nGOSSIP, BRING  \nIT TO ME!");
         } else {
             gossips.push("A DUCK'S QUACK\nDOES NOT ECHO\nANYWHERE");
@@ -756,6 +756,10 @@ io.sockets.on('connection', function (socket) {
         return gossips[Math.floor(Math.random()*gossips.length)];
     }
     npc["9:12"] = function (user) {
+        if (!user.secrets.metMemoryTree) {
+            user.secrets.metMemoryTree = true;
+            return "I AM A MEMORY\nTREE. I CAN\nHEAR YOU!";
+        }
     	if (Object.keys(memoryTree).length > 0) {
     		console.log(memoryTree);
     		var key = randomKey(memoryTree);
