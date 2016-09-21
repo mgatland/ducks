@@ -648,45 +648,6 @@ var frontend = function (assets) {
         tryMoving();
     }, 1000/60); //input framerate is super high
 
-    function doISupportFullScreen() {
-        return (document.documentElement.requestFullscreen
-            || document.documentElement.msRequestFullscreen
-            || document.documentElement.mozRequestFullScreen
-            || document.documentElement.webkitRequestFullscreen);
-    }
-    //From MDN
-    function toggleFullScreen() {
-      if (!document.fullscreenElement &&    // alternative standard method
-          !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen();
-        } else if (document.documentElement.msRequestFullscreen) {
-          document.documentElement.msRequestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) {
-          document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.webkitRequestFullscreen) {
-          document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
-      }
-    };
-    var fullScreenDiv = get("fullscreenbutton");
-    if (doISupportFullScreen()) {
-        fullScreenDiv.addEventListener('click', toggleFullScreen);
-    } else {
-        fullScreenDiv.classList.add("hide");
-    }
-
-
     function cheats (msg) {
         if (msg === "lag on") {
             debugLag = 400;
