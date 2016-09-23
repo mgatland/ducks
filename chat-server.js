@@ -461,7 +461,7 @@ io.sockets.on('connection', function (socket) {
                         }
                     }
                 } else {
-                    sendServerMessage(user.socket, "You find nothing.");
+                    sendServerMessage(user.socket, "Nothing in this room.");
                 }
                 break;
             case 'drop':
