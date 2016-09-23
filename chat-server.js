@@ -651,9 +651,15 @@ io.sockets.on('connection', function (socket) {
 	    return keys[ keys.length * Math.random() << 0];
 	};
 
-    var notes = {};
+    var notes = {}; //can be a string or a function that returns a string
 
-    notes['10:10'] = "~happy holidays~ be careful where you quack this summer!"; //the 'news' post
+    notes['10:10'] = function () {
+        if (users.length === 1) {
+            return "Welcome to Ducktown! no-one else is here :(";
+        } else {
+            return "Welcome to Ducktown! Population: " + users.length;
+        }
+    }
 
     notes['9:10'] = "Feeling sleepy? Take a /nap";
     notes['11:10'] = "Type /quack to quack!";
@@ -780,6 +786,9 @@ io.sockets.on('connection', function (socket) {
 
     function displayNoteFor (user) {
         var note = notes[user.map.x + ":" + user.map.y];
+        if (typeof(note) === 'function') {
+            note = note();
+        }
         if (note) {
             sendServerMessage(user.socket, note);
         } else {
