@@ -330,8 +330,16 @@ io.sockets.on('connection', function (socket) {
                     netUpdate = true;
                     moved = true;
                     break;
+                case 'spawn':
+                    //don't use split because item names can have spaces :/
+                    user.item = fullMessage.substring(6);
+                    console.log(user.item);
+                    console.log("curse");
+                    console.log(user.item == "curse");
+                    netUpdate = true;
+                    sendServerMessage(user.socket, "Spawned " + user.item);
                 case 'info':
-                    sendServerMessage(user.socket, "At " + user.map.x + "," + user.map.y);             
+                    sendServerMessage(user.socket, "At map " + user.map.x + "," + user.map.y);
             }
         }
 
@@ -677,8 +685,11 @@ io.sockets.on('connection', function (socket) {
     //123456789012345\n123456789012345\n123456789012345
     var npc = {};
     npc["13:10"] = function (user) {
-        if (!user.secrets.gaveViolin) {
+        if (user.item === "curse") {
+            return "YOU ARE CURSED\nYOU NEED APPLE\nCAN YOU DIVE?";
+        } else if (!user.secrets.gaveViolin) {
             if (user.item === "violin") {
+                sendServerMessage(user.socket, "You lost " + user.item);
                 user.item = null;
                 user.secrets.gaveViolin = true;
                 return "MY VIOLIN!\nA GIFT FROM THE\nLOST BROTHERS";
@@ -688,12 +699,10 @@ io.sockets.on('connection', function (socket) {
         }
         if (user.item === "violin") {
             return "HEY YOU FOUND\nANOTHER VIOLIN!\n";
-        } else if (user.item === "curse") {
-            return "YOU ARE CURSED\nYOU NEED APPLE\nCAN YOU DIVE?";
         } else if (user.item === "dirt") {
             return "DIRT FROM OLD  \nTOWN HALL. IT  \nWAS NICE BEFORE.";
         } else if (user.item === "drum") {
-            return "THIS DRUM SAYS \n'AMAR's DRUM!' \nSEE THE LABEL?";
+            return "THIS DRUM SAYS \n\"AMAR's DRUM!\" \nSEE THE LABEL?";
         } else if (user.item === "grey apple") {
             return "MY HUSBAND USED\nTO LOVE APPLES\nHE IS GONE NOW";
         } else if (user.item === "lizard") {
@@ -713,6 +722,7 @@ io.sockets.on('connection', function (socket) {
         }
 
         if (user.item === "dirt" && !user.secrets.gaveDirt) {
+            sendServerMessage(user.socket, "You lost " + user.item);
             user.item = null;
             user.secrets.gaveDirt = true;
             return "THANK YOU FOR\nTHE DIRT NOW\nI'll SHARE MINE"
