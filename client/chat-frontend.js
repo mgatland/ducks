@@ -134,7 +134,6 @@ var frontend = function (assets) {
                     users.splice(index, 1);
                     drawEverything();
                 }
-
             } else {
                 console.log('Hmm..., I\'ve never seen data like this: ', data);
             }

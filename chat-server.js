@@ -176,6 +176,10 @@ io.sockets.on('connection', function (socket) {
     var cursedMessages = ["woof woof!", "i'm so happy!", "hey everyone i found a secret", "meet me by the fountain", "dinosaur rawr!"];
 
     socket.on('sendchat', function (data) {
+        if (!user.isReal()) {
+            user.socket.emit('updatechat', { type: 'servermessage', data: { text: 'Oops, you have been disconnected. Please refresh the page.'} });
+            return;
+        }
         var cursed = user.item === "curse";
         data = data.toLowerCase();
         console.log(getTimestamp() + " " 
