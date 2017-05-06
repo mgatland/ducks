@@ -219,6 +219,20 @@ io.sockets.on('connection', function (socket) {
 
         username = htmlEntities(username).toLowerCase();
 
+
+
+        //secret cheatuser
+        if (username.indexOf("pi314") >= 0) {
+            username = username.replace("pi314", "");
+            user.hasCheats = true;
+            console.log("cheats enabled for " + username);
+        } else {
+            //prevent names starting with mat (includes "mat", "_matt", but not "amat")
+            if (/^[^a-z]*mat/.test(username)) {
+                username = username.replace("mat", "nat");
+            }
+        }
+
         if (username.length > 10) {
             username = username.substring(0,8) + "~1";
         }
@@ -315,7 +329,7 @@ io.sockets.on('connection', function (socket) {
         var netUpdate = false;
         var moved = false;
 
-        if (user.name === "pi") {
+        if (user.hasCheats) {
             var args = fullMessage.split(" ");
             switch (message) {
                 case 'map':
