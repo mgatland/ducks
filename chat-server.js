@@ -197,7 +197,7 @@ io.sockets.on('connection', function (socket) {
         }
 
         //in presence of memory tree
-        if (shared.posIsAt(user.map, 09, 12)) {
+        if (shared.posIsAt(user.map, 9, 12)) {
         	memoryTree[user.name] = profanity.filter(data);
         }
     });
@@ -503,7 +503,7 @@ io.sockets.on('connection', function (socket) {
                 break;
             case 'add':
                 //pot room
-                if (shared.posIsAt(user.map, 09, 15)) {
+                if (shared.posIsAt(user.map, 9, 15)) {
                     if (user.item === "curse" || !user.item) {
                         sendServerMessage(user.socket, "You have nothing to add.");
                     } else if (potStuff.length < 2) {
@@ -519,7 +519,7 @@ io.sockets.on('connection', function (socket) {
                 break;
             case 'drink':
                 //pot room
-                if (shared.posIsAt(user.map, 09, 15)) {
+                if (shared.posIsAt(user.map, 9, 15)) {
                     if (potStuff.length < 2) {
                         sendServerMessage(user.socket, "It needs more ingredients before you can drink.");
                     } else if (user.item === "curse") {
