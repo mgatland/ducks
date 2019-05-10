@@ -51,44 +51,45 @@
 
 
 
+	//These swears are removed even if they are part of a longer word
+	//They should not be part of common English words
+	const fragmentSwears = [
+		"fag",
+		"bitch",
+		"cunt",
+		"dick", //in a few words
+		"fuck",
+		"midget",
+		"nigg", //in snigger, niggles, etc but worth it!
+		"piss", //in a few words
+		"pussy", //in pussycat
+		"shit", //in mishit
+		"tits", //singular 'tit' is very common
+	]
 
-
-
+	//These swears are only removed if a word on their own
+	//i.e. 'ass' is removed but 'assets' is not
 	var baseSwears = [
 		"ass",
-		"asshole",
-		"bitch",
 		"cock",
-		"cunt",
-		"dick",
-		"fag",
-		"faggot",
-		"fuck",
-		"fucked",
-		"fucker",
-		"fucking",
-		"midget",
-		"motherfucker",
-		"piss",
-		"pussy",
-		"shit",
 		"suck my balls",
 		"suck my dick",
 		"suck ur dick",
-		"tits",
+		"tit",
 		"vag"
 	];
 
-	var swears = [];
+	var wholeSwears = [];
 	baseSwears.forEach(function (swear) {
-		swears.push(swear);
-		swears.push(swear + "s");
-		swears.push(swear + "z");
+		wholeSwears.push(swear);
+		wholeSwears.push(swear + "s");
+		wholeSwears.push(swear + "z");
 	});
 
-	var filter = new RegExp("\\b(" + swears.join("|") + ")\\b", "gi");
+	var baseFilter = new RegExp("\\b(" + wholeSwears.join("|") + ")\\b", "gi");
+	const fragFilter = new RegExp("(" + fragmentSwears.join("|") + ")", "gi");
 	exports.filter = function (rawText) {
-		return rawText.replace(filter, "***");
+		return rawText.replace(baseFilter, "***").replace(fragFilter, "***");
 	}
 
 })(typeof exports === 'undefined'? this['shared']={}: exports);

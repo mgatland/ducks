@@ -235,6 +235,8 @@ io.sockets.on('connection', function (socket) {
             if (/^[^a-z]*mat/.test(username)) {
                 username = username.replace("mat", "nat");
             }
+            //remove profanity
+            username = profanity.filter(username);
         }
 
         if (username.length > 10) {
