@@ -10,7 +10,7 @@
     "npm": "5.2.x"
   },
   "dependencies": {
-    "express": "3.1.x",
+    "express": "4.17.x",
     "sendgrid": "^2.0.0",
     "socket.io": "1.3.5"
   }
