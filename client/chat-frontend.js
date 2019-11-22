@@ -83,7 +83,7 @@ var frontend = function (assets) {
 
     function connect() {
         console.log("connecting to port " + port);
-        socket = io.connect("http://" + document.domain + ":" + port);
+        socket = io.connect(location.protocol + "//" + document.domain + ":" + port);
 
         socket.on('connect', function () {
             // first we want users to enter their names
