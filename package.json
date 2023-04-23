@@ -12,6 +12,6 @@
   "dependencies": {
     "express": "4.17.x",
     "sendgrid": "^2.0.0",
-    "socket.io": "1.3.5"
+    "socket.io": "4.6.1"
   }
 }
